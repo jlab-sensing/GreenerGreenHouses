@@ -1,0 +1,304 @@
+# Created by Ultra Librarian 8.3.331 Copyright © 1999-2021
+# Frank Frank, Accelerated Designs
+
+Grid mil;
+Set Wire_Bend 2;
+
+
+Edit 'RGR0020A.pac';
+Grid Mil;
+Layer 1;
+Smd '1' 23.622 9.4488 -100 R180 (-64.9606 39.3701);
+Layer 1;
+Smd '2' 23.622 9.4488 -100 R180 (-64.9606 19.6851);
+Layer 1;
+Smd '3' 23.622 9.4488 -100 R180 (-64.9606 0);
+Layer 1;
+Smd '4' 23.622 9.4488 -100 R180 (-64.9606 -19.685);
+Layer 1;
+Smd '5' 23.622 9.4488 -100 R180 (-64.9606 -39.3701);
+Layer 1;
+Smd '6' 23.622 9.4488 -100 R90 (-39.3701 -64.9606);
+Layer 1;
+Smd '7' 23.622 9.4488 -100 R90 (-19.6851 -64.9606);
+Layer 1;
+Smd '8' 23.622 9.4488 -100 R90 (0 -64.9606);
+Layer 1;
+Smd '9' 23.622 9.4488 -100 R90 (19.685 -64.9606);
+Layer 1;
+Smd '10' 23.622 9.4488 -100 R90 (39.3701 -64.9606);
+Layer 1;
+Smd '11' 23.622 9.4488 -100 R180 (64.9606 -39.3701);
+Layer 1;
+Smd '12' 23.622 9.4488 -100 R180 (64.9606 -19.685);
+Layer 1;
+Smd '13' 23.622 9.4488 -100 R180 (64.9606 0);
+Layer 1;
+Smd '14' 23.622 9.4488 -100 R180 (64.9606 19.6851);
+Layer 1;
+Smd '15' 23.622 9.4488 -100 R180 (64.9606 39.3701);
+Layer 1;
+Smd '16' 23.622 9.4488 -100 R90 (39.3701 64.9606);
+Layer 1;
+Smd '17' 23.622 9.4488 -100 R90 (19.685 64.9606);
+Layer 1;
+Smd '18' 23.622 9.4488 -100 R90 (0 64.9606);
+Layer 1;
+Smd '19' 23.622 9.4488 -100 R90 (-19.6851 64.9606);
+Layer 1;
+Smd '20' 23.622 9.4488 -100 R90 (-39.3701 64.9606);
+Layer 1;
+Smd '21' 80.7087 80.7087 -0 R0 (0 0);
+Change Drill 8;
+Pad 'V' Round 0 20 R0 (0 -31);
+Change Drill 8;
+Pad 'V_1' Round 0 20 R0 (0 31);
+Change Drill 8;
+Pad 'V_2' Round 0 20 R0 (-31 0);
+Change Drill 8;
+Pad 'V_3' Round 0 20 R0 (31 0);
+Layer 21;
+Wire 8 (-78 -78) (-70 -78);
+Wire 8 (-78 -78) (-78 -70);
+Wire 8 (70 -78) (78 -78);
+Wire 8 (78 -78) (78 -70);
+Wire 8 (78 70) (78 78);
+Wire 8 (70 78) (78 78);
+Wire 8 (-78 78) (-55 78);
+Wire 8 (-78 56) (-78 78);
+Change Size 50;
+Change Ratio 6;
+Text 'Designator250' SR0 (-72 107);
+Layer 51;
+Wire 6 (-72 -72) (-72 72);
+Wire 6 (72 -72) (72 72);
+Wire 6 (-72 72) (72 72);
+Wire 6 (-72 -72) (72 -72);
+Wire 4 (-34 36) -180 (-58 36);
+Wire 4 (-58 36) -180 (-34 36);
+Layer 31;
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (3.937 3.937) (40.0394 3.937) (40.0394 40.0394) (3.937 40.0394) (3.937 3.937);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (-3.937 40.0394) (-40.0394 40.0394) (-40.0394 3.937) (-3.937 3.937) (-3.937 40.0394);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (-3.937 -3.937) (-40.0394 -3.937) (-40.0394 -40.0394) (-3.937 -40.0394) (-3.937 -3.937);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (3.937 -40.0394) (40.0394 -40.0394) (40.0394 -3.937) (3.937 -3.937) (3.937 -40.0394);
+Layer 27;
+Change Size 50;
+Change Ratio 6;
+Text '>Value' SR0 (-68 -25);
+Change Size 50;
+Change Ratio 6;
+Text '>Name' SR0 (-129 -25);
+
+Edit 'RGR0020A_NV.pac';
+Grid Mil;
+Layer 1;
+Smd '1' 23.622 9.4488 -100 R180 (-64.9606 39.3701);
+Layer 1;
+Smd '2' 23.622 9.4488 -100 R180 (-64.9606 19.6851);
+Layer 1;
+Smd '3' 23.622 9.4488 -100 R180 (-64.9606 0);
+Layer 1;
+Smd '4' 23.622 9.4488 -100 R180 (-64.9606 -19.685);
+Layer 1;
+Smd '5' 23.622 9.4488 -100 R180 (-64.9606 -39.3701);
+Layer 1;
+Smd '6' 23.622 9.4488 -100 R90 (-39.3701 -64.9606);
+Layer 1;
+Smd '7' 23.622 9.4488 -100 R90 (-19.6851 -64.9606);
+Layer 1;
+Smd '8' 23.622 9.4488 -100 R90 (0 -64.9606);
+Layer 1;
+Smd '9' 23.622 9.4488 -100 R90 (19.685 -64.9606);
+Layer 1;
+Smd '10' 23.622 9.4488 -100 R90 (39.3701 -64.9606);
+Layer 1;
+Smd '11' 23.622 9.4488 -100 R180 (64.9606 -39.3701);
+Layer 1;
+Smd '12' 23.622 9.4488 -100 R180 (64.9606 -19.685);
+Layer 1;
+Smd '13' 23.622 9.4488 -100 R180 (64.9606 0);
+Layer 1;
+Smd '14' 23.622 9.4488 -100 R180 (64.9606 19.6851);
+Layer 1;
+Smd '15' 23.622 9.4488 -100 R180 (64.9606 39.3701);
+Layer 1;
+Smd '16' 23.622 9.4488 -100 R90 (39.3701 64.9606);
+Layer 1;
+Smd '17' 23.622 9.4488 -100 R90 (19.685 64.9606);
+Layer 1;
+Smd '18' 23.622 9.4488 -100 R90 (0 64.9606);
+Layer 1;
+Smd '19' 23.622 9.4488 -100 R90 (-19.6851 64.9606);
+Layer 1;
+Smd '20' 23.622 9.4488 -100 R90 (-39.3701 64.9606);
+Layer 1;
+Smd '21' 80.7087 80.7087 -0 R0 (0 0);
+Layer 21;
+Wire 8 (-78 -78) (-70 -78);
+Wire 8 (-78 -78) (-78 -70);
+Wire 8 (70 -78) (78 -78);
+Wire 8 (78 -78) (78 -70);
+Wire 8 (78 70) (78 78);
+Wire 8 (70 78) (78 78);
+Wire 8 (-78 78) (-55 78);
+Wire 8 (-78 56) (-78 78);
+Change Size 50;
+Change Ratio 6;
+Text 'Designator251' SR0 (-72 107);
+Layer 51;
+Wire 6 (-72 -72) (-72 72);
+Wire 6 (72 -72) (72 72);
+Wire 6 (-72 72) (72 72);
+Wire 6 (-72 -72) (72 -72);
+Wire 4 (-34 36) -180 (-58 36);
+Wire 4 (-58 36) -180 (-34 36);
+Layer 31;
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (3.937 3.937) (40.0394 3.937) (40.0394 40.0394) (3.937 40.0394) (3.937 3.937);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (-3.937 40.0394) (-40.0394 40.0394) (-40.0394 3.937) (-3.937 3.937) (-3.937 40.0394);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (-3.937 -3.937) (-40.0394 -3.937) (-40.0394 -40.0394) (-3.937 -40.0394) (-3.937 -3.937);
+Layer 31;
+Change Spacing 50;
+Change Pour solid;
+Polygon 1  (3.937 -40.0394) (40.0394 -40.0394) (40.0394 -3.937) (3.937 -3.937) (3.937 -40.0394);
+Layer 27;
+Change Size 50;
+Change Ratio 6;
+Text '>Value' SR0 (-68 -25);
+Change Size 50;
+Change Ratio 6;
+Text '>Name' SR0 (-129 -25);
+
+Edit 'BQ25570RGR.sym';
+Grid Mil;
+Layer 94;
+Pin 'VSS_2' Pwr None Middle R180 Both 0 (1000 -800)
+Pin 'VIN_DC' Pwr None Middle R0 Both 0 (-1000 600)
+Pin 'VOC_SAMP' In None Middle R180 Both 0 (1000 900)
+Pin 'VREF_SAMP' In None Middle R0 Both 0 (-1000 800)
+Pin 'EN_N' In None Middle R0 Both 0 (-1000 400)
+Pin 'VOUT_EN' In None Middle R0 Both 0 (-1000 200)
+Pin 'VBAT_OV' In None Middle R0 Both 0 (-1000 -400)
+Pin 'VRDIV' Out None Middle R0 Both 0 (-1000 -200)
+Pin 'NC_2' Pwr None Middle R180 Both 0 (1000 -500)
+Pin 'OK_HYST' In None Middle R0 Both 0 (-1000 -800)
+Pin 'OK_PROG' In None Middle R0 Both 0 (-1000 -600)
+Pin 'VOUT_SET' In None Middle R0 Both 0 (-1000 -1000)
+Pin 'VBAT_OK' Out None Middle R0 Both 0 (-1000 0)
+Pin 'VOUT' Pwr None Middle R180 Both 0 (1000 100)
+Pin 'VSS' Pwr None Middle R180 Both 0 (1000 -900)
+Pin 'LBUCK' Pas None Middle R180 Both 0 (1000 300)
+Pin 'NC' Pas None Middle R180 Both 0 (1000 -600)
+Pin 'VBAT' I/O None Middle R180 Both 0 (1000 500)
+Pin 'VSTOR' Pwr None Middle R180 Both 0 (1000 700)
+Pin 'LBOOST' In None Middle R0 Both 0 (-1000 1000)
+Pin 'PAD' Pwr None Middle R180 Both 0 (1000 -1000)
+Wire 6 (-800 -1200) (800 -1200);
+Wire 6 (800 -1200) (800 1200);
+Wire 6 (800 1200) (-800 1200);
+Wire 6 (-800 1200) (-800 -1200);
+Layer 97;
+Layer 95;
+Change Size 82;
+Change Ratio 6;
+Text '>Name' SR0 (-186 59);
+Layer 96;
+Change Size 82;
+Change Ratio 6;
+Text '>Value' SR0 (-211 -41);
+Layer 96;
+Change Size 82;
+Change Ratio 6;
+Text '>Value' SR0 (-211 -41);
+
+Edit 'BQ25570RGRR.dev';
+Prefix 'U';
+Description '';
+Value Off;
+Add BQ25570RGR 'A' Next  0 (0 0);
+Package 'RGR0020A';
+Technology '';
+Attribute TYPE 'TYPE';
+Attribute RefDes 'RefDes';
+Attribute Copyright 'Copyright (C) 2023 Ultra Librarian. All rights reserved.';
+Attribute Mfr_Name 'Texas Instruments';
+Attribute Manufacturer_Part_Number 'BQ25570RGRR';
+Attribute DigiKey_Part_Number_1 '2156-BQ25570RGRR-ND';
+Attribute DigiKey_Part_Number_2 '296-39934-1-ND';
+Attribute DigiKey_Part_Number_3 '296-39934-2-ND';
+Attribute DigiKey_Part_Number_4 '296-39934-6-ND';
+Attribute DigiKey_Part_Number_5 'BQ25570RGRR-ND';
+Connect 'A.VSS_2' '1';
+Connect 'A.VIN_DC' '2';
+Connect 'A.VOC_SAMP' '3';
+Connect 'A.VREF_SAMP' '4';
+Connect 'A.EN_N' '5';
+Connect 'A.VOUT_EN' '6';
+Connect 'A.VBAT_OV' '7';
+Connect 'A.VRDIV' '8';
+Connect 'A.NC_2' '9';
+Connect 'A.OK_HYST' '10';
+Connect 'A.OK_PROG' '11';
+Connect 'A.VOUT_SET' '12';
+Connect 'A.VBAT_OK' '13';
+Connect 'A.VOUT' '14';
+Connect 'A.VSS' '15';
+Connect 'A.LBUCK' '16';
+Connect 'A.NC' '17';
+Connect 'A.VBAT' '18';
+Connect 'A.VSTOR' '19';
+Connect 'A.LBOOST' '20';
+Connect 'A.PAD' '21';
+Package 'RGR0020A_NV' 'RGR0020A_NV';
+Technology '';
+Attribute TYPE 'TYPE';
+Attribute RefDes 'RefDes';
+Attribute Copyright 'Copyright (C) 2023 Ultra Librarian. All rights reserved.';
+Attribute Mfr_Name 'Texas Instruments';
+Attribute Manufacturer_Part_Number 'BQ25570RGRR';
+Attribute DigiKey_Part_Number_1 '2156-BQ25570RGRR-ND';
+Attribute DigiKey_Part_Number_2 '296-39934-1-ND';
+Attribute DigiKey_Part_Number_3 '296-39934-2-ND';
+Attribute DigiKey_Part_Number_4 '296-39934-6-ND';
+Attribute DigiKey_Part_Number_5 'BQ25570RGRR-ND';
+Connect 'A.VSS_2' '1';
+Connect 'A.VIN_DC' '2';
+Connect 'A.VOC_SAMP' '3';
+Connect 'A.VREF_SAMP' '4';
+Connect 'A.EN_N' '5';
+Connect 'A.VOUT_EN' '6';
+Connect 'A.VBAT_OV' '7';
+Connect 'A.VRDIV' '8';
+Connect 'A.NC_2' '9';
+Connect 'A.OK_HYST' '10';
+Connect 'A.OK_PROG' '11';
+Connect 'A.VOUT_SET' '12';
+Connect 'A.VBAT_OK' '13';
+Connect 'A.VOUT' '14';
+Connect 'A.VSS' '15';
+Connect 'A.LBUCK' '16';
+Connect 'A.NC' '17';
+Connect 'A.VBAT' '18';
+Connect 'A.VSTOR' '19';
+Connect 'A.LBOOST' '20';
+Connect 'A.PAD' '21';
