@@ -5,14 +5,33 @@ Date Created : 7/17/2023  2:19pm
 Last Edited : 7/17/2023   2:20pm
 */
 
+#include <HDC2080.h>
 
+#define ADDR 0x40
+
+HDC2080 sensor(ADDR);
+
+float temperature = 0, humidity = 0;
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  while(!Serial);
 
+  sensor.begin();
+
+  sensor.reset();
+
+  sensor.setMeasurementMode(TEMP_AND_HUMID);
+  sensor.setRate(ONE_HZ);
+  sensor.setTempRes(FOURTEEN_BIT);
+  sensor.setHumidRes(FOURTEEN_BIT);
+
+  senor.triggerMeasurement();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
+  //add in SD Card data recording
 
+  delay(1000);
 }
