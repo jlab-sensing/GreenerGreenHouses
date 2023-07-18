@@ -7,6 +7,7 @@ Last Edited : 7/18/2023   4:05pm
 
 #include <HDC2080.h>
 #include <SD.h>
+#include <SPI.h>
 
 #define ADDR 0x40
 
@@ -14,6 +15,7 @@ Last Edited : 7/18/2023   4:05pm
 #define ARGUS_GH_Temp "ARGH_T.txt"
 #define GGH_GH_Humidity "GGGH_H.txt"
 #define GGH_GH_Temp "GGGH_T.txt"
+//=====================================================
 #define GGH_GRO_Humidity "GGGO_H.txt"   
 #define GGH_GRO_Temp "GGGO_T.txt"
 #define ARGUS_GRO_Humidity "ARGO_H.txt"
