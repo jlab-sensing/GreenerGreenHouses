@@ -2,12 +2,22 @@
 Greener GreenHouses RH/T Test Harness
 authors: mkaltman@ucsc.edu , tikraeme@ucsc.edu
 Date Created : 7/17/2023  2:19pm
-Last Edited : 7/17/2023   2:20pm
+Last Edited : 7/18/2023   4:05pm
 */
 
 #include <HDC2080.h>
+#include <SD.h>
 
 #define ADDR 0x40
+
+#define ARGUS_GH_Humidity "ARGH_H.txt"
+#define ARGUS_GH_Temp "ARGH_T.txt"
+#define GGH_GH_Humidity "GGGH_H.txt"
+#define GGH_GH_Temp "GGGH_T.txt"
+#define GGH_GRO_Humidity "GGGO_H.txt"   
+#define GGH_GRO_Temp "GGGO_T.txt"
+#define ARGUS_GRO_Humidity "ARGO_H.txt"
+#define ARGUS_GRO_Temp "ARGO_T.txt"
 
 HDC2080 sensor(ADDR);
 
@@ -26,7 +36,7 @@ void setup() {
   sensor.setTempRes(FOURTEEN_BIT);
   sensor.setHumidRes(FOURTEEN_BIT);
 
-  senor.triggerMeasurement();
+  sensor.triggerMeasurement();
 }
 
 void loop() {
