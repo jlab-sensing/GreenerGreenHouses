@@ -18,7 +18,7 @@ plot(samples, htu21d_pow)
 hold on
 
 %ens210 current calc at each sample rate
-ens210_curr = ((60-samples)*0.04+samples*6.6)/60
+ens210_curr = ((60-samples)*0.04+samples*58)/60
 ens210_pow = ens210_curr * 3
 plot(samples, ens210_pow)
 
