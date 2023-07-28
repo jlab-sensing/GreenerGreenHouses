@@ -22,10 +22,10 @@ Last Edited : 7/27/2023   11:00am
 #define ARGUS_GRO_Humidity "ARGO_H.txt"
 #define ARGUS_GRO_Temp "ARGO_T.txt"
 
-File ARG_H;
-File ARG_T;
-File GGH_H;
-File GGH_T;
+//File ARG_H;
+//File ARG_T;
+//File GGH_H;
+//File GGH_T;
 
 HDC2080 sensor(ADDR);
 
@@ -45,19 +45,19 @@ void setup() {
 
   sensor.triggerMeasurement();
 
- Serial.print("Initializing SD card...");
+ //Serial.print("Initializing SD card...");
 
-  if (!SD.begin(4)) {
-    Serial.println("initialization failed!");
-    while (1);
-  }
-  Serial.println("initialization done.");
+  //if (!SD.begin(4)) {
+  //  Serial.println("initialization failed!");
+  //  while (1);
+  //}
+  //Serial.println("initialization done.");
 
   //reading and storing GGH temp value
-  GGH_T = SD.open(GGH_GRO_Temp,FILE_WRITE);
+  //GGH_T = SD.open(GGH_GRO_Temp,FILE_WRITE);
   
 // //reading and storing GGH humidity value
-  GGH_H = SD.open(GGH_GRO_Humidity,FILE_WRITE);
+  //GGH_H = SD.open(GGH_GRO_Humidity,FILE_WRITE);
 }
 
 
@@ -75,10 +75,10 @@ void loop() {
   Serial.print("\t\tHumidity (%): "); Serial.println(x);
   
 
-  GGH_H.println(x);
-  GGH_H.flush();
-  GGH_T.println(y);
-  GGH_T.flush();
+  //GGH_H.println(x);
+  //GGH_H.flush();
+  //GGH_T.println(y);
+  //GGH_T.flush();
 
   delay(1000);
 
