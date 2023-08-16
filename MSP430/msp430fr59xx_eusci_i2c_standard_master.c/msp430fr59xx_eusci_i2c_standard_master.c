@@ -80,6 +80,9 @@ uint8_t SlaveType1 [TYPE_1_LENGTH] = {0};
 uint8_t SlaveType0 [TYPE_0_LENGTH] = {0};
 uint8_t TempBitsLo[1] = {0};
 uint8_t TempBitsHi[1] = {0};
+uint8_t HumidityBitsLo[1] = {0};
+uint8_t HumidityBitsHi[1] = {0};
+
 
 //******************************************************************************
 // General I2C State Machine ***************************************************

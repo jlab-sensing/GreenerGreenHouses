@@ -1,0 +1,5 @@
+"./msp430fr59xx_eusci_i2c_standard_master.obj"
+"../lnk_msp430fr5969.cmd"
+-llibmpu_init.a
+-llibmath.a
+-llibc.a
