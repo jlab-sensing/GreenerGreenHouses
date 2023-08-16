@@ -1,0 +1,7 @@
+"./HDC2021.obj"
+"./MSP430_I2c.obj"
+"./main.obj"
+"../lnk_msp430fr5969.cmd"
+-llibmpu_init.a
+-llibmath.a
+-llibc.a
