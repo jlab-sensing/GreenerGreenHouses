@@ -19,11 +19,27 @@
 #define MEAS_CONFIG_REG 0x0F
 
 float Sensor_ReadTemp(void) {
-	
+	uint8_t byte[2] = {0,0};
+	uint16_t temp = 0;
+	//Read register TEMP_LO_REG into byte[0]
+	//Read register TEMP_HI_REG into byte[1]
+	temp = byte[1];
+	temp = (temp << 8) | byte[0];
+	float f = temp;
+	f = ((f * 165.0f) / 65536.0f) - 40.0f;
+	return f;
 }
 
 float Sensor_ReadHumidity() {
-
+    uint8_t byte[2] = {0,0};
+    uint16_t humidity = 0;
+    //Read register HUMIDITY_LO_REG into byte[0]
+    //Read register HUMIDITY_HI_REG into byte[1]
+    humidity = byte[1];
+    humidity = (humidity << 8) | byte[0];
+    float f = humidity;
+    f = (f / 65536.0f) * 100.0f;
+    return f;
 }
 
 
@@ -36,26 +52,26 @@ void Sensor_SetMeasurementRate(int Rate) {
 	//Read register CONFIG_REG to configContents[0]
 	switch(Rate) {
 		case MANUAL:
-			configContents[0] = configContents[0] & 0x8F;
+			configContents[0] &= 0x8F;
 			break;
 		case TWO_MINS:
-			configContents[0] = configContents[0] & 0x9F;
-			configContents[0] = configContents[0] | 0x10;
+			configContents[0] &= 0x9F;
+			configContents[0] |= 0x10;
 			break;
 		case ONE_MINS:
-			configContents[0] = configContents[0] & 0xAF;
-			configContents[0] = configContents[0] | 0x20;
+			configContents[0] &= 0xAF;
+			configContents[0] |= 0x20;
 			break;
 		case TEN_SECONDS:
-			configContents[0] = configContents[0] & 0xBF;
-			configContents[0] = configContents[0] | 0x30;
+			configContents[0] &= 0xBF;
+			configContents[0] |= 0x30;
 			break;
 		case FIVE_SECONDS:
-			configContents[0] = configContents[0] & 0xCF;
-			configContents[0] = configContents[0] | 0x40;
+			configContents[0] &= 0xCF;
+			configContents[0] |= 0x40;
 			break;
 		default:
-			configContents[0] = configContents[0] & 0x8F;
+			configContents[0] &= 0x8F;
 	}
 	//Write configContents[0] to register CONFIG_REG
 }
@@ -65,18 +81,18 @@ void Sensor_MeasurementMode(int Mode) {
 	//Read register MEAS_CONFIG_REG to configContents[0]
 	switch(Mode) {
 		case TEMP_AND_HUMID:
-			configContents[0] = configContents[0] & 0xF9;
+			configContents[0] &= 0xF9;
 			break;
 		case TEMP_ONLY:
-			configContents[0] = configContents[0] & 0xFC;
-			configContents[0] = configContents[0] | 0x02;
+			configContents[0] &= 0xFC;
+			configContents[0] |= 0x02;
 			break;
 		case HUMID_ONLY:
-			configContents[0] = configContents[0] & 0xFD;
-			configContents[0] = configContents[0] | 0x04;
+			configContents[0] &= 0xFD;
+			configContents[0] |= 0x04;
 			break;
 		default:
-			configContents[0] = configContents[0] & 0xF9;
+			configContents[0] &= 0xF9;
 	}
 	//Write configContents[0] to register 0x0F
 }
@@ -86,22 +102,39 @@ void Sensor_SetHumidityResolution(int Resolution) {
     //Read register MEAS_CONFIG_REG to configContents[0]
     switch(Resolution) {
     case FOURTEEN_BIT:
-        configContents[0] = configContents[0] & 0x3F;
+        configContents[0] &= 0x3F;
         break;
     case ELEVEN_BIT:
-        configContents[0] = configContents[0] & 0x7F;
-        configContents[0] = configContents[0] | 0x40;
+        configContents[0] &= 0x7F;
+        configContents[0] |= 0x40;
         break;
     case NINE_BIT:
-        configContents[0] = configContents[0] & 0xB7;
-        configContents[0] = configContents[0] | 0x80;
+        configContents[0] &= 0xBF;
+        configContents[0] |= 0x80;
         break;
     default:
-        configContents[0] = configContents[0] & 0x3F;
+        configContents[0] &= 0x3F;
     }
     //Write configContents[0] to MEAS_CONFIG_REG
 }
 
 void Sensor_SetTempResolution(int Resolution) {
-
+    uint8_t configContents[1] = {0};
+    //Read register MEAS_CONFIG_REG to configContents[0]
+    switch(Resolution) {
+        case FOURTEEN_BIT:
+            configContents[0] &= 0xCF;
+            break;
+        case ELEVEN_BIT:
+            configContents[0] &= 0xDF;
+            configContents[0] |= 0x10;
+            break;
+        case NINE_BIT:
+            configContents[0] &= 0xEF;
+            configContents[0] |= 0x20;
+            break;
+        default:
+            configContents[0] &= 0xCF;
+    }
+    //Write configContents[0] to MEAS_CONFIG_REG
 }
