@@ -37,8 +37,8 @@ float Sensor_ReadTemp(void) {
 }
 
 float Sensor_ReadHumidity() {
-    uint8_t byte1[0] = {0};
-    uint8_t byte2[0] = {0};
+    uint8_t byte1[1] = {0};
+    uint8_t byte2[1] = {0};
     uint16_t humidity = 0;
     I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_LO_REG, 1);
     CopyArray(ReceiveBuffer, byte1, 1);
@@ -53,12 +53,17 @@ float Sensor_ReadHumidity() {
 
 
 void Sensor_TriggerMeasurement(void) {
-
+    uint8_t configContents[1] = {0};
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+    CopyArray(ReceiveBuffer, configContents, 1);
+    configContents[0] |= 0x01;
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);
 }
 
 void Sensor_SetMeasurementRate(int Rate) {
 	uint8_t configContents[1] = {0};
-	//Read register CONFIG_REG to configContents[0]
+	I2C_Controller_ReadReg(HDC2021_ADDRESS, CONFIG_REG, 1);
+	CopyArray(ReceiveBuffer, configContents, 1);
 	switch(Rate) {
 		case MANUAL:
 			configContents[0] &= 0x8F;
@@ -82,12 +87,13 @@ void Sensor_SetMeasurementRate(int Rate) {
 		default:
 			configContents[0] &= 0x8F;
 	}
-	//Write configContents[0] to register CONFIG_REG
+	I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG_REG, configContents, 1);
 }
 
 void Sensor_MeasurementMode(int Mode) {
 	uint8_t configContents[1] = {0};
-	//Read register MEAS_CONFIG_REG to configContents[0]
+	I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+	CopyArray(ReceiveBuffer, configContents, 1);
 	switch(Mode) {
 		case TEMP_AND_HUMID:
 			configContents[0] &= 0xF9;
@@ -103,12 +109,13 @@ void Sensor_MeasurementMode(int Mode) {
 		default:
 			configContents[0] &= 0xF9;
 	}
-	//Write configContents[0] to register 0x0F
+	I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);
 }
 
 void Sensor_SetHumidityResolution(int Resolution) {
     uint8_t configContents[1] = {0};
-    //Read register MEAS_CONFIG_REG to configContents[0]
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+    CopyArray(ReceiveBuffer, configContents, 1);
     switch(Resolution) {
     case FOURTEEN_BIT:
         configContents[0] &= 0x3F;
@@ -124,12 +131,13 @@ void Sensor_SetHumidityResolution(int Resolution) {
     default:
         configContents[0] &= 0x3F;
     }
-    //Write configContents[0] to MEAS_CONFIG_REG
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);
 }
 
 void Sensor_SetTempResolution(int Resolution) {
     uint8_t configContents[1] = {0};
-    //Read register MEAS_CONFIG_REG to configContents[0]
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+    CopyArray(ReceiveBuffer, configContents, 1);
     switch(Resolution) {
         case FOURTEEN_BIT:
             configContents[0] &= 0xCF;
@@ -145,5 +153,5 @@ void Sensor_SetTempResolution(int Resolution) {
         default:
             configContents[0] &= 0xCF;
     }
-    //Write configContents[0] to MEAS_CONFIG_REG
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);
 }
