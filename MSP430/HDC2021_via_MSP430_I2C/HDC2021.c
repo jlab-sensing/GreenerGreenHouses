@@ -10,6 +10,9 @@
 #include "HDC2021.h"
 #include "MSP430_I2C.h"
 
+extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
+extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
+
 #define HDC2021_ADDRESS 0x40
 #define TEMP_LO_REG 0x00
 #define TEMP_HI_REG 0x01
