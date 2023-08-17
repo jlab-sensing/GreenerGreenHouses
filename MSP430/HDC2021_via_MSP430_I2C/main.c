@@ -9,6 +9,7 @@
  */
 
 extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
+extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
 
 #define I2C_INITIAL_COMM_TEST
 
@@ -20,6 +21,12 @@ int main(void)
     initGPIO();
     initI2C(HDC2021_ADDRESS);
 
+
+    /*
+     * Initial communication testing, polls HDC2021
+     * for device id and manufacturer id.
+     * currently stores valus
+     */
 #ifdef I2C_INITIAL_COMM_TEST
 
     uint8_t DeviceID_Hi[1] = {0};
