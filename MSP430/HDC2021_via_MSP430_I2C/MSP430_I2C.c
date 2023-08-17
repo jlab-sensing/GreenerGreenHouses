@@ -1,8 +1,11 @@
 /*
- * MSP430_I2C.c
- *
- *  Created on: Aug 17, 2023
- *      Author: matth
+*  MSP430_I2C.c
+ * Header file for implementation of I2C communication via MSP430EXPFR5969
+ * Written in Code Composer Studio 12.4
+ * Adapted from TI's msp430fr59xx_eusci_i2c_standard_master example
+ * Created on: Aug 17, 2023
+ * Author: Matthew Kaltman
+ * Last Modified: 8/17/23
  */
 
 
