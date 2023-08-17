@@ -19,24 +19,30 @@
 #define MEAS_CONFIG_REG 0x0F
 
 float Sensor_ReadTemp(void) {
-	uint8_t byte[2] = {0,0};
+	uint8_t byte1[1] = {0};
+	uint8_t byte2[1] = {0};
 	uint16_t temp = 0;
-	//Read register TEMP_LO_REG into byte[0]
-	//Read register TEMP_HI_REG into byte[1]
-	temp = byte[1];
-	temp = (temp << 8) | byte[0];
+	I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_LO_REG, 1);
+	CopyArray(ReceiveBuffer, byte1, 1);
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_HI_REG, 1);
+    CopyArray(ReceiveBuffer, byte2, 1);
+	temp = byte2[0];
+	temp = (temp << 8) | byte1[0];
 	float f = temp;
 	f = ((f * 165.0f) / 65536.0f) - 40.0f;
 	return f;
 }
 
 float Sensor_ReadHumidity() {
-    uint8_t byte[2] = {0,0};
+    uint8_t byte1[0] = {0};
+    uint8_t byte2[0] = {0};
     uint16_t humidity = 0;
-    //Read register HUMIDITY_LO_REG into byte[0]
-    //Read register HUMIDITY_HI_REG into byte[1]
-    humidity = byte[1];
-    humidity = (humidity << 8) | byte[0];
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_LO_REG, 1);
+    CopyArray(ReceiveBuffer, byte1, 1);
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_HI_REG, 1);
+    CopyArray(ReceiveBuffer, byte2, 1);
+    humidity = byte2[0];
+    humidity = (humidity << 8) | byte1[0];
     float f = humidity;
     f = (f / 65536.0f) * 100.0f;
     return f;
