@@ -27,10 +27,7 @@
 #define TEMP_AND_HUMID 0
 #define TEMP_ONLY 1
 #define HUMID_ONLY 2
-#define ACTIVE_LOW 0
-#define ACTIVE_HIGH 1
-#define LEVEL_MODE 0
-#define COMPARATOR_MODE 1
+
 
 
 /****************************************************************
@@ -38,10 +35,10 @@
  ***************************************************************/
 
 //Reads and returns the temperature of the HDC2021 as a float for high precision
-float Sensor_ReadTemp();
+float Sensor_ReadTemp(void);
 
 //Reads and returns the relative humidity of the HDC2021 as a float for high precision
-float Sensor_ReadHumidity();
+float Sensor_ReadHumidity(void);
 
 
 
@@ -49,18 +46,40 @@ float Sensor_ReadHumidity();
  *** MANIPULATOR-FUNCTIONS ********************************************
  *********************************************************************/
 
-void Sensor_Begin();
+/*
+ *Sets bit 7 of CONFIG register to trigger soft reset,
+ *Run at the beginning of initialization to clear registers
+ */
+void Sensor_Reset(void);
 
-void Sensor_Reset();
+/*
+ * Sets bit 0 of the measurement CONFIG register to enable measurements,
+ * Run only after setting rate, mode, and resolutions
+ */
+void Sensor_TriggerMeasurement(void);
 
-void Sensor_TriggerMeasurement();
-
+/*
+ * Sets the rate at which the sensor is polled
+ * 1s,5s,10s,1min,5min,manual
+ */
 void Sensor_SetMeasurementRate(int Rate);
 
+/*
+ * Sets the measurement mode of the sensor
+ * RH , T , RH/T
+ */
 void Sensor_SetMeasurementMode(int Mode);
 
+/*
+ * Sets humidity reading resolution:
+ * 9b,11b,14b
+ */
 void Sensor_SetHumidityResolution(int Resolution);
 
+/*
+ * Sets temperature reading resolution:
+ * 9b,11b,14b
+ */
 void Sensor_SetTempResolution(int Resolution);
 
 
