@@ -25,9 +25,18 @@
 #define MESSAGE_LENGTH      1
 
 
-// Enum for I2C statemachine, hidden from user
-typedef enum I2C_ModeEnum* I2C_Mode;
-
+// Enum for I2C statemachine
+typedef enum I2C_ModeEnum{
+    IDLE_MODE,
+    NACK_MODE,
+    TX_REG_ADDRESS_MODE,
+    RX_REG_ADDRESS_MODE,
+    TX_DATA_MODE,
+    RX_DATA_MODE,
+    SWITCH_TO_RX_MODE,
+    SWITHC_TO_TX_MODE,
+    TIMEOUT_MODE
+} I2C_Mode;
 /* For peripheral device with dev_addr, writes the data specified in *reg_data
  *
  * dev_addr: The peripheral device address.
@@ -55,9 +64,23 @@ I2C_Mode I2C_Controller_ReadReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t coun
  */
 void CopyArray(uint8_t *source, uint8_t *dest, uint8_t count);
 
+/*
+ * Clears GPIO output latch and configures
+ * p1.7 and p1.6 as SCL and SDA respectively
+ */
+void initGPIO(void);
 
 
+/*
+ * Configure one FRAM waitstate as required by the device datasheet for MCLK
+ * operation beyond 8MHz _before_ configuring the clock system.
+ */
+void initClockTo16MHz(void);
 
+/*
+ * Enables I2C interrupts and sets initial peripheral address
+ */
+void initI2C(uint8_t dev_add);
 
 
 #endif /* MSP430_I2C_H_ */
