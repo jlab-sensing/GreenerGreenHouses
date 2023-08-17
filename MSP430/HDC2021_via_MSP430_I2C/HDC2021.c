@@ -106,7 +106,7 @@ void Sensor_SetMeasurementRate(int Rate) {
 	I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG_REG, configContents, 1);
 }
 
-void Sensor_MeasurementMode(int Mode) {
+void Sensor_SetMeasurementMode(int Mode) {
 	uint8_t configContents[1] = {0};
 	I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
 	CopyArray(ReceiveBuffer, configContents, 1);
