@@ -15,6 +15,8 @@
  *** CONFIGURATION-DEFINES **************************************
  ***************************************************************/
 
+#define HDC2021_ADDRESS 0x40
+
 //Available measurement resolution for temperature and humidity
 #define FOURTEEN_BIT 0
 #define ELEVEN_BIT 1

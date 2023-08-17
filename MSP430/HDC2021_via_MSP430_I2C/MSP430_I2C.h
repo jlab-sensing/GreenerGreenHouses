@@ -14,6 +14,8 @@
 #include <stdint.h>
 
 
+
+
 /****************************************************************
  *** CONFIGURATION-DEFINES **************************************
  ***************************************************************/
@@ -22,7 +24,7 @@
 #define MAX_BUFFER_SIZE     20
 
 //size of message being sent/received, typically 1 byte
-#define MESSAGE_LENGTH      1
+#define STD_MSG_LENGTH      1
 
 
 // Enum for I2C statemachine
@@ -37,6 +39,22 @@ typedef enum I2C_ModeEnum{
     SWITHC_TO_TX_MODE,
     TIMEOUT_MODE
 } I2C_Mode;
+
+///* ReceiveBuffer: Buffer used to receive data in the ISR
+// * RXByteCtr: Number of bytes left to receive
+// * ReceiveIndex: The index of the next byte to be received in ReceiveBuffer
+// * TransmitBuffer: Buffer used to transmit data in the ISR
+// * TXByteCtr: Number of bytes left to transfer
+// * TransmitIndex: The index of the next byte to be transmitted in TransmitBuffer
+// * */
+// uint8_t ReceiveBuffer[MAX_BUFFER_SIZE] = {0};
+// uint8_t RXByteCtr = 0;
+// uint8_t ReceiveIndex = 0;
+// uint8_t TransmitBuffer[MAX_BUFFER_SIZE] = {0};
+// uint8_t TXByteCtr = 0;
+// uint8_t TransmitIndex = 0;
+
+
 /* For peripheral device with dev_addr, writes the data specified in *reg_data
  *
  * dev_addr: The peripheral device address.
