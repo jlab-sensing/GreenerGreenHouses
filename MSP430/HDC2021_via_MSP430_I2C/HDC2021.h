@@ -2,13 +2,18 @@
  * HDC2021.h
  * Header file for implementation of HDC2021 RH/T Sensor via MSP430EXPFR5969
  * Written in Code Composer Studio 12.4
- *  Created on: Aug 17, 2023
- *      Author: Matthew Kaltman
- *
+ * Created on: Aug 17, 2023
+ * Author: Matthew Kaltman
+ * Last Modified: 8/17/23
  */
 
 #ifndef HDC2021_H_
 #define HDC2021_H_
+
+
+/****************************************************************
+ *** CONFIGURATION-DEFINES **************************************
+ ***************************************************************/
 
 //Available measurement resolution for temperature and humidity
 #define FOURTEEN_BIT 0
@@ -42,9 +47,9 @@ float Sensor_ReadHumidity(void);
 
 
 
-/**********************************************************************
- *** MANIPULATOR-FUNCTIONS ********************************************
- *********************************************************************/
+/****************************************************************
+ *** MANIPULATOR-FUNCTIONS **************************************
+ ***************************************************************/
 
 /*
  *Sets bit 7 of CONFIG register to trigger soft reset,
