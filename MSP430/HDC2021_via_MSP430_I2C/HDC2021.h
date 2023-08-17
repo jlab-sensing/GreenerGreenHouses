@@ -36,11 +36,13 @@
 /****************************************************************
  *** ACESS-FUNCTIONS ********************************************
  ***************************************************************/
+
+//Reads and returns the temperature of the HDC2021 as a float for high precision
 float Sensor_ReadTemp();
 
+//Reads and returns the relative humidity of the HDC2021 as a float for high precision
 float Sensor_ReadHumidity();
 
-uint8_t Sensor_ReadRegister(uint8_t Register);
 
 
 /**********************************************************************
@@ -50,8 +52,6 @@ uint8_t Sensor_ReadRegister(uint8_t Register);
 void Sensor_Begin();
 
 void Sensor_Reset();
-
-void Sensor_WriteRegister(uint8_t Register, uint8_t Data);
 
 void Sensor_TriggerMeasurement();
 
