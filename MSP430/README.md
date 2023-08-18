@@ -9,9 +9,10 @@ This project was written in Texas Instruments Code Composer Studio (CCS) v12.4.0
 * In CCS, navigate to [Files >> import >> Code Composer Studio >> CCS Projects >> Select Search Directory] and then select HDC2021_via_MSP430_I2C as the project to open.
 * Build the project in order to create the .out file read by the MSP
 * Once this project is open in your workspace, navigate to the flash drop down and select "Build Project Before Load", there should be a check next to it.
- * ![Flash_img](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/618b6e23-2cca-4c37-9800-3bd23bd92026) ![image](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/983de156-8f2f-437c-b213-b73a3cd0dc5d)
+ * ![Flash_img](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/618b6e23-2cca-4c37-9800-3bd23bd92026)   ![image](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/a92e0620-07b4-4248-8598-80bdc0526fe4)
+
 * Navigate back to the flash drop down and press "Select Program to Load". From there navigate to [Browse Project >> HDC2021_via_MSP430_I2C >> Debug >> HDC2021_via_MSP430_I2C.out]
-* If this is unavailable, make sure the project has been built first!
+* If this is unavailable, make sure the project has been built first
 
 
 
@@ -116,7 +117,12 @@ int main(){
 - [ ] Add functions for setting Temperature/Humidity Offset
 - [ ] Create standardized test-harness to verify sensor functionality
 - [ ] Continue to manage README as code-base progresses
+- [ ] Enable data-logging through uart->terminal
+- [ ] Create library for communication with TI [LoRa boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125#supported-products)
 - [ ] Optimize current code-base for low-power performance
+    - [ ] Remove float operations
+    - [ ] enable and pull un-used GPIO pins to ground
+      
 
     
 
