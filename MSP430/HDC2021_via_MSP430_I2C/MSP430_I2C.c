@@ -138,8 +138,7 @@ void initI2C(uint8_t dev_add)
     UCB0BRW = 160;                            // fSCL = SMCLK/160 = ~100kHz
     UCB0I2CSA = dev_add;                   // peripheral Address
     UCB0CTLW0 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= UCNACKIE;
-}
+    UCB0IE |= UCNACKIE;}
 
 //******************************************************************************
 // I2C Interrupt ***************************************************************

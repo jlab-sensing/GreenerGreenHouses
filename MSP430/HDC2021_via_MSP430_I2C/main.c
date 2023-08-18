@@ -9,9 +9,14 @@
  */
 
 extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
-extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
+//extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
 
-#define I2C_INITIAL_COMM_TEST
+float Temperature = 0.0;
+float Humidity = 0.0;
+
+ //#define I2C_INITIAL_COMM_TEST
+
+ #define HDC2021_READ_TEST
 
 int main(void)
 {
@@ -20,12 +25,18 @@ int main(void)
     initClockTo16MHz();
     initGPIO();
     initI2C(HDC2021_ADDRESS);
+    Sensor_Reset();
+    Sensor_SetMeasurementMode(TEMP_AND_HUMID);
+    Sensor_SetMeasurementRate(ONE_SECOND);
+    Sensor_SetTempResolution(FOURTEEN_BIT);
+    Sensor_SetHumidityResolution(FOURTEEN_BIT);
+    Sensor_TriggerMeasurement();
 
 
     /*
      * Initial communication testing, polls HDC2021
      * for device id and manufacturer id.
-     * currently stores valus
+     * currently stores values
      */
 #ifdef I2C_INITIAL_COMM_TEST
 
@@ -59,6 +70,20 @@ data2[1] = DeviceID_Hi[0];
 
 DeviceID = data2[1];
 DeviceID = (DeviceID << 8) | data2[0];
+
+#endif
+
+
+
+#ifdef HDC2021_READ_TEST
+
+//have to dump first reading as Sensor wakes up and begins valid measurement points
+Temperature = Sensor_ReadTemp();
+Humidity = Sensor_ReadHumidity();
+
+//valid measurements begin
+Temperature = Sensor_ReadTemp();
+Humidity = Sensor_ReadHumidity();
 
 #endif
 

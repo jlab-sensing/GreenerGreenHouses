@@ -67,7 +67,7 @@ void Sensor_TriggerMeasurement(void) {
     I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);    //Register Write-back
 }
 
-void Sensor_reset(void) {
+void Sensor_Reset(void) {
     uint8_t configContents[1] = {0};
     I2C_Controller_ReadReg(HDC2021_ADDRESS, CONFIG_REG, 1);
     CopyArray(ReceiveBuffer, configContents, 1);

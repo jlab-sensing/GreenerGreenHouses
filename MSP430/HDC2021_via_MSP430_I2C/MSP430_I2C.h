@@ -40,20 +40,6 @@ typedef enum I2C_ModeEnum{
     TIMEOUT_MODE
 } I2C_Mode;
 
-///* ReceiveBuffer: Buffer used to receive data in the ISR
-// * RXByteCtr: Number of bytes left to receive
-// * ReceiveIndex: The index of the next byte to be received in ReceiveBuffer
-// * TransmitBuffer: Buffer used to transmit data in the ISR
-// * TXByteCtr: Number of bytes left to transfer
-// * TransmitIndex: The index of the next byte to be transmitted in TransmitBuffer
-// * */
-// uint8_t ReceiveBuffer[MAX_BUFFER_SIZE] = {0};
-// uint8_t RXByteCtr = 0;
-// uint8_t ReceiveIndex = 0;
-// uint8_t TransmitBuffer[MAX_BUFFER_SIZE] = {0};
-// uint8_t TXByteCtr = 0;
-// uint8_t TransmitIndex = 0;
-
 
 /* For peripheral device with dev_addr, writes the data specified in *reg_data
  *
@@ -97,6 +83,7 @@ void initClockTo16MHz(void);
 
 /*
  * Enables I2C interrupts and sets initial peripheral address
+ * dev_add: Address of peripheral device
  */
 void initI2C(uint8_t dev_add);
 
