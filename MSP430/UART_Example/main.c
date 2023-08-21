@@ -1,8 +1,9 @@
-#include "msp430.h"
+#include <msp430.h>
+#include "UART.h"
+#include <stdint.h>
 
-const char message[] = "Hello World!";
-const unsigned char messageLength = sizeof(message);
-unsigned char TXbytes = 0;
+uint8_t message[] = "Hello World!";
+uint8_t messlen = sizeof(message);
 
 int main(void)
 {
@@ -39,37 +40,9 @@ int main(void)
 
   __bis_SR_register(LPM3_bits | GIE);       // Enter LPM3, interrupts enabled
   __no_operation();                         // For debugger
+
+
+  TXTransmit(message, messlen);
+
 }
 
-#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=USCI_A0_VECTOR
-__interrupt void USCI_A0_ISR(void)
-#elif defined(__GNUC__)
-void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
-#else
-#error Compiler not supported!
-#endif
-{
-    switch(__even_in_range(UCA0IV,USCI_UART_UCTXCPTIFG))
-    {
-      case USCI_NONE: break;
-      case USCI_UART_UCRXIFG: break;
-
-      case USCI_UART_UCTXIFG:
-
-          // Transmit the byte
-          UCA0TXBUF = message[TXbytes++];
-
-          // If last byte sent, disable the interrupt
-          if(TXbytes == (messageLength-1))
-          {
-              UCA0IE &= ~UCTXIE;
-              TXbytes = 0;
-          }
-          break;
-
-      case USCI_UART_UCSTTIFG: break;
-      case USCI_UART_UCTXCPTIFG: break;
-      default: break;
-    }
-}
