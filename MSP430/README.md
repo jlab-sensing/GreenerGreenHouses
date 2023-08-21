@@ -118,8 +118,10 @@ int main(){
 - [ ] Add functions for setting Temperature/Humidity Offset
 - [ ] Create standardized test-harness to verify sensor functionality
 - [ ] Continue to manage README as code-base progresses
-- [ ] Figure out licensing, does this need a license/if so what license
+- [x] Figure out licensing, does this need a license/if so what license
 - [ ] Enable data-logging through uart->terminal
+- [ ] Update example code
+- [ ] Add examples folder
 - [ ] Create library for communication with TI [LoRa boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125#supported-products)
 - [ ] Optimize current code-base for low-power performance
     - [ ] Remove float operations
