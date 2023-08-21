@@ -4,7 +4,7 @@
  * Written in Code Composer Studio 12.4
  * Created on: Aug 17, 2023
  * Author: Matthew Kaltman
- * Last Modified: 8/17/23
+ * Last Modified: 8/18/23
  */
 
 #ifndef HDC2021_H_

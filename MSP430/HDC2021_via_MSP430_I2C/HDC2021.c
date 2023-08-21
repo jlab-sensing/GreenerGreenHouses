@@ -10,8 +10,7 @@
 #include "HDC2021.h"
 #include "MSP430_I2C.h"
 
-extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
-extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
+
 
 /*
  * HDC2080 Register Map
@@ -24,14 +23,16 @@ extern uint8_t TransmitBuffer[MAX_BUFFER_SIZE];
 #define CONFIG_REG 0x0E
 #define MEAS_CONFIG_REG 0x0F
 
+
+
 float Sensor_ReadTemp(void) {
 	uint8_t byte1[1] = {0};
 	uint8_t byte2[1] = {0};
 	uint16_t temp = 0;
 	I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_LO_REG, 1);            //Poll Upper and Lower temp Registers for 8b temp data
-	CopyArray(ReceiveBuffer, byte1, 1);
+	CopyRxArray(byte1, 1);
     I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_HI_REG, 1);
-    CopyArray(ReceiveBuffer, byte2, 1);
+    CopyRxArray(byte2, 1);
 
 	temp = byte2[0];                                                    //Temperature conversion to readable values (HDC2080 datasheet)
 	temp = (temp << 8) | byte1[0];
@@ -45,9 +46,9 @@ float Sensor_ReadHumidity() {
     uint8_t byte2[1] = {0};
     uint16_t humidity = 0;
     I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_LO_REG, 1);        //Poll upper and lower humidity registers for 8b humidity data
-    CopyArray(ReceiveBuffer, byte1, 1);
+    CopyRxArray(byte1, 1);
     I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_HI_REG, 1);
-    CopyArray(ReceiveBuffer, byte2, 1);
+    CopyRxArray(byte2, 1);
 
     humidity = byte2[0];                                                //Humidity conversion to readable values (HDC2080 datasheet)
     humidity = (humidity << 8) | byte1[0];
@@ -60,7 +61,7 @@ float Sensor_ReadHumidity() {
 void Sensor_TriggerMeasurement(void) {
     uint8_t configContents[1] = {0};
     I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
-    CopyArray(ReceiveBuffer, configContents, 1);
+    CopyRxArray(configContents, 1);
 
     configContents[0] |= 0x01;                                                       //b. 0 in register 0x0F (MEAS_CONFIG_REG)
                                                                                      //triggers sensor measurement
@@ -70,7 +71,7 @@ void Sensor_TriggerMeasurement(void) {
 void Sensor_Reset(void) {
     uint8_t configContents[1] = {0};
     I2C_Controller_ReadReg(HDC2021_ADDRESS, CONFIG_REG, 1);
-    CopyArray(ReceiveBuffer, configContents, 1);
+    CopyRxArray(configContents, 1);
 
     configContents[0] |= 0x80;                                                       //b. 8 in register 0x0E (CONFIG_REG)
                                                                                      //triggers soft reset. Bit is self-clearing
@@ -81,7 +82,7 @@ void Sensor_Reset(void) {
 void Sensor_SetMeasurementRate(int Rate) {
 	uint8_t configContents[1] = {0};
 	I2C_Controller_ReadReg(HDC2021_ADDRESS, CONFIG_REG, 1);
-	CopyArray(ReceiveBuffer, configContents, 1);
+	CopyRxArray(configContents, 1);
 
 	switch(Rate) {                                                                  //5 cases (2 minutes, 1 minute, 10 sec, 5 sec
 		case MANUAL:                                                                //Manual Mode, no frequency set
@@ -113,7 +114,7 @@ void Sensor_SetMeasurementRate(int Rate) {
 void Sensor_SetMeasurementMode(int Mode) {
 	uint8_t configContents[1] = {0};
 	I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
-	CopyArray(ReceiveBuffer, configContents, 1);
+	CopyRxArray(configContents, 1);
 
 	switch(Mode) {
 		case TEMP_AND_HUMID:
@@ -137,7 +138,7 @@ void Sensor_SetMeasurementMode(int Mode) {
 void Sensor_SetHumidityResolution(int Resolution) {
     uint8_t configContents[1] = {0};
     I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
-    CopyArray(ReceiveBuffer, configContents, 1);
+    CopyRxArray(configContents, 1);
 
     switch(Resolution) {
     case FOURTEEN_BIT:
@@ -161,7 +162,7 @@ void Sensor_SetHumidityResolution(int Resolution) {
 void Sensor_SetTempResolution(int Resolution) {
     uint8_t configContents[1] = {0};
     I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
-    CopyArray(ReceiveBuffer, configContents, 1);
+    CopyRxArray(configContents, 1);
 
     switch(Resolution) {
         case FOURTEEN_BIT:

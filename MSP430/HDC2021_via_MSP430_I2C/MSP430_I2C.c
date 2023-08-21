@@ -5,7 +5,7 @@
  * Adapted from TI's msp430fr59xx_eusci_i2c_standard_master example
  * Created on: Aug 17, 2023
  * Author: Matthew Kaltman
- * Last Modified: 8/17/23
+ * Last Modified: 8/21/23
  */
 
 
@@ -15,10 +15,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
-
-
-
-
 
 /* Used to track the state of the software state machine*/
 I2C_Mode ControllerMode = IDLE_MODE;
@@ -66,6 +62,17 @@ I2C_Mode I2C_Controller_ReadReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t coun
 
 }
 
+void CopyTxArray(uint8_t *source,uint8_t count);
+
+
+void CopyTxArray(uint8_t *source,uint8_t count)
+{
+        uint8_t copyIndex = 0;
+        for (copyIndex = 0; copyIndex < count; copyIndex++)
+        {
+            TransmitBuffer[copyIndex] = source[copyIndex];
+        }
+}
 I2C_Mode I2C_Controller_WriteReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t count)
 {
     /* Initialize state machine */
@@ -73,7 +80,7 @@ I2C_Mode I2C_Controller_WriteReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t *re
     TransmitRegAddr = reg_addr;
 
     //Copy register data to TransmitBuffer
-    CopyArray(reg_data, TransmitBuffer, count);
+    CopyTxArray(reg_data, count);
 
     TXByteCtr = count;
     RXByteCtr = 0;
@@ -94,15 +101,28 @@ I2C_Mode I2C_Controller_WriteReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t *re
 
 
 /*
- * Copies data from one array to another, used to dumb the Rx buffer contents
+ * Copies data from one array to another, used to dump the Rx buffer contents
  * after a readreg operation
  */
-void CopyArray(uint8_t *source, uint8_t *dest, uint8_t count)
+//void CopyRxArray(uint8_t *source, uint8_t *dest, uint8_t count)
+//{
+//    uint8_t copyIndex = 0;
+//    for (copyIndex = 0; copyIndex < count; copyIndex++)
+//    {
+//        dest[copyIndex] = source[copyIndex];
+//    }
+//}
+
+/*
+ * Copies data from one array to another, used to dump the Rx buffer contents
+ * after a readreg operation
+ */
+void CopyRxArray(uint8_t *dest, uint8_t count)
 {
     uint8_t copyIndex = 0;
     for (copyIndex = 0; copyIndex < count; copyIndex++)
     {
-        dest[copyIndex] = source[copyIndex];
+        dest[copyIndex] = ReceiveBuffer[copyIndex];
     }
 }
 

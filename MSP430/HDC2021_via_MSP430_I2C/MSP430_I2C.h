@@ -5,14 +5,13 @@
  * Written in Code Composer Studio 12.4
  * Created on: Aug 17, 2023
  * Author: Matthew Kaltman
- * Last Modified: 8/17/23
+ * Last Modified: 8/21/23
  */
 
 #ifndef MSP430_I2C_H_
 #define MSP430_I2C_H_
 
 #include <stdint.h>
-
 
 
 
@@ -66,7 +65,7 @@ I2C_Mode I2C_Controller_ReadReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t coun
  * *dest: Array to store data
  * count: length of array
  */
-void CopyArray(uint8_t *source, uint8_t *dest, uint8_t count);
+void CopyRxArray(uint8_t *dest, uint8_t count);
 
 /*
  * Clears GPIO output latch and configures
