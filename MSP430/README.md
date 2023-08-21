@@ -119,6 +119,7 @@ int main(){
 - [ ] Create standardized test-harness to verify sensor functionality
 - [ ] Continue to manage README as code-base progresses
 - [x] Figure out licensing, does this need a license/if so what license
+- [ ] Create UART library
 - [ ] Enable data-logging through uart->terminal
 - [ ] Update example code
 - [ ] Add examples folder
