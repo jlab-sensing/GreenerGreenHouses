@@ -61,7 +61,7 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
           UCA0TXBUF = message[TXbytes++];
 
           // If last byte sent, disable the interrupt
-          if(TXbytes == messageLength)
+          if(TXbytes == (messageLength-1))
           {
               UCA0IE &= ~UCTXIE;
               TXbytes = 0;
