@@ -13,23 +13,24 @@
 
 #include <stdint.h>
 
+//define max size of TX buffer
+#define MAX_BUFFER_SIZE_UART 100
 
 /*
  * Enables UART interrupts and sets initial timers
+ * Baudrate is set by default to 9600
  */
-void initUART(void);
+void UART_Init(void);
 
-void initGPIO(void);
+void UART_Init_GPIO(void);
 
-void initClock(void);
-
-void CopyTXArray(uint8_t *source,uint8_t count)
+void UART_Init_Clock(void);
 
 /*
  * Raises TX interrupt flag and transmits data byte by byte through UART TX buffer
  * Once all bytes are passed through, lowers TX interrupt flag
  * data: char pointer (string) of data to be passed
  */
-void TXTransmit(uint8_t* data, int length);
+void TXTransmit(uint8_t* data, uint8_t length);
 
 #endif

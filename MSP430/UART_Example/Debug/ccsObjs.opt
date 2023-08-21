@@ -1,6 +1,0 @@
-"./UART.obj"
-"./main.obj"
-"../lnk_msp430fr5969.cmd"
--llibmpu_init.a
--llibmath.a
--llibc.a

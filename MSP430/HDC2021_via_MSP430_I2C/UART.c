@@ -15,10 +15,23 @@
 
 #include "UART.h"
 
-uint8_t TransmitBuffer[MAX_BUFFER_SIZE] = {0};
+uint8_t TXBuffer[MAX_BUFFER_SIZE_UART] = {0};
 unsigned char TXbytes = 0;
+uint8_t messageLength = 0;
 
-void initUART() {
+void CopyTXArray(uint8_t *source, uint8_t count);
+
+void CopyTXArray(uint8_t *source, uint8_t count)
+{
+        uint8_t copyIndex = 0;
+        for (copyIndex = 0; copyIndex < count; copyIndex++)
+        {
+            TXBuffer[copyIndex] = source[copyIndex];
+        }
+}
+
+
+void UART_Init() {
     // Configure USCI_A0 for UART mode
       UCA0CTLW0 = UCSWRST;                      // Put eUSCI in reset
       UCA0CTLW0 |= UCSSEL__SMCLK;               // CLK = SMCLK
@@ -31,13 +44,13 @@ void initUART() {
       UCA0BR1 = 0x00;
       UCA0MCTLW |= UCOS16 | UCBRF_1;
       UCA0CTLW0 &= ~UCSWRST;                    // Initialize eUSCI
-      UCA0IE |= UCTXIE;
 
       __bis_SR_register(LPM3_bits | GIE);       // Enter LPM3, interrupts enabled
       __no_operation();
 }
 
-void initClock() {
+
+void UART_Init_Clock() {
     // Startup clock system with max DCO setting ~8MHz
     CSCTL0_H = CSKEY >> 8;                    // Unlock clock registers
     CSCTL1 = DCOFSEL_3 | DCORSEL;             // Set DCO to 8MHz
@@ -46,7 +59,8 @@ void initClock() {
     CSCTL0_H = 0;
 }
 
-void initGPIO() {
+
+void UART_Init_GPIO() {
     // Configure GPIO
     P2SEL1 |= BIT0 | BIT1;                    // USCI_A0 UART operation
     P2SEL0 &= ~(BIT0 | BIT1);
@@ -56,17 +70,10 @@ void initGPIO() {
     PM5CTL0 &= ~LOCKLPM5;
 }
 
-void CopyTXArray(uint8_t *source, uint8_t count)
-{
-        uint8_t copyIndex = 0;
-        for (copyIndex = 0; copyIndex < count; copyIndex++)
-        {
-            TransmitBuffer[copyIndex] = source[copyIndex];
-        }
-}
 
-void TXTransmit(uint8_t *message, uint8_t count) {
-    CopyArray(message, count);                                              //Copy message into TX buffer for transmission
+void TXTransmit(uint8_t *message, uint8_t length) {
+    CopyTXArray(message, length);                                              //Copy message into TX buffer for transmission
+    messageLength = length;
     UCA0IE | UCTXIE;                                                        //Enable TX interrupt flag
 }
 
@@ -83,11 +90,11 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
     {
       case USCI_NONE: break;
       case USCI_UART_UCRXIFG: break;
-
+      //TX Interrupt
       case USCI_UART_UCTXIFG:
 
           // Transmit the byte
-          UCA0TXBUF = TransmitBuffer[TXbytes++];
+          UCA0TXBUF = TXBuffer[TXbytes++];
 
           // If last byte sent, disable the interrupt
           if(TXbytes == (messageLength-1))
