@@ -28,8 +28,6 @@ This code demonstrates the usage of the MSP430_I2C library to read the HDC2021's
 #include "MSP430_I2C.h"
 #include <stdint.h>
 
-//required to link to the Rx buffer I2C library
-extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
 uint16_t ManufacturerID = 0; //global to view value in debug memory
 
 int main(void){
@@ -44,13 +42,13 @@ int main(void){
 
     //Read top 8 bits of manufacturer ID and store
     I2C_Controller_ReadReg(0x40, 0xFD, STD_MSG_LENGTH);
-    CopyArray(ReceiveBuffer, data, STD_MSG_LENGTH);
+    CopyRxArray(data, STD_MSG_LENGTH);
 
     ManufacturerID = data[0];
 
     //read bottom 8 bits of manufacturer ID
     I2C_Controller_ReadReg(0x40, 0xFC, STD_MSG_LENGTH);
-    CopyArray(ReceiveBuffer, data, STD_MSG_LENGTH);
+    CopyRxArray(data, STD_MSG_LENGTH);
 
     //bit masking to store manufacturer ID correctly
     ManufacturerID = (ManufacturerID << 8) | data[0];
@@ -71,20 +69,14 @@ HDC2021 is as follows:
 
 For details on available modes, rates, and resolutions see [HDC2021.h](HDC2021_via_MSP430_I2C/HDC2021.h).
 ```c
+
 //required libraries for example to work
 #include <msp430.h>
-#include "MSP430_I2C.h"
 #include <stdint.h>
+#include "MSP430_I2C.h"
 #include "HDC2021.h"
 
-//required to link to the Rx buffer in I2C library
-extern uint8_t ReceiveBuffer[MAX_BUFFER_SIZE];
-
-//global to view value in debug memory
-//Sensor resolution allows floats, however is recommended against
-float Temperature = 0.0;
-float Humidity = 0.0;
-
+    uint16_t Temperature,Humidity;
 int main(){
     WDTCTL = WDTPW | WDTHOLD; //Disable Watchdog Timer
 
@@ -93,7 +85,7 @@ int main(){
     initGPIO();
     initI2C(HDC2021_ADDRESS);
 
-
+   // uint16_t Temperature,Humidity;
     //HDC2021 Initialization
     Sensor_Reset();
     Sensor_SetMeasurementMode(TEMP_AND_HUMID);
@@ -110,7 +102,7 @@ int main(){
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
 
- return 0;
+    return 0;
 }
 ```
 
@@ -121,7 +113,7 @@ int main(){
 - [x] Figure out licensing, does this need a license/if so what license
 - [ ] Create UART library
 - [ ] Enable data-logging through uart->terminal
-- [ ] Update example code
+- [x] Update example code
 - [ ] Add examples folder
 - [ ] Create library for communication with TI [LoRa boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125#supported-products)
 - [ ] Optimize current code-base for low-power performance
