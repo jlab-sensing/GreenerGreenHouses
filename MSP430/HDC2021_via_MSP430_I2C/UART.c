@@ -15,13 +15,13 @@
 
 #include "UART.h"
 
-uint8_t TXBuffer[MAX_BUFFER_SIZE_UART] = {0};
+char TXBuffer[MAX_BUFFER_SIZE_UART] = {0};
 unsigned char TXbytes = 0;
 uint8_t messageLength = 0;
 
-void CopyTXArray(uint8_t *source, uint8_t count);
+void CopyTXArray(char *source, unsigned char count);
 
-void CopyTXArray(uint8_t *source, uint8_t count)
+void CopyTXArray(char *source, unsigned char count)
 {
         uint8_t copyIndex = 0;
         for (copyIndex = 0; copyIndex < count; copyIndex++)
@@ -71,12 +71,14 @@ void UART_Init_GPIO() {
 }
 
 
-void TXTransmit(uint8_t *message, uint8_t length) {
+void TXTransmit(char *message, unsigned char length) {
     CopyTXArray(message, length);                                              //Copy message into TX buffer for transmission
     messageLength = length;
     UCA0IE | UCTXIE;                                                        //Enable TX interrupt flag
 }
 
+
+//UART Interrupt
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=USCI_A0_VECTOR
 __interrupt void USCI_A0_ISR(void)

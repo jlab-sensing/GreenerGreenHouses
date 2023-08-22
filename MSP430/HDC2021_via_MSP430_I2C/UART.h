@@ -22,8 +22,15 @@
  */
 void UART_Init(void);
 
+/*
+* Disable the GPIO power-on default high-impedance mode to activate
+* previously configured port settings
+ */
 void UART_Init_GPIO(void);
 
+/*
+ * Initializes the UART Clocks
+ */
 void UART_Init_Clock(void);
 
 /*
@@ -31,6 +38,6 @@ void UART_Init_Clock(void);
  * Once all bytes are passed through, lowers TX interrupt flag
  * data: char pointer (string) of data to be passed
  */
-void TXTransmit(uint8_t* data, uint8_t length);
+void TXTransmit(char* data, unsigned char length);
 
 #endif
