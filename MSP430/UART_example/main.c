@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdint.h>
 
+//hi
+
 int main(void)
 {
   WDTCTL = WDTPW | WDTHOLD;                 // Stop Watchdog
