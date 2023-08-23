@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 //define max size of TX buffer
-#define MAX_BUFFER_SIZE_UART 24
+#define MAX_BUFFER_SIZE_UART 50
 
 /*
  * Enables UART interrupts and sets initial timers

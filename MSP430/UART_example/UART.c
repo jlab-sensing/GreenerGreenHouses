@@ -45,8 +45,7 @@ void UART_Init() {
       UCA0MCTLW |= UCOS16 | UCBRF_1;
       UCA0CTLW0 &= ~UCSWRST;                    // Initialize eUSCI
 
-      __bis_SR_register(LPM3_bits | GIE);       // Enter LPM3, interrupts enabled
-      __no_operation();
+      __bis_SR_register(GIE);       // Enter LPM3, interrupts enabled
 }
 
 
@@ -74,10 +73,7 @@ void UART_Init_GPIO() {
 void TXTransmit(char *message, unsigned char length) {
     CopyTXArray(message, length);                                              //Copy message into TX buffer for transmission
     messageLength = length;
-    //UCA0IE | UCTXIE;                                                        //Enable TX interrupt flag
-    while(TXbytes < messageLength) {
-        UCA0TXBUF = TXBuffer[TXbytes++];
-    }
+    UCA0IE |= UCTXIE;                                                        //Enable TX interrupt flag
 }
 
 
@@ -101,7 +97,7 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
           UCA0TXBUF = TXBuffer[TXbytes++];
 
           // If last byte sent, disable the interrupt
-          if(TXbytes == messageLength - 1)
+          if(TXbytes == messageLength)
           {
               UCA0IE &= ~UCTXIE;
               TXbytes = 0;
