@@ -144,7 +144,7 @@ void initClockTo16MHz()
 
     // Clock System Setup
     CSCTL0_H = CSKEY >> 8;                    // Unlock CS registers
-    CSCTL1 = DCORSEL | DCOFSEL_4;             // Set DCO to 16MHz
+    CSCTL1 = DCOFSEL_3 |  DCORSEL ;             // Set DCO to 16MHz
     CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK;
     CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;     // Set all dividers
 
