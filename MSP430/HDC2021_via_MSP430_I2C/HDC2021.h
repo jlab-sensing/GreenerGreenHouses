@@ -3,8 +3,8 @@
  * Header file for implementation of HDC2021 RH/T Sensor via MSP430EXPFR5969
  * Written in Code Composer Studio 12.4
  * Created on: Aug 17, 2023
- * Author: Matthew Kaltman
- * Last Modified: 8/18/23
+ * Author: Matthew Kaltman, Tim Kraemer
+ * Last Modified: 8/23/23
  */
 
 #ifndef HDC2021_H_
@@ -99,7 +99,17 @@ void Sensor_SetHumidityResolution(int Resolution);
  */
 void Sensor_SetTempResolution(int Resolution);
 
+/*
+ * Sets a temperature offset
+ * offset: 8 bit offset value for Temperature measurement
+ */
+void setTempOffsetAdjust(uint8_t offset);
 
+/*
+ * Sets a humidity offset
+ * offset: 8 bit offset value for Humidity measurement
+ */
+void setHumidityOffsetAdjust(uint8_t offset);
 
 
 

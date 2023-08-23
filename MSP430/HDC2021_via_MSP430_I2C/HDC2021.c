@@ -1,8 +1,10 @@
 /*
- * HDC2021.c
- *
- *  Created on: Aug 17, 2023
- *      Author: matth
+ * HDC2021.h
+ * Header file for implementation of HDC2021 RH/T Sensor via MSP430EXPFR5969
+ * Written in Code Composer Studio 12.4
+ * Created on: Aug 17, 2023
+ * Author: Matthew Kaltman, Tim Kraemer
+ * Last Modified: 8/23/23
  */
 
 #include <stdlib.h>
@@ -22,6 +24,8 @@
 #define HUMIDITY_HI_REG 0x03
 #define CONFIG_REG 0x0E
 #define MEAS_CONFIG_REG 0x0F
+#define TEMP_OFFSET_ADJUST 0x08
+#define HUM_OFFSET_ADJUST 0x09
 
 
 
@@ -55,6 +59,34 @@ float Sensor_ReadHumidity() {
     float f = humidity;
     f = (f / 65536.0f) * 100.0f;
     return f;
+}
+
+uint16_t Sensor_ReadRawTemp() {
+    uint8_t byte1[1] = {0};
+    uint8_t byte2[1] = {0};
+    uint16_t temp = 0;
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_LO_REG, 1);
+    CopyRxArray(byte1, 1);
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_HI_REG, 1);
+    CopyRxArray(byte2, 1);
+
+    temp = byte2[0];
+    temp = (temp << 8) | byte1[0];
+    return temp;
+}
+
+uint16_t Sensor_ReadRawHumidity() {
+    uint8_t byte1[1] = {0};
+    uint8_t byte2[1] = {0};
+    uint16_t humidity = 0;
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_LO_REG, 1);
+    CopyRxArray(byte1, 1);
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, HUMIDITY_HI_REG, 1);
+    CopyRxArray(byte2, 1);
+
+    humidity = byte2[0];
+    humidity = (humidity << 8) | byte1[0];
+    return humidity;
 }
 
 
@@ -181,4 +213,14 @@ void Sensor_SetTempResolution(int Resolution) {
     }
 
     I2C_Controller_WriteReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, configContents, 1);
+}
+
+void setTempOffsetAdjust(uint8_t offset) {
+    uint8_t offsetContents[1] = {offset};
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, TEMP_OFFSET_ADJUST, offsetContents, 1);
+}
+
+void setHumidityOffsetAdjust(uint8_t offset) {
+    uint8_t offsetContents[1] = {offset};
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, HUM_OFFSET_ADJUST, offsetContents, 1);
 }
