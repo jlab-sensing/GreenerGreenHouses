@@ -47,6 +47,16 @@ float Sensor_ReadTemp(void);
 //Reads and returns the relative humidity of the HDC2021 as a float for high precision
 float Sensor_ReadHumidity(void);
 
+//Reads and returns the Temperature Hi [8] and Temperature Lo registers [8],
+//storing and returning as concatenated integer [16]
+uint16_t Sensor_ReadRawTemp(void);
+
+
+//Reads and returns the Humidity Hi [8] and Humidity Lo registers [8],
+//storing and returning as concatenated integer [16]
+uint16_t Sensor_ReadRawHumidity(void);
+
+
 
 
 /****************************************************************
