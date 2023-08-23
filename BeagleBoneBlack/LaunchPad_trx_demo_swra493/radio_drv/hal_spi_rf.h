@@ -49,6 +49,9 @@
 #if defined (__MSP430F5529__)
   #include "hal_spi_rf_exp5529.h"
 #endif
+#if defined (__BEAGLEBONEBLACKREVC__)
+  #include "hal_spi_rf_BBBREVC.h"
+#endif
 
 // CC Chip versions
 #define DEV_UNKNOWN       10

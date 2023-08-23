@@ -41,12 +41,13 @@
 /******************************************************************************
  * INCLUDES
  */
-#include "msp430.h"
+//#include "msp430.h"
+#include "BBBREVC.h"
 #include "stdio.h"
-#include "radio_drv.h"
-#include "cc1x_utils.h"
-#include "hal_spi_rf.h"
-#include "uart_drv.h"
+#include "radio_drv/radio_drv.h"
+#include "radio_drv/cc1x_utils.h"
+#include "radio_drv/hal_spi_rf.h"
+#include "uart_drv/uart_drv.h"
 #include "LaunchPad_trx_demo.h"
 
 /******************************************************************************
@@ -99,7 +100,7 @@ void main (void)
 	unsigned char u_str_length;
 
 	/*  Stop WDT */
-	WDTCTL = WDTPW + WDTHOLD;
+	// WDTCTL = WDTPW + WDTHOLD;
 
 	/* Setup MSP specific functions, IO's, timers and WDT */
 	msp_setup();
