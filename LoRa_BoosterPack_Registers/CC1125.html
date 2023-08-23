@@ -1,0 +1,63 @@
+<html><head>
+<style>
+body {background-color:#dde;}
+caption {font-weight:bold; font-size:16px;margin-left:30px}
+th { text-align:left; background-color:#f00; color:#fff}
+table { background-color: #eec; font-size:9px;margin:10px}
+</style>
+</head>
+<body><table border=1 cellpadding=5 cellspacing=0>
+<caption>CC1125 registers</caption>
+<tr><th>Name</th><th>Address</th><th>Value</th>
+<th>Description</th></tr><tr><td>IOCFG3<td>0x0000</td><td>0xB0</td><td>GPIO3 IO Pin Configuration</td></tr>
+<tr><td>IOCFG2<td>0x0001</td><td>0x06</td><td>GPIO2 IO Pin Configuration</td></tr>
+<tr><td>IOCFG1<td>0x0002</td><td>0xB0</td><td>GPIO1 IO Pin Configuration</td></tr>
+<tr><td>IOCFG0<td>0x0003</td><td>0x40</td><td>GPIO0 IO Pin Configuration</td></tr>
+<tr><td>SYNC_CFG1<td>0x0008</td><td>0x08</td><td>Sync Word Detection Configuration Reg. 1</td></tr>
+<tr><td>DEVIATION_M<td>0x000A</td><td>0xA3</td><td>Frequency Deviation Configuration</td></tr>
+<tr><td>MODCFG_DEV_E<td>0x000B</td><td>0x0A</td><td>Modulation Format and Frequency Deviation Configur..</td></tr>
+<tr><td>DCFILT_CFG<td>0x000C</td><td>0x1C</td><td>Digital DC Removal Configuration</td></tr>
+<tr><td>FREQ_IF_CFG<td>0x000F</td><td>0x33</td><td>RX Mixer Frequency Configuration</td></tr>
+<tr><td>IQIC<td>0x0010</td><td>0xC6</td><td>Digital Image Channel Compensation Configuration</td></tr>
+<tr><td>CHAN_BW<td>0x0011</td><td>0x10</td><td>Channel Filter Configuration</td></tr>
+<tr><td>MDMCFG0<td>0x0013</td><td>0x05</td><td>General Modem Parameter Configuration Reg. 0</td></tr>
+<tr><td>SYMBOL_RATE2<td>0x0014</td><td>0x3F</td><td>Symbol Rate Configuration Exponent and Mantissa [1..</td></tr>
+<tr><td>SYMBOL_RATE1<td>0x0015</td><td>0x75</td><td>Symbol Rate Configuration Mantissa [15:8]</td></tr>
+<tr><td>SYMBOL_RATE0<td>0x0016</td><td>0x10</td><td>Symbol Rate Configuration Mantissa [7:0]</td></tr>
+<tr><td>AGC_REF<td>0x0017</td><td>0x20</td><td>AGC Reference Level Configuration</td></tr>
+<tr><td>AGC_CS_THR<td>0x0018</td><td>0x19</td><td>Carrier Sense Threshold Configuration</td></tr>
+<tr><td>AGC_CFG1<td>0x001C</td><td>0xA0</td><td>Automatic Gain Control Configuration Reg. 1</td></tr>
+<tr><td>FIFO_CFG<td>0x001E</td><td>0x00</td><td>FIFO Configuration</td></tr>
+<tr><td>SETTLING_CFG<td>0x0020</td><td>0x03</td><td>Frequency Synthesizer Calibration and Settling Con..</td></tr>
+<tr><td>FS_CFG<td>0x0021</td><td>0x12</td><td>Frequency Synthesizer Configuration</td></tr>
+<tr><td>WOR_CFG0<td>0x0023</td><td>0x20</td><td>eWOR Configuration Reg. 0</td></tr>
+<tr><td>WOR_EVENT0_MSB<td>0x0024</td><td>0x02</td><td>Event 0 Configuration MSB</td></tr>
+<tr><td>WOR_EVENT0_LSB<td>0x0025</td><td>0xE9</td><td>Event 0 Configuration LSB</td></tr>
+<tr><td>PKT_CFG0<td>0x0028</td><td>0x20</td><td>Packet Configuration Reg. 0</td></tr>
+<tr><td>RFEND_CFG0<td>0x002A</td><td>0x09</td><td>RFEND Configuration Reg. 0</td></tr>
+<tr><td>PKT_LEN<td>0x002E</td><td>0xFF</td><td>Packet Length Configuration</td></tr>
+<tr><td>IF_MIX_CFG<td>0x2F00</td><td>0x00</td><td>IF Mix Configuration</td></tr>
+<tr><td>FREQOFF_CFG<td>0x2F01</td><td>0x22</td><td>Frequency Offset Correction Configuration</td></tr>
+<tr><td>FREQ2<td>0x2F0C</td><td>0x56</td><td>Frequency Configuration [23:16]</td></tr>
+<tr><td>FREQ1<td>0x2F0D</td><td>0xEC</td><td>Frequency Configuration [15:8]</td></tr>
+<tr><td>FREQ0<td>0x2F0E</td><td>0x28</td><td>Frequency Configuration [7:0]</td></tr>
+<tr><td>IF_ADC0<td>0x2F11</td><td>0x05</td><td>Analog to Digital Converter Configuration Reg. 0</td></tr>
+<tr><td>FS_DIG1<td>0x2F12</td><td>0x00</td><td>Frequency Synthesizer Digital Reg. 1</td></tr>
+<tr><td>FS_DIG0<td>0x2F13</td><td>0x5F</td><td>Frequency Synthesizer Digital Reg. 0</td></tr>
+<tr><td>FS_CAL0<td>0x2F17</td><td>0x0E</td><td>Frequency Synthesizer Calibration Reg. 0</td></tr>
+<tr><td>FS_DIVTWO<td>0x2F19</td><td>0x03</td><td>Frequency Synthesizer Divide by 2</td></tr>
+<tr><td>FS_DSM0<td>0x2F1B</td><td>0x33</td><td>FS Digital Synthesizer Module Configuration Reg. 0</td></tr>
+<tr><td>FS_DVC0<td>0x2F1D</td><td>0x17</td><td>Frequency Synthesizer Divider Chain Configuration ..</td></tr>
+<tr><td>FS_PFD<td>0x2F1F</td><td>0x50</td><td>Frequency Synthesizer Phase Frequency Detector Con..</td></tr>
+<tr><td>FS_PRE<td>0x2F20</td><td>0x6E</td><td>Frequency Synthesizer Prescaler Configuration</td></tr>
+<tr><td>FS_REG_DIV_CML<td>0x2F21</td><td>0x14</td><td>Frequency Synthesizer Divider Regulator Configurat..</td></tr>
+<tr><td>FS_SPARE<td>0x2F22</td><td>0xAC</td><td>Frequency Synthesizer Spare</td></tr>
+<tr><td>XOSC5<td>0x2F32</td><td>0x0E</td><td>Crystal Oscillator Configuration Reg. 5</td></tr>
+<tr><td>XOSC3<td>0x2F34</td><td>0xC7</td><td>Crystal Oscillator Configuration Reg. 3</td></tr>
+<tr><td>XOSC1<td>0x2F36</td><td>0x07</td><td>Crystal Oscillator Configuration Reg. 1</td></tr>
+<tr><td>PARTNUMBER<td>0x2F8F</td><td>0x58</td><td>Part Number</td></tr>
+<tr><td>PARTVERSION<td>0x2F90</td><td>0x21</td><td>Part Revision</td></tr>
+<tr><td>MODEM_STATUS1<td>0x2F92</td><td>0x10</td><td>Modem Status Reg. 1</td></tr>
+<tr><td>XOSC_TEST1<td>0x2F9F</td><td>0x00</td><td>Crystal Oscillator Test Reg. 1</td></tr>
+</table>
+</body><html>
