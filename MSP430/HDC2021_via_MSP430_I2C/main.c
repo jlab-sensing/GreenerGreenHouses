@@ -43,15 +43,13 @@ int main(){
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
 
-    char temp_string[40] = {0};
-    //char hum_string[40] = {0};
-
-    sprintf(temp_string, "%s%d\n", "Temp: \n", (int)Temperature);
+    char temp_and_humidity_string[40] = {0};
 
     while(1) {
         Temperature = Sensor_ReadTemp();
-        sprintf(temp_string, "%s%d%s", "Temp: ", (int)Temperature, "°C\n");
-        TXTransmit(temp_string, strlen(temp_string));
+        Humidity = Sensor_ReadHumidity();
+        sprintf(temp_and_humidity_string, "%s%d%s%d%s", "Temp: ", (int)Temperature, "°C   Humidity: ", (int)Humidity, "%\n\n");
+        TXTransmit(temp_and_humidity_string, strlen(temp_and_humidity_string));
 
        __delay_cycles(16000000);
     }
