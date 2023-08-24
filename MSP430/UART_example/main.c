@@ -14,7 +14,7 @@ int main(void)
   UART_Init();
 
 
-  char message[] = "Matt is such a cool guy";
+  char message[] = "Matt is such a cool guy\n";
   unsigned char message_length = strlen(message);
 
   TXTransmit(message, message_length);
