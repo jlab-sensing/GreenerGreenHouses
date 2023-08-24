@@ -15,10 +15,12 @@
 
 #include "UART.h"
 
+//MAX buffer size set to 50 characters
 char TXBuffer[MAX_BUFFER_SIZE_UART] = {0};
-unsigned char TXbytes = 0;
+unsigned char TXPointer = 0;
 uint8_t messageLength = 0;
 
+//Function to copy transmission string into TX buffer for UART transmission
 void CopyTXArray(char *source, unsigned char count);
 
 void CopyTXArray(char *source, unsigned char count)
@@ -71,9 +73,9 @@ void UART_Init_GPIO() {
 
 
 void TXTransmit(char *message, unsigned char length) {
-    CopyTXArray(message, length);                                              //Copy message into TX buffer for transmission
+    CopyTXArray(message, length);           //Copy message into TX buffer for transmission
     messageLength = length;
-    UCA0IE |= UCTXIE;                                                        //Enable TX interrupt flag
+    UCA0IE |= UCTXIE;                       //Enable TX interrupt flag
 }
 
 
@@ -93,14 +95,12 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
 
       case USCI_UART_UCTXIFG:
 
-          // Transmit the byte
-          UCA0TXBUF = TXBuffer[TXbytes++];
+          UCA0TXBUF = TXBuffer[TXPointer++];  // Transmit the byte
 
-          // If last byte sent, disable the interrupt
-          if(TXbytes == messageLength)
+          if(TXPointer == messageLength)      // If last byte sent, disable the interrupt
           {
-              UCA0IE &= ~UCTXIE;
-              TXbytes = 0;
+              UCA0IE &= ~UCTXIE;            //TX interrupt disable
+              TXPointer = 0;                  //set TX buffer pointer to 0 for next transmission
           }
           break;
 
