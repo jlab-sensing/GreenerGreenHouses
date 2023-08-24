@@ -22,8 +22,8 @@ int main(){
     initI2C(HDC2021_ADDRESS);
 
     //basic UART library initialization
-    //UART_Init_GPIO();
-    //UART_Init();
+    UART_Init_GPIO();
+    UART_Init();
 
     //TXTransmit(test, strlen(test));
 
@@ -43,21 +43,18 @@ int main(){
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
 
-    //char temp_string[40] = {0};
+    char temp_string[40] = {0};
     //char hum_string[40] = {0};
-    //int i = 0;
 
-//    sprintf(temp_string, "%s%d", "Temp: \n", (int)Temperature);
-//
-//    while(1) {
-//        Temperature = Sensor_ReadTemp();
-//        sprintf(temp_string, "%s%d", "Temp: ", (int)Temperature);
-//        TXTransmit(temp_string, strlen(temp_string));
-//
-//        for(i = 0; i < 1000000; i++) {
-//            _NOP();
-//        }
-//    }
+    sprintf(temp_string, "%s%d\n", "Temp: \n", (int)Temperature);
+
+    while(1) {
+        Temperature = Sensor_ReadTemp();
+        sprintf(temp_string, "%s%d%s", "Temp: ", (int)Temperature, "°C\n");
+        TXTransmit(temp_string, strlen(temp_string));
+
+       __delay_cycles(16000000);
+    }
 
 }
 
