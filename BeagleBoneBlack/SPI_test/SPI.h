@@ -1,4 +1,3 @@
-
 #ifndef SPI_SAMPLE_H
 #define SPI_SAMPLE_H
 
@@ -23,10 +22,14 @@
 // SPI port number must be in the range 0 to 1
 // For SPI port 0, chip select must be 0. For SPI port 1, chip select can be 0 or 1
 // Returns the file descriptor
-int SPI_initPort(char* spiDevice);
+int SPI_initPort(char* spiDevice, int mode, int freqHz);
+
+// Prints the settings for the provided spiFileDesc.
+// Status >= 0 is success, < 0 is error
+int SPI_readSettings(int spiFileDesc);
 
 // Returns the status
 // Status >= 0 is success, < 0 is error
-int SPI_transfer(int spiFileDesc, uint8_t *send, uint8_t *recv, int numBytes);
+int SPI_transfer(int spiFileDesc, uint8_t *send, uint8_t *recv, int length);
 
 #endif

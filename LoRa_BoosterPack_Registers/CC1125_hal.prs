@@ -1,0 +1,53 @@
+//
+// Rf settings for CC1125
+//
+halRfWriteReg(IOCFG3,0xB0);        //GPIO3 IO Pin Configuration
+halRfWriteReg(IOCFG2,0x06);        //GPIO2 IO Pin Configuration
+halRfWriteReg(IOCFG1,0xB0);        //GPIO1 IO Pin Configuration
+halRfWriteReg(IOCFG0,0x40);        //GPIO0 IO Pin Configuration
+halRfWriteReg(SYNC_CFG1,0x08);     //Sync Word Detection Configuration Reg. 1
+halRfWriteReg(DEVIATION_M,0xA3);   //Frequency Deviation Configuration
+halRfWriteReg(MODCFG_DEV_E,0x0A);  //Modulation Format and Frequency Deviation Configur..
+halRfWriteReg(DCFILT_CFG,0x1C);    //Digital DC Removal Configuration
+halRfWriteReg(FREQ_IF_CFG,0x33);   //RX Mixer Frequency Configuration
+halRfWriteReg(IQIC,0xC6);          //Digital Image Channel Compensation Configuration
+halRfWriteReg(CHAN_BW,0x10);       //Channel Filter Configuration
+halRfWriteReg(MDMCFG0,0x05);       //General Modem Parameter Configuration Reg. 0
+halRfWriteReg(SYMBOL_RATE2,0x3F);  //Symbol Rate Configuration Exponent and Mantissa [1..
+halRfWriteReg(SYMBOL_RATE1,0x75);  //Symbol Rate Configuration Mantissa [15:8]
+halRfWriteReg(SYMBOL_RATE0,0x10);  //Symbol Rate Configuration Mantissa [7:0]
+halRfWriteReg(AGC_REF,0x20);       //AGC Reference Level Configuration
+halRfWriteReg(AGC_CS_THR,0x19);    //Carrier Sense Threshold Configuration
+halRfWriteReg(AGC_CFG1,0xA0);      //Automatic Gain Control Configuration Reg. 1
+halRfWriteReg(FIFO_CFG,0x00);      //FIFO Configuration
+halRfWriteReg(SETTLING_CFG,0x03);  //Frequency Synthesizer Calibration and Settling Con..
+halRfWriteReg(FS_CFG,0x12);        //Frequency Synthesizer Configuration
+halRfWriteReg(WOR_CFG0,0x20);      //eWOR Configuration Reg. 0
+halRfWriteReg(WOR_EVENT0_MSB,0x02);//Event 0 Configuration MSB
+halRfWriteReg(WOR_EVENT0_LSB,0xE9);//Event 0 Configuration LSB
+halRfWriteReg(PKT_CFG0,0x20);      //Packet Configuration Reg. 0
+halRfWriteReg(RFEND_CFG0,0x09);    //RFEND Configuration Reg. 0
+halRfWriteReg(PKT_LEN,0xFF);       //Packet Length Configuration
+halRfWriteReg(IF_MIX_CFG,0x00);    //IF Mix Configuration
+halRfWriteReg(FREQOFF_CFG,0x22);   //Frequency Offset Correction Configuration
+halRfWriteReg(FREQ2,0x56);         //Frequency Configuration [23:16]
+halRfWriteReg(FREQ1,0xEC);         //Frequency Configuration [15:8]
+halRfWriteReg(FREQ0,0x28);         //Frequency Configuration [7:0]
+halRfWriteReg(IF_ADC0,0x05);       //Analog to Digital Converter Configuration Reg. 0
+halRfWriteReg(FS_DIG1,0x00);       //Frequency Synthesizer Digital Reg. 1
+halRfWriteReg(FS_DIG0,0x5F);       //Frequency Synthesizer Digital Reg. 0
+halRfWriteReg(FS_CAL0,0x0E);       //Frequency Synthesizer Calibration Reg. 0
+halRfWriteReg(FS_DIVTWO,0x03);     //Frequency Synthesizer Divide by 2
+halRfWriteReg(FS_DSM0,0x33);       //FS Digital Synthesizer Module Configuration Reg. 0
+halRfWriteReg(FS_DVC0,0x17);       //Frequency Synthesizer Divider Chain Configuration ..
+halRfWriteReg(FS_PFD,0x50);        //Frequency Synthesizer Phase Frequency Detector Con..
+halRfWriteReg(FS_PRE,0x6E);        //Frequency Synthesizer Prescaler Configuration
+halRfWriteReg(FS_REG_DIV_CML,0x14);//Frequency Synthesizer Divider Regulator Configurat..
+halRfWriteReg(FS_SPARE,0xAC);      //Frequency Synthesizer Spare
+halRfWriteReg(XOSC5,0x0E);         //Crystal Oscillator Configuration Reg. 5
+halRfWriteReg(XOSC3,0xC7);         //Crystal Oscillator Configuration Reg. 3
+halRfWriteReg(XOSC1,0x07);         //Crystal Oscillator Configuration Reg. 1
+halRfWriteReg(PARTNUMBER,0x58);    //Part Number
+halRfWriteReg(PARTVERSION,0x21);   //Part Revision
+halRfWriteReg(MODEM_STATUS1,0x10); //Modem Status Reg. 1
+halRfWriteReg(XOSC_TEST1,0x00);    //Crystal Oscillator Test Reg. 1
