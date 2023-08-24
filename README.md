@@ -26,4 +26,4 @@ This repository contains concurrent work for the Greener Greenhouses research pr
   - [ ] file cleanup - remove defunct or unnecessary files
   - [ ] Update root README when new directories are created
   - [ ] Standardize naming conventions for each directory
-  - [ ] License Project under MIT
+  - [x] License Project under MIT
