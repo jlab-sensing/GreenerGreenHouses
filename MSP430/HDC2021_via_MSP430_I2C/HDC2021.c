@@ -4,7 +4,7 @@
  * Written in Code Composer Studio 12.4
  * Created on: Aug 17, 2023
  * Author: Matthew Kaltman, Tim Kraemer
- * Last Modified: 8/23/23
+ * Last Modified: 8/24/23
  */
 
 #include <stdlib.h>
@@ -223,4 +223,38 @@ void setTempOffsetAdjust(uint8_t offset) {
 void setHumidityOffsetAdjust(uint8_t offset) {
     uint8_t offsetContents[1] = {offset};
     I2C_Controller_WriteReg(HDC2021_ADDRESS, HUM_OFFSET_ADJUST, offsetContents, 1);
+}
+
+uint8_t returnTempOffset() {
+    uint8_t offset[1] = {0};
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, TEMP_OFFSET_ADJUST, 1);
+    CopyRxArray(offset, 1);
+    return offset[0];
+}
+
+uint8_t returnHumidityOffset() {
+    uint8_t offset[1] = {0};
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, HUM_OFFSET_ADJUST, 1);
+    CopyRxArray(offset, 1);
+    return offset[0];
+}
+
+void enableHeater() {
+    uint8_t configContents[1] = {0};
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+    CopyRxArray(configContents, 1);
+
+    configContents[0] |= 0x08;
+
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG, configContents, 1);
+}
+
+void disableHeater() {
+    uint8_t configContents[1] = {0};
+    I2C_Controller_ReadReg(HDC2021_ADDRESS, MEAS_CONFIG_REG, 1);
+    CopyRxArray(configContents, 1);
+
+    configContents[0] |= 0x08;
+
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG, configContents, 1);
 }

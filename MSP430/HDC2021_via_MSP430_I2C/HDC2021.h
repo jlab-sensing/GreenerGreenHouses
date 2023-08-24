@@ -4,7 +4,7 @@
  * Written in Code Composer Studio 12.4
  * Created on: Aug 17, 2023
  * Author: Matthew Kaltman, Tim Kraemer
- * Last Modified: 8/23/23
+ * Last Modified: 8/24/23
  */
 
 #ifndef HDC2021_H_
@@ -111,22 +111,25 @@ void setTempOffsetAdjust(uint8_t offset);
  */
 void setHumidityOffsetAdjust(uint8_t offset);
 
+/*
+ * Returns the temperature offset set in the TEMP_OFFSET_ADJUST register
+ */
+uint8_t returnTempOffset(void);
 
+/*
+ * Returns the humidity offset set inthe HUM_OFFSET_ADJUST register
+ */
+uint8_t returnHumidityOffset(void);
 
+/*
+ * Enables the heating element of the HDC2021 sensor
+ */
+void enableHeater(void);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+ * Disables the heating element of the HDC2021 sensor
+ */
+void disableHeater(void);
 
 
 
