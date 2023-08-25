@@ -8,10 +8,10 @@
 #include "MSP430_I2C.h"
 #include "UART.h"
 
+#define ONE_SEC     16000000                            //16 million cycles equal 1 second wait time
+
 float Temperature;
 float Humidity;
-
-//char test[] = "Test";
 
 int main(){
     WDTCTL = WDTPW | WDTHOLD; //Disable Watchdog Timer
@@ -22,10 +22,8 @@ int main(){
     initI2C(HDC2021_ADDRESS);
 
     //basic UART library initialization
-    //UART_Init_GPIO();
-    //UART_Init();
-
-    //TXTransmit(test, strlen(test));
+    UART_Init_GPIO();
+    UART_Init();
 
     //HDC2021 Initialization
     Sensor_Reset();
@@ -39,25 +37,18 @@ int main(){
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
 
-    //first valid measurements stored
-    Temperature = Sensor_ReadTemp();
-    Humidity = Sensor_ReadHumidity();
+    char temp_and_humidity_string[40] = {0};
 
-    //char temp_string[40] = {0};
-    //char hum_string[40] = {0};
-    //int i = 0;
+    while(1) {
+        Temperature = Sensor_ReadTemp();                                        //read Temperature and Humidity Data
+        Humidity = Sensor_ReadHumidity();
+        sprintf(temp_and_humidity_string, "%s%d%s%d%s", "Temp: ",               //Compile data into a singular string
+                (int)Temperature, "°C   Humidity: ", (int)Humidity, "%\n\n");
+        TXTransmit(temp_and_humidity_string,                                    //Transmit to TX buffer
+                   strlen(temp_and_humidity_string));
 
-//    sprintf(temp_string, "%s%d", "Temp: \n", (int)Temperature);
-//
-//    while(1) {
-//        Temperature = Sensor_ReadTemp();
-//        sprintf(temp_string, "%s%d", "Temp: ", (int)Temperature);
-//        TXTransmit(temp_string, strlen(temp_string));
-//
-//        for(i = 0; i < 1000000; i++) {
-//            _NOP();
-//        }
-//    }
+       __delay_cycles(ONE_SEC);                                                 //Transmit to TX buffer
+    }
 
 }
 
