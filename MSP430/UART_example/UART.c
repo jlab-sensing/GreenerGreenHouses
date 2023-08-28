@@ -1,11 +1,11 @@
 /*
  * UART.c
  * Header file for implementation of UART communication with the MSP430FR5969
- * Adapted from TI's msp430fr59xx_euscia_0uart2 example
+ * Adapted from Max Dunne's UART Library
  * Written in Code Composer Studio 12.4
  * Created on: Aug 21, 2023
  * Author: Tim Kraemer
- * Last Modified: 8/21/23
+ * Last Modified: 8/28/23
  */
 
 #include <stdlib.h>
@@ -66,20 +66,26 @@ void UART_Init_GPIO() {
 
 
 void UART_Start_Transmission() {
+    //Keep transmitting until CB is empty
     while(uart1TxBuffer.dataSize > 0) {
-        uint8_t c;
-        CB_ReadByte(&uart1TxBuffer, &c);
-        UCA0TXBUF = c;
-        __delay_cycles(10000);
+        if(UCA0IFG & 0x1){                    //UCA0IFG flag, high when TX Buffer is empty and ready for next byte.
+            uint8_t c;
+            CB_ReadByte(&uart1TxBuffer, &c);  //Read next available byte in CB into c
+            UCA0TXBUF = c;
+        }
     }
 }
 
 int UART_Write_Data(const void *data, size_t length) {
+    //Copy message into Circular Buffer, returns STANDARD_ERROR if not successful
     int success = CB_WriteMany(&uart1TxBuffer, data, length, false);
-    UCA0IE |= UCTXIE;
+    UCA0IE |= UCTXIE;                         //Set TX interrupt flag high
     return success;
 }
 
+
+
+//UART Interrupt
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=USCI_A0_VECTOR
 __interrupt void USCI_A0_ISR(void)
@@ -95,7 +101,7 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
       case USCI_UART_UCRXIFG: break;
 
       case USCI_UART_UCTXIFG:
-
+          //Call UART_Start_Transmission() and immediately clear interrupt flag to prevent blocking
           UART_Start_Transmission();
           UCA0IE &= ~UCTXIE;
 
