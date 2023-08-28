@@ -20,6 +20,7 @@
 /*
  * Enables UART interrupts and sets initial timers
  * Baudrate is set by default to 9600
+ * Initializes Circular Buffer
  */
 void UART_Init(void);
 
@@ -34,7 +35,16 @@ void UART_Init_GPIO(void);
  */
 void UART_Init_Clock(void);
 
+/*
+ * Copies message from Circular Buffer byte by byte into TX transmission buffer, until size of CB is 0
+ */
 void UART_Start_Transmission(void);
+
+/*
+ * Copies message into Circular Buffer and toggles TX interrupt flag. Returns success or failure
+ * data: char array of message to transmit through TX
+ * length: size of message in number of bytes
+ */
 
 int UART_Write_Data(const void* data, size_t length);
 
