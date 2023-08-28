@@ -1,7 +1,9 @@
 #include "msp430.h"
+#include "CircularBuffer.h"
 #include "UART.h"
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 int main(void)
 {
@@ -12,12 +14,11 @@ int main(void)
   UART_Init();
 
 
-  char message[] = "Matt is such a cool guy\n";
-  unsigned char message_length = strlen(message);
+  char message1[] = "Message1\n";
+  char message2[] = "Message2\n";
 
-  UART_Write_Data(message, message_length);
+  UART_Write_Data(message1, strlen(message1));
+  UART_Write_Data(message2, strlen(message2));
 
   while(1);
-
-
 }

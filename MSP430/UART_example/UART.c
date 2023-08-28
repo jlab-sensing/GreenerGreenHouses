@@ -70,6 +70,7 @@ void UART_Start_Transmission() {
         uint8_t c;
         CB_ReadByte(&uart1TxBuffer, &c);
         UCA0TXBUF = c;
+        __delay_cycles(5000);
     }
 }
 
