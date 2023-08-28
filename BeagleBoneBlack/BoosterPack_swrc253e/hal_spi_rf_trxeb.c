@@ -47,6 +47,7 @@
 
 #include "SPI.h"
 #include <linux/spi/spidev.h>
+#include <stdio.h>
 
 extern int spiFileDesc; // from main.c
 
@@ -80,6 +81,11 @@ static uint8_t rxBuffer[SPI_BUFFER_SIZE];
 void trxRfSpiInterfaceInit(uint8 prescalerValue)
 {
     spiFileDesc = SPI_initPort(SPI_DEV_BUS0_CS0, SPI_MODE_0, 115200);
+    
+    for (int i = 0; i < SPI_BUFFER_SIZE; i++){
+        txBuffer[i] = 0;
+        rxBuffer[i] = 0;
+    }
     return;
   // /* Keep peripheral in reset state*/
   // UCB0CTL1 |= UCSWRST;
@@ -199,8 +205,19 @@ rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint
     }
     
     SPI_transfer(spiFileDesc, txBuffer, rxBuffer, len + 1);
+    if (txBuffer[0] & RADIO_READ_ACCESS){  // read
+        for (int i = 0; i < len; i++){ // Write to pData
+            pData[i] = rxBuffer[i + 1];
+        }
+    }else{                          // write (from pData)
+        // do not overwrite pData
+    }
     
+    // for (int i = 0; i < len + 1; i++){
+        // printf("[%02d]\tTX: 0x%02X\tRX: 0x%02X\tpD: 0x%02X\n", i, txBuffer[i], rxBuffer[i], pData[i]);
+    // }
     /* return the status byte value */
+    // printf("Returning pData[1] = 0x%02X\n", pData[1]);
     return rxBuffer[0];
     
   // uint8 readValue;
@@ -254,8 +271,20 @@ rfStatus_t trx16BitRegAccess(uint8 accessType, uint8 extAddr, uint8 regAddr, uin
             txBuffer[i + 2] = pData[i];
         }
     }
-    
+    // printf("SPI_transfer with len %d\n", len+2);
     SPI_transfer(spiFileDesc, txBuffer, rxBuffer, len + 2);
+    if (txBuffer[0] & RADIO_READ_ACCESS){  // read
+        for (int i = 0; i < len; i++){ // Write to pData
+            pData[i] = rxBuffer[i + 2];
+        }
+    }else{                          // write (from pData)
+        // do not overwrite pData
+    }
+    
+    
+    // for (int i = 0; i < len + 2; i++){
+        // printf("[%02d]\tTX: 0x%02X\tRX: 0x%02X\n", i, txBuffer[i], pData[i]);
+    // }
     
     /* return the status byte value */
     return rxBuffer[0];

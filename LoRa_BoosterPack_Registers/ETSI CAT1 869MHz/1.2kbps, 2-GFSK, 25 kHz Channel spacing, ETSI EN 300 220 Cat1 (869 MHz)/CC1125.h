@@ -19,14 +19,11 @@ typedef struct {
     uint8 agc_ref;          // AGC Reference Level Configuration
     uint8 agc_cs_thr;       // Carrier Sense Threshold Configuration
     uint8 agc_cfg1;         // Automatic Gain Control Configuration Reg. 1
+    uint8 agc_cfg0;         // Automatic Gain Control Configuration Reg. 0
     uint8 fifo_cfg;         // FIFO Configuration
     uint8 settling_cfg;     // Frequency Synthesizer Calibration and Settling Con..
     uint8 fs_cfg;           // Frequency Synthesizer Configuration
-    uint8 wor_cfg0;         // eWOR Configuration Reg. 0
-    uint8 wor_event0_msb;   // Event 0 Configuration MSB
-    uint8 wor_event0_lsb;   // Event 0 Configuration LSB
     uint8 pkt_cfg0;         // Packet Configuration Reg. 0
-    uint8 rfend_cfg0;       // RFEND Configuration Reg. 0
     uint8 pkt_len;          // Packet Length Configuration
     uint8 if_mix_cfg;       // IF Mix Configuration
     uint8 freqoff_cfg;      // Frequency Offset Correction Configuration

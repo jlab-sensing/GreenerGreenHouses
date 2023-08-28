@@ -17,15 +17,12 @@ RF_SETTINGS code rfSettings = {
     0x10,  // SYMBOL_RATE0        Symbol Rate Configuration Mantissa [7:0]
     0x20,  // AGC_REF             AGC Reference Level Configuration
     0x19,  // AGC_CS_THR          Carrier Sense Threshold Configuration
-    0xA0,  // AGC_CFG1            Automatic Gain Control Configuration Reg. 1
+    0xA9,  // AGC_CFG1            Automatic Gain Control Configuration Reg. 1
+    0xCF,  // AGC_CFG0            Automatic Gain Control Configuration Reg. 0
     0x00,  // FIFO_CFG            FIFO Configuration
     0x03,  // SETTLING_CFG        Frequency Synthesizer Calibration and Settling Con..
     0x12,  // FS_CFG              Frequency Synthesizer Configuration
-    0x20,  // WOR_CFG0            eWOR Configuration Reg. 0
-    0x02,  // WOR_EVENT0_MSB      Event 0 Configuration MSB
-    0xE9,  // WOR_EVENT0_LSB      Event 0 Configuration LSB
     0x20,  // PKT_CFG0            Packet Configuration Reg. 0
-    0x09,  // RFEND_CFG0          RFEND Configuration Reg. 0
     0xFF,  // PKT_LEN             Packet Length Configuration
     0x00,  // IF_MIX_CFG          IF Mix Configuration
     0x22,  // FREQOFF_CFG         Frequency Offset Correction Configuration

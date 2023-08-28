@@ -18,15 +18,12 @@ SYMBOL_RATE1   |0x0015|0x75|Symbol Rate Configuration Mantissa [15:8]
 SYMBOL_RATE0   |0x0016|0x10|Symbol Rate Configuration Mantissa [7:0]
 AGC_REF        |0x0017|0x20|AGC Reference Level Configuration
 AGC_CS_THR     |0x0018|0x19|Carrier Sense Threshold Configuration
-AGC_CFG1       |0x001C|0xA0|Automatic Gain Control Configuration Reg. 1
+AGC_CFG1       |0x001C|0xA9|Automatic Gain Control Configuration Reg. 1
+AGC_CFG0       |0x001D|0xCF|Automatic Gain Control Configuration Reg. 0
 FIFO_CFG       |0x001E|0x00|FIFO Configuration
 SETTLING_CFG   |0x0020|0x03|Frequency Synthesizer Calibration and Settling Con..
 FS_CFG         |0x0021|0x12|Frequency Synthesizer Configuration
-WOR_CFG0       |0x0023|0x20|eWOR Configuration Reg. 0
-WOR_EVENT0_MSB |0x0024|0x02|Event 0 Configuration MSB
-WOR_EVENT0_LSB |0x0025|0xE9|Event 0 Configuration LSB
 PKT_CFG0       |0x0028|0x20|Packet Configuration Reg. 0
-RFEND_CFG0     |0x002A|0x09|RFEND Configuration Reg. 0
 PKT_LEN        |0x002E|0xFF|Packet Length Configuration
 IF_MIX_CFG     |0x2F00|0x00|IF Mix Configuration
 FREQOFF_CFG    |0x2F01|0x22|Frequency Offset Correction Configuration

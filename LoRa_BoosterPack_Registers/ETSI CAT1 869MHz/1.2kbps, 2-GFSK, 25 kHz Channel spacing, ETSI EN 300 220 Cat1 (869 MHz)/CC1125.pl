@@ -21,15 +21,12 @@ sub writeRegisters
     $dev->writeRegister("SYMBOL_RATE0",0x10);
     $dev->writeRegister("AGC_REF",0x20);
     $dev->writeRegister("AGC_CS_THR",0x19);
-    $dev->writeRegister("AGC_CFG1",0xA0);
+    $dev->writeRegister("AGC_CFG1",0xA9);
+    $dev->writeRegister("AGC_CFG0",0xCF);
     $dev->writeRegister("FIFO_CFG",0x00);
     $dev->writeRegister("SETTLING_CFG",0x03);
     $dev->writeRegister("FS_CFG",0x12);
-    $dev->writeRegister("WOR_CFG0",0x20);
-    $dev->writeRegister("WOR_EVENT0_MSB",0x02);
-    $dev->writeRegister("WOR_EVENT0_LSB",0xE9);
     $dev->writeRegister("PKT_CFG0",0x20);
-    $dev->writeRegister("RFEND_CFG0",0x09);
     $dev->writeRegister("PKT_LEN",0xFF);
     $dev->writeRegister("IF_MIX_CFG",0x00);
     $dev->writeRegister("FREQOFF_CFG",0x22);

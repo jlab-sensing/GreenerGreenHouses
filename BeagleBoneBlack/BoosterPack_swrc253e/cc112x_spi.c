@@ -74,11 +74,19 @@ rfStatus_t cc112xSpiReadReg(uint16 addr, uint8 *pData, uint8 len)
   /* Decide what register space is accessed */
   if(!tempExt)
   {
-    rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempAddr,pData,len);
+    if (len == 1){
+      rc = trx8BitRegAccess(RADIO_READ_ACCESS,tempAddr,pData,len);
+    }else{
+      rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempAddr,pData,len);
+    }
   }
   else if (tempExt == 0x2F)
   {
-    rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempExt,tempAddr,pData,len);
+    if (len == 1){
+      rc = trx16BitRegAccess(RADIO_READ_ACCESS,tempExt,tempAddr,pData,len);
+    }else{
+      rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempExt,tempAddr,pData,len);
+    }
   }
   return (rc);
 }
@@ -112,11 +120,19 @@ rfStatus_t cc112xSpiWriteReg(uint16 addr, uint8 *pData, uint8 len)
   /* Decide what register space is accessed */  
   if(!tempExt)
   {
-    rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
+    if (len == 1){
+      rc = trx8BitRegAccess(RADIO_WRITE_ACCESS,tempAddr,pData,len);
+    }else{
+      rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
+    }
   }
   else if (tempExt == 0x2F)
   {
-    rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempExt,tempAddr,pData,len);
+    if (len == 1){
+      rc = trx16BitRegAccess(RADIO_WRITE_ACCESS,tempExt,tempAddr,pData,len);
+    }else{
+      rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempExt,tempAddr,pData,len);
+    }
   }
   return (rc);
 }

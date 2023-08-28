@@ -10,6 +10,7 @@
 
 #include "cc112x_spi.h"
 #include "SPI.h"
+#include "cc112x_easy_link_reg_config.h"
 
 // #define uint8_t u_int8_t
 // #define SPI_BUFFER_SIZE 4
@@ -21,6 +22,9 @@
 
 // Global
 int spiFileDesc = 0;
+
+static void manualCalibration(void);
+static void registerConfig(void);
 
 int main(int argc, char *argv[]){
     
@@ -47,23 +51,13 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     
-    // uint8_t *txBuffer = malloc(SPI_BUFFER_SIZE);
-    // uint8_t *rxBuffer = malloc(SPI_BUFFER_SIZE);
     
-    // Read all registers from 0x00 to 0x3F
-    // for (int i = 0; i <= 0x3F; i++){
-        // txBuffer[i] = i | CC1125_REG_READ_nWRITE; // not burst
-    // }
+    registerConfig();
     
-    // Read CC1125 device ID, expect 0x60
-    // txBuffer[0] = 0xD0 | CC1125_REG_READ_nWRITE & ~CC1125_REG_BURST;
-    // txBuffer[1] = 0x00; // dummy
-    
-    // Reset BME280
-    // txBuffer[2] = 0xE0 & BME_280_REG_WRITE;
-    // txBuffer[3] = 0xB6; // reset command
-    
-    
+    rfStatus_t status = 0;
+    uint16 address = 0x00;
+    uint8 rxData[SPI_BUFFER_SIZE];
+    for (int i = 0; i < sizeof(rxData); i++) rxData[i] = 0;
     
     while(1){
         // SPI_transfer(spiFileDesc, txBuffer, rxBuffer, SPI_BUFFER_SIZE);
@@ -72,11 +66,187 @@ int main(int argc, char *argv[]){
         // for (int i = 0; i < SPI_BUFFER_SIZE; i++){
             // printf("0x%X ", rxBuffer[i]);
         // }
-        printf("sleep(1)\n");
+        
+        // printf("TX status: %X\nRX status: %X\n", cc112xGetTxStatus(), cc112xGetRxStatus());
+        
+        
+        status = cc112xSpiReadReg(address, rxData, 1);
+        if (address >= 0x2FD9){
+            address = 0x00;
+        }else{
+            address++;
+        }
+        
+        printf("[0x%02X] status = 0x%02X\trxData = 0x%02X\n", address, status, rxData[0]);
+        
         sleep(1);
     }
 
     printf("Closing \"/dev/spidev0.0\".\n");
     // fclose(spiFileDesc);
     return 0;
+}
+
+/*******************************************************************************
+*   @fn         registerConfig
+*
+*   @brief      Write register settings as given by SmartRF Studio found in
+*               cc112x_easy_link_reg_config.h
+*
+*   @param      none
+*
+*   @return     none
+*/
+static void registerConfig(void) {
+
+    uint8 writeByte;
+    uint8 readByte;
+    rfStatus_t status;
+    
+    for(uint16 i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+        printf("%d\t0x%02X\t0x%02X\n", i, preferredSettings[i].data, preferredSettings[i].addr);
+    }
+
+    // Reset radio
+    printf("Resetting radio.\n");
+    status = trxSpiCmdStrobe(CC112X_SRES);
+    printf("Status byte: 0x%02X\n", status);
+    
+    // Wait for reset
+    sleep(1);
+    
+    // Read registers from radio
+    printf("Reading\n");
+    for(uint16 i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+        printf("i = %d\t", i);
+        printf("expect = 0x%02X\t", preferredSettings[i].data);
+        status = cc112xSpiReadReg(preferredSettings[i].addr, &readByte, 1);
+        printf("value = 0x%02X\t", readByte);
+        
+        if (readByte == preferredSettings[i].data){
+            printf("OK\n");
+        }else{
+            printf("UNEXPECTED REGISTER VALUE\n");
+        }
+    }
+
+    // Write registers to radio
+    printf("Writing\n");
+    for(uint16 i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+        printf("i = %d\t", i);
+        writeByte = preferredSettings[i].data;
+        printf("writeByte = 0x%02X\t", writeByte);
+        status = cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
+        printf("status = 0x%02X\n", status);
+    }
+    
+    // Read registers from radio
+    printf("Reading\n");
+    for(uint16 i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+        printf("i = %d\t", i);
+        printf("expect = 0x%02X\t", preferredSettings[i].data);
+        status = cc112xSpiReadReg(preferredSettings[i].addr, &readByte, 1);
+        printf("value = 0x%02X\t", readByte);
+        
+        if (readByte == preferredSettings[i].data){
+            printf("OK\n");
+        }else{
+            printf("UNEXPECTED REGISTER VALUE\n");
+        }
+    }
+    
+    printf("Done configuring registers.\n");
+    return;
+}
+
+/*******************************************************************************
+*   @fn         manualCalibration
+*
+*   @brief      Calibrates radio according to CC112x errata
+*
+*   @param      none
+*
+*   @return     none
+*/
+#define VCDAC_START_OFFSET 2
+#define FS_VCO2_INDEX 0
+#define FS_VCO4_INDEX 1
+#define FS_CHP_INDEX 2
+static void manualCalibration(void) {
+
+    uint8 original_fs_cal2;
+    uint8 calResults_for_vcdac_start_high[3];
+    uint8 calResults_for_vcdac_start_mid[3];
+    uint8 marcstate;
+    uint8 writeByte;
+
+    // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    writeByte = 0x00;
+    cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+
+    // 2) Start with high VCDAC (original VCDAC_START + 2):
+    cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
+    writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
+    cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
+
+    // 3) Calibrate and wait for calibration to be done
+    //   (radio back in IDLE state)
+    trxSpiCmdStrobe(CC112X_SCAL);
+
+    do {
+        cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+    } while (marcstate != 0x41);
+
+    // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
+    //    high VCDAC_START value
+    cc112xSpiReadReg(CC112X_FS_VCO2,
+                     &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_VCO4,
+                     &calResults_for_vcdac_start_high[FS_VCO4_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_CHP,
+                     &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
+
+    // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    writeByte = 0x00;
+    cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+
+    // 6) Continue with mid VCDAC (original VCDAC_START):
+    writeByte = original_fs_cal2;
+    cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
+
+    // 7) Calibrate and wait for calibration to be done
+    //   (radio back in IDLE state)
+    trxSpiCmdStrobe(CC112X_SCAL);
+
+    do {
+        cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+    } while (marcstate != 0x41);
+
+    // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
+    //    with mid VCDAC_START value
+    cc112xSpiReadReg(CC112X_FS_VCO2, 
+                     &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_VCO4,
+                     &calResults_for_vcdac_start_mid[FS_VCO4_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_CHP,
+                     &calResults_for_vcdac_start_mid[FS_CHP_INDEX], 1);
+
+    // 9) Write back highest FS_VCO2 and corresponding FS_VCO
+    //    and FS_CHP result
+    if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
+        calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
+        writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_high[FS_VCO4_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO4, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_high[FS_CHP_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
+    } else {
+        writeByte = calResults_for_vcdac_start_mid[FS_VCO2_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_mid[FS_VCO4_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO4, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_mid[FS_CHP_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
+    }
 }
