@@ -15,10 +15,10 @@ int main(void)
 
 
   char message1[] = "Message1\n";
-  char message2[] = "Message2\n";
+  //char message2[] = "Message2\n";
 
   UART_Write_Data(message1, strlen(message1));
-  UART_Write_Data(message2, strlen(message2));
+  //UART_Write_Data(message2, strlen(message2));
 
   while(1);
 }
