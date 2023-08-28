@@ -41,10 +41,10 @@
  *
  *******************************************************************************/
 
-#include <cc1x_utils.h>
+#include "cc1x_utils.h"
 #include "stdio.h"
 #include "stdlib.h"
-#include "msp430.h"
+// #include "msp430.h"
 #include "hal_timer.h"
 #include "LaunchPad_trx_demo.h"
 #include "uart_drv.h"
