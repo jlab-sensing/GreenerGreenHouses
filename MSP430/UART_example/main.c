@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdint.h>
 
-//hi
-
 int main(void)
 {
   WDTCTL = WDTPW | WDTHOLD;                 // Stop Watchdog
@@ -17,7 +15,7 @@ int main(void)
   char message[] = "Matt is such a cool guy\n";
   unsigned char message_length = strlen(message);
 
-  TXTransmit(message, message_length);
+  UART_Write_Data(message, message_length);
 
   while(1);
 

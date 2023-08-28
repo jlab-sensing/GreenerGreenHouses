@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "UART.h"
+#include "ringbuffer.h"
 
 //MAX buffer size set to 50 characters
 char TXBuffer[MAX_BUFFER_SIZE_UART] = {0};

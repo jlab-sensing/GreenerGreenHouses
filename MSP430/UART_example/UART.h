@@ -12,6 +12,7 @@
 #define MSP430_UART_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 //define max size of TX buffer
 #define MAX_BUFFER_SIZE_UART 50
@@ -32,6 +33,10 @@ void UART_Init_GPIO(void);
  * Initializes the UART Clocks
  */
 void UART_Init_Clock(void);
+
+void UART_Start_Transmission(void);
+
+int UART_Write_Data(const void* data, size_t length);
 
 /*
  * Raises TX interrupt flag and transmits data byte by byte through UART TX buffer

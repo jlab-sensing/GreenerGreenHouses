@@ -246,7 +246,7 @@ void enableHeater() {
 
     configContents[0] |= 0x08;
 
-    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG, configContents, 1);
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG_REG, configContents, 1);
 }
 
 void disableHeater() {
@@ -256,5 +256,5 @@ void disableHeater() {
 
     configContents[0] |= 0x08;
 
-    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG, configContents, 1);
+    I2C_Controller_WriteReg(HDC2021_ADDRESS, CONFIG_REG, configContents, 1);
 }

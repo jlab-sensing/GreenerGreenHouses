@@ -12,26 +12,21 @@
 #include <msp430.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 
 #include "UART.h"
+#include "CircularBuffer.h"
 
-char TXBuffer[MAX_BUFFER_SIZE_UART] = {0};
-unsigned char TXbytes = 0;
-uint8_t messageLength = 0;
-
-void CopyTXArray(char *source, unsigned char count);
-
-void CopyTXArray(char *source, unsigned char count)
-{
-        uint8_t copyIndex = 0;
-        for (copyIndex = 0; copyIndex < count; copyIndex++)
-        {
-            TXBuffer[copyIndex] = source[copyIndex];
-        }
-}
+static CircularBuffer uart1TxBuffer;
+static uint8_t u1TxBuf[1024];
 
 
 void UART_Init() {
+    // First initialize the necessary circular buffers.
+    CB_Init(&uart1TxBuffer, u1TxBuf, sizeof (u1TxBuf));
+
+
     // Configure USCI_A0 for UART mode
       UCA0CTLW0 = UCSWRST;                      // Put eUSCI in reset
       UCA0CTLW0 |= UCSSEL__SMCLK;               // CLK = SMCLK
@@ -70,12 +65,19 @@ void UART_Init_GPIO() {
 }
 
 
-void TXTransmit(char *message, unsigned char length) {
-    CopyTXArray(message, length);                                              //Copy message into TX buffer for transmission
-    messageLength = length;
-    UCA0IE |= UCTXIE;                                                        //Enable TX interrupt flag
+void UART_Start_Transmission() {
+    while(uart1TxBuffer.dataSize > 0) {
+        uint8_t c;
+        CB_ReadByte(&uart1TxBuffer, &c);
+        UCA0TXBUF = c;
+    }
 }
 
+int UART_Write_Data(const void *data, size_t length) {
+    int success = CB_WriteMany(&uart1TxBuffer, data, length, false);
+    UCA0IE |= UCTXIE;
+    return success;
+}
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=USCI_A0_VECTOR
@@ -93,16 +95,8 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
 
       case USCI_UART_UCTXIFG:
 
-          // Transmit the byte
-          UCA0TXBUF = TXBuffer[TXbytes++];
-
-          // If last byte sent, disable the interrupt
-          if(TXbytes == messageLength)
-          {
-              UCA0IE &= ~UCTXIE;
-              TXbytes = 0;
-          }
-          break;
+          UART_Start_Transmission();
+          UCA0IE &= ~UCTXIE;
 
       case USCI_UART_UCSTTIFG: break;
       case USCI_UART_UCTXCPTIFG: break;
