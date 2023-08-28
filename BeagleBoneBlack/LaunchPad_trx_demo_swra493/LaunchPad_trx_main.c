@@ -41,14 +41,15 @@
 /******************************************************************************
  * INCLUDES
  */
-//#include "msp430.h"
-#include "BBBREVC.h"
+// #include "msp430.h"
 #include "stdio.h"
-#include "radio_drv/radio_drv.h"
-#include "radio_drv/cc1x_utils.h"
-#include "radio_drv/hal_spi_rf.h"
-#include "uart_drv/uart_drv.h"
+#include "radio_drv.h"
+#include "cc1x_utils.h"
+#include "hal_spi_rf.h"
+#include "uart_drv.h"
 #include "LaunchPad_trx_demo.h"
+
+#define __MSP430F5529__
 
 /******************************************************************************
  * LOCAL FUNCTIONS
@@ -103,13 +104,13 @@ void main (void)
 	// WDTCTL = WDTPW + WDTHOLD;
 
 	/* Setup MSP specific functions, IO's, timers and WDT */
-	msp_setup();
+	// msp_setup();
 
 	/* Initialize the UART port */
-	hal_uart_init();
+	// hal_uart_init();
 
 	/* enable uart echo function */
-	uart_drv_toggle_echo();
+	// uart_drv_toggle_echo();
 
 	/* initialize the radio subsystem */
 	trx_cfg.bit_rate = radio_init(1);

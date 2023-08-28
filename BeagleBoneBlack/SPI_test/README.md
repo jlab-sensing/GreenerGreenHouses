@@ -17,6 +17,9 @@ This directory contains test files and configuration scripts for the BeagleBone 
 - SPILIB_test.c -- C source file for the executable described above.
 - README.md -- This file.
 
+## Prerequisites
+There are no prerequisites for the files in this directory. Only C standard libraries and system libraries are used. However, the SPI pins must be configured as SPI using the `config-pin-spi0-on.sh` script.
+
 ## Instructions
 Compilation is done with the following command:
 ```
@@ -29,6 +32,9 @@ sudo <exectuable name>
 
 ## Attribution
 SPI library is based on resources provided in Dr. Brian Fraser's CMPT433 course: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt433/links
-Specifically, this guide developed by Ian Cruikshank: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt433/links/files/2022-student-howtos-ensc351/SPI-On-BBG.pdf
+
+Specifically, this guide developed by Ian Cruikshank: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt433/links/files/2022-student-howtos-ensc351/SPI-On-BBG.pdf
+
 And its support files: https://opencoursehub.cs.sfu.ca/bfraser/solutions/433/StudentHowToGuides/2022Files-Ensc351/SPI-On-BBG.zip
+
 Which is itself based on code from Derek Molloy: https://github.com/derekmolloy/exploringBB/blob/version2/chp08/spi/spidev_test/spidev_test.c

@@ -1,3 +1,13 @@
+/*
+ * main.c
+ * Main test file for UART driver library
+ * Written using Max Dunne's UART and Circular Buffer Library
+ * Written in Code Composer Studio 12.4
+ * Created on: Aug 21, 2023
+ * Author: Tim Kraemer
+ * Last Modified: 8/28/23
+ */
+
 #include "msp430.h"
 #include "CircularBuffer.h"
 #include "UART.h"

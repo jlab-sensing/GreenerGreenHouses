@@ -1,11 +1,11 @@
 /*
  * UART.h
  * Header file for implementation of UART communication with the MSP430FR5969
- * Adapted from TI's msp430fr59xx_euscia_0uart2 example
+ * Adapted from Max Dunne's UART library
  * Written in Code Composer Studio 12.4
  * Created on: Aug 21, 2023
  * Author: Tim Kraemer
- * Last Modified: 8/21/23
+ * Last Modified: 8/28/23
  */
 
 #ifndef MSP430_UART_H_
