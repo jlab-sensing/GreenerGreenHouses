@@ -10,8 +10,8 @@ This directory contains test files for interfacing the BOOSTXL-CC1125 with the B
 - cc112x_spi.c -- Top-layer CC1125 SPI access library implementation file as provided in the TI SWRC253E code examples.
 - cc112x_spi.h -- Top-layer CC1125 SPI access library header file as provided in the TI SWRC253E code examples.
 - hal_defs.h -- Contains defined constants and macros as provided in the TI SWRC253E code examples.
-- hal_spi_rf_trxeb.c -- Implementation file for register access and command strobes to the CC1125. Modified from TI SWRC253E code examples. Mid-level SPI access.
-- hal_spi_rf_trxeb.h -- Header file for register access and command strobes to the CC1125. Modified from TI SWRC253E code examples. Mid-level SPI access.
+- hal_spi_rf_trxeb.c -- Implementation file for register access and command strobes to the CC1125. Modified from TI SWRC253E code examples. Mid-layer SPI access.
+- hal_spi_rf_trxeb.h -- Header file for register access and command strobes to the CC1125. Modified from TI SWRC253E code examples. Mid-layer SPI access.
 - hal_types.h -- Contains typedefs for integer types and compiler abstractions as provided in the TI SWRC253E code examples.
 - main.c -- Main execution loop which contains the register read/write/read test. Resets CC1125, reads default registers, writes to them based on the contents of cc112x_easy_link_reg_config.h, and reads the registers again to verify successful write. Loops with reading through all registers (including extended addresses) from 0x00 to 0x2F and 0x2F00 to 0x2FD9.
 - out -- Compiled binary for the AM3358 processor (BeagleBone Black revision C).
