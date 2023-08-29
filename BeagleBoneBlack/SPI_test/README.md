@@ -4,10 +4,6 @@ This directory contains test files and configuration scripts for the BeagleBone 
 
 ## Files
 - deprecated\ -- Contains old test files.
-- config-pin-i2c2-off.sh -- Turns off I2C on SCL:P9.19 and SDA:P9.20. Can be executed with user permissions.
-- config-pin-i2c2-on.sh -- Turns on I2C on SCL:P9.19 and SDA:P9.20. Can be executed with user permissions.
-- config-pin-spi0-off.sh -- Turns off SPI on CS0:P9.17, MOSI:P9.18, MISO:P9.21, and SCLK:P9.22. Can be executed with user permissions.
-- config-pin-spi0-on.sh -- Turns on SPI on CS0:P9.17, MOSI:P9.18, MISO:P9.21, and SCLK:P9.22. Can be executed with user permissions.
 - SPI.c -- C source file for the SPI library.
 - SPI.h -- C header file for the SPI library.
 - SPI_BME280_test -- Executable file that reads the BME280 temperature/humidity/pressure sensor's device ID and resets the device. Execute as sudo.
