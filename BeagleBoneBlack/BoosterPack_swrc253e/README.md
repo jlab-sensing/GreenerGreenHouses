@@ -17,6 +17,9 @@ This directory contains test files for interfacing the BOOSTXL-CC1125 with the B
 - out -- Compiled binary for the AM3358 processor (BeagleBone Black revision C).
 - README.md -- This file.
 
+## Wiring Diagram
+![Wiring](Wiring.png)
+
 ## Instructions
 Compilation is done with the following command (when in the repository):
 ```
