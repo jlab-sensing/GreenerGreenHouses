@@ -8,6 +8,10 @@
     // #define printf(x) do{ printf("\t"); printf(x);} while(0);
 // #endif
 
+#define MODBUS_SLAVE
+
+#define MAP_SIZE_ALL 16
+
 #define RTU_PORT        "/dev/ttyUSB0"
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
@@ -17,8 +21,15 @@
 // gcc libmodbus_hello.c -o libmodbus_hello -lmodbus
 // Emulates a modbus server
 int main(void) {
+    int status;
     modbus_t *mb;
+    
     printf("Program start.\n");
+#ifndef MODBUS_SLAVE
+    printf("Master mode\n");
+#else
+    printf("Slave mode\n");
+#endif
     
     printf("Instantiating Modbus RTU on %s at %d baud (%d%c%d).\n", RTU_PORT, RTU_BAUD, RTU_DATA_BITS, RTU_PARITY, RTU_STOP_BITS);
     mb = modbus_new_rtu(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
@@ -67,13 +78,83 @@ int main(void) {
     printf("\tRTS delay: %d us\n", rts_delay);
     if (rts_delay == -1) printf("ERROR\n");
     
-    
+    printf("set_slave (master: destination)\n");
+    status = modbus_set_slave(mb, 0xAB);
+    printf("status = %d\n", status);
     
     printf("Opening connection.\n");
     if (modbus_connect(mb) != 0){
         printf("modbus_connect(mb=0x%02X) failed to connect.\n", mb);
         return -1;
     }
+    
+    // uint16_t tab_reg[32];
+    // modbus_read_registers(mb, 0, 5, tab_reg);
+    
+#ifndef MODBUS_SLAVE
+    printf("Writing 1 bit (1b) to 0x00CD\n");
+    status = modbus_write_bit(mb, 0x00CD, 1);
+    printf("status = %d\n", status);
+    
+    printf("Writing 2 bytes (0xABCD) to 0x0012\n");
+    status = modbus_write_register(mb, 0x0012, 0xABCD);
+    printf("status = %d\n", status);
+#else
+    printf("Mapping %d rows\n", MAP_SIZE_ALL);
+    modbus_mapping_t *map;
+    // map = modbus_mapping_new_start_address();
+    map = modbus_mapping_new(MAP_SIZE_ALL, MAP_SIZE_ALL, MAP_SIZE_ALL, MAP_SIZE_ALL); // 16 of each
+    // map->tab_bits[0]
+    // map->tab_input_bits[0]
+    // map->tab_input_registers[0]
+    // map->tab_registers[0]
+    
+    if (map == NULL){
+        printf("modbus_mapping_new failed to allocate.\n");
+        return -1;
+    }
+    
+    printf("Dumping data (hex):\n");
+    printf("addr\tbit\tibit\tireg\treg\n");
+    printf("------------------------------------\n");
+    for (int i = 0; i < MAP_SIZE_ALL; i++){
+        printf("%04X|\t%04X\t%04X\t%04X\t%04X\n", 
+        i, 
+        map->tab_bits[i], 
+        map->tab_input_bits[i], 
+        map->tab_input_registers[i], 
+        map->tab_registers[i]);
+    }
+    
+    printf("get_socket == %d\n", modbus_get_socket(mb));
+    
+    int req_length;
+    uint8_t req[MODBUS_MAX_ADU_LENGTH];
+    while(1){
+        printf("modbus_receive\n");
+        req_length = modbus_receive(mb, req);
+        switch(req_length){
+            case 0:
+                printf("Ignore request (other slave address)\n");
+                break;
+            case -1:
+                printf("Error receiving\n");
+                break;
+            default:
+                printf("Handling request (length %d)\n", req_length);
+                
+                status = modbus_reply(mb, req, req_length, map);
+                if (status == -1){
+                    printf("Could not reply\n");
+                }else{
+                    printf("replied length %d\n", status);
+                }
+                break;
+        }
+    }
+    
+#endif
+    
     
     printf("Closing connection.\n");
     modbus_close(mb);
@@ -83,25 +164,9 @@ int main(void) {
     bytes_flushed = modbus_flush(mb);
     printf("Flushed %d bytes.\n", bytes_flushed);
     
-    
-    // modbus_close(mb);
     printf("Freeing mb = 0x%02X\n", mb);
     modbus_free(mb);
     
     printf("Program end.\n");
     return 0;
-    
-    /*
-    modbus_t *mb;
-    uint16_t tab_reg[32];
-
-    mb = modbus_new_tcp("127.0.0.1", 1502);
-    modbus_connect(mb);
-
-    // Read 5 registers from the address 0
-    modbus_read_registers(mb, 0, 5, tab_reg);
-
-    modbus_close(mb);
-    modbus_free(mb);
-    */
 }
