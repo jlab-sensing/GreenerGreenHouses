@@ -1,5 +1,6 @@
 #include <stdio.h>
 // #include <stdlib.h>
+#include <unistd.h>
 #include <modbus/modbus.h>
 // #include <modbus/modbus-rtu.h>
 
@@ -10,7 +11,9 @@
 
 #define MODBUS_SLAVE
 
-#define MAP_SIZE_ALL 16
+#define MODBUS_SLAVE_ID 0xAB
+
+#define MAP_SIZE_ALL 32
 
 #define RTU_PORT        "/dev/ttyUSB0"
 #define RTU_BAUD        19200
@@ -78,8 +81,8 @@ int main(void) {
     printf("\tRTS delay: %d us\n", rts_delay);
     if (rts_delay == -1) printf("ERROR\n");
     
-    printf("set_slave (master: destination)\n");
-    status = modbus_set_slave(mb, 0xAB);
+    printf("set_slave (master: destination) address 0x%02X (%d)\n", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
+    status = modbus_set_slave(mb, MODBUS_SLAVE_ID);
     printf("status = %d\n", status);
     
     printf("Opening connection.\n");
@@ -130,8 +133,22 @@ int main(void) {
     
     int req_length;
     uint8_t req[MODBUS_MAX_ADU_LENGTH];
+    int iteration = 0;
     while(1){
-        printf("modbus_receive\n");
+        printf("\n%d\n", iteration++);
+        
+        printf("Dumping data (hex):\n");
+        printf("addr\tbit\tibit\tireg\treg\n");
+        printf("------------------------------------\n");
+        for (int i = 0; i < MAP_SIZE_ALL; i++){
+            printf("%04X|\t%04X\t%04X\t%04X\t%04X\n", 
+            i, 
+            map->tab_bits[i], 
+            map->tab_input_bits[i], 
+            map->tab_input_registers[i], 
+            map->tab_registers[i]);
+        }
+        printf("waiting on modbus_receive\n");
         req_length = modbus_receive(mb, req);
         switch(req_length){
             case 0:
@@ -142,7 +159,7 @@ int main(void) {
                 break;
             default:
                 printf("Handling request (length %d)\n", req_length);
-                
+                sleep(5);
                 status = modbus_reply(mb, req, req_length, map);
                 if (status == -1){
                     printf("Could not reply\n");
