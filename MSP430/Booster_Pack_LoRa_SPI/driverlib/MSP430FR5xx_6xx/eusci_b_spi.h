@@ -307,7 +307,7 @@ extern void EUSCI_B_SPI_changeClockPhasePolarity(uint16_t baseAddress,
 //
 //*****************************************************************************
 extern void EUSCI_B_SPI_transmitData(uint16_t baseAddress,
-                                     uint8_t transmitData);
+                                     uint16_t transmitData);
 
 //*****************************************************************************
 //
