@@ -20,6 +20,10 @@ This repository contains concurrent work for the Greener Greenhouses research pr
 
     Power consumption models for temperature & humidity sensor comparison, as well as CCS project for power trace measurement on MSP430 programs
 
+- **BeagleBoneBlack**
+
+    Contains source code for Beaglebone Black development, specifically work on SPI to LoRa boosterpack compatability, and ModbusLib test code for server/client side testing.
+
   ## To Do
 
   - [ ] Create specific README file for each directory
