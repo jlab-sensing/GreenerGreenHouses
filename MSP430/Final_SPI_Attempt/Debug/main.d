@@ -20,6 +20,17 @@ main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/
 main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_types.h
 main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
+main.obj: ../smartRF1125.h
+main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdio.h
+main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdarg.h
+main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/eusci_a_uart.h
+main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/hw_memmap.h
+main.obj: C:/ti/ccs1240/ccs/ccs_base/msp430/include/msp430fr5xx_6xxgeneric.h
+main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h
+main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/gpio.h
+main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/cs.h
+main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h
+main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h
 
 ../main.c:
 
@@ -60,4 +71,26 @@ C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_types
 C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h:
 
 C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
+
+../smartRF1125.h:
+
+C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdio.h:
+
+C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdarg.h:
+
+C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/eusci_a_uart.h:
+
+C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/hw_memmap.h:
+
+C:/ti/ccs1240/ccs/ccs_base/msp430/include/msp430fr5xx_6xxgeneric.h:
+
+C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h:
+
+C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/gpio.h:
+
+C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/cs.h:
+
+C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h:
+
+C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h:
 

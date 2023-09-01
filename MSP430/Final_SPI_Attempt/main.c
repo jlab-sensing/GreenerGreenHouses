@@ -3,23 +3,118 @@
 #include "cc112x_spi.h"
 #include "hal_spi_rf_trxeb.h"
 #include "stdint.h"
-
-
+#include "smartRF1125.h"
+#include <stdio.h>
+//#include <driverlib/MSP430FR5xx_6xx/cs.h>
+#include <eusci_a_uart.h>
+#include <gpio.h>
+#include <hw_memmap.h>
+#include <cs.h>
+#include <string.h>
+//#include <driverlib/MSP430FR5xx_6xx/eusci_b_spi.h>
+//#include <pmm.h>
+//#include <wdt_a.h>
 /**
  * main.c
  */
+
+void putcha(char c){
+
+ EUSCI_A_UART_transmitData(EUSCI_A0_BASE,c);
+
+}
+
+void putstring(char *s){
+    int i= 0;
+    int length = ((strlen(s)) - 1);
+
+    for(i = length; i >= 0; i--)
+    {
+        putcha(s[length - i]);
+    }
+}
+
 uint8_t DeviceID[8] = {0};
 uint8_t DevAdd[1] = {0xA};
+char Jack[512] = {0};
 int main(void)
 {
 	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
 	
 	PM5CTL0 &= ~LOCKLPM5;
+	/* Select Port J
+	* Set Pin 4, 5 to input Primary Module Function, LFXT.
+	*/
+	GPIO_setAsPeripheralModuleFunctionInputPin(
+	    GPIO_PORT_PJ,
+	    GPIO_PIN4 + GPIO_PIN5,
+	    GPIO_PRIMARY_MODULE_FUNCTION
+	);
+
+	//Set DCO frequency to 1 MHz
+	CS_setDCOFreq(CS_DCORSEL_0,CS_DCOFSEL_0);
+	//Set external clock frequency to 32.768 KHz
+	CS_setExternalClockSource(32768,0);
+	//Set ACLK=LFXT
+	CS_initClockSignal(CS_ACLK,CS_LFXTCLK_SELECT,CS_CLOCK_DIVIDER_1);
+	//Set SMCLK = DCO with frequency divider of 1
+	CS_initClockSignal(CS_SMCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
+	//Set MCLK = DCO with frequency divider of 1
+	CS_initClockSignal(CS_MCLK,CS_DCOCLK_SELECT,CS_CLOCK_DIVIDER_1);
+	//Start XT1 with no time out
+	CS_turnOnLFXT(CS_LFXT_DRIVE_0);
+
+
+	// Configure UART pins
+	//Set P2.0 and P2.1 as Secondary Module Function Input.
+	/*
+
+	* Select Port 2d
+	* Set Pin 0, 1 to input Secondary Module Function, (UCA0TXD/UCA0SIMO, UCA0RXD/UCA0SOMI).
+	*/
+	GPIO_setAsPeripheralModuleFunctionInputPin(
+	GPIO_PORT_P2,
+	GPIO_PIN0 + GPIO_PIN1,
+	GPIO_SECONDARY_MODULE_FUNCTION
+	);
+
+	EUSCI_A_UART_initParam param;
+	param.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;
+	param.clockPrescalar = 0x6;
+	param.firstModReg = 0x8;
+	param.secondModReg = 0x11;
+	param.parity = EUSCI_A_UART_NO_PARITY;
+	param.msborLsbFirst = EUSCI_A_UART_LSB_FIRST;
+	param.numberofStopBits = EUSCI_A_UART_ONE_STOP_BIT;
+	param.uartMode = EUSCI_A_UART_MODE;
+	param.overSampling = 0x1;
+
+
+	if(STATUS_FAIL ==EUSCI_A_UART_init(EUSCI_A0_BASE,&param)){
+	  return 0;
+	}
+
+	EUSCI_A_UART_enable(EUSCI_A0_BASE);
+	 EUSCI_A_UART_clearInterrupt(EUSCI_A0_BASE,
+	    EUSCI_A_UART_RECEIVE_INTERRUPT);
+
+	  // Enable USCI_A0 RX interrupt
+	  EUSCI_A_UART_enableInterrupt(EUSCI_A0_BASE,
+	    EUSCI_A_UART_RECEIVE_INTERRUPT);                     // Enable interrupt
+
+	  __enable_interrupt();
+
 	trxRfSpiInterfaceInit(4);
 	cc112xSpiWriteReg(CC112X_DEV_ADDR,DevAdd, 1);
 
 	cc112xSpiReadReg(CC112X_DEV_ADDR,DeviceID, 1);
+	uint16_t i = 0;
+    for(i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+     sprintf(Jack,"%d\t0x%02X\t0x%02X\n", i, preferredSettings[i].data, preferredSettings[i].addr);
+     putstring(Jack);
+    }
 	int j=0;
+
 	while(1){
 
 	    j = 1;
