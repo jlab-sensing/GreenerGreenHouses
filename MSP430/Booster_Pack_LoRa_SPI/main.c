@@ -19,9 +19,11 @@
  * main.c
  */
 uint16_t i;
-uint8_t RXData = 0, TXData = 0;
+uint16_t RXData = 0, TXData = 0;
 uint8_t check = 0;
 
+#define PARTNUM_ADD      0x8F
+#define EXTENDED_ADD     0x2F
 
 void putc(char c){
  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,c);
@@ -37,6 +39,27 @@ void puts(char *s){
     }
 }
 
+uint8_t get_device_number(uint8_t* pData, int len) {
+    uint8_t readVal;
+    //0x8000 leftmost READ REQUEST bit
+    uint16_t TXRequest = 0x8000 | (EXTENDED_ADD << 8) | PARTNUM_ADD;
+
+    EUSCI_B_SPI_transmitData(EUSCI_B0_BASE,TXRequest);
+    readVal = EUSCI_B_SPI_receiveData(EUSCI_B0_BASE);
+    //while(!(UCB0IFG & UCRXIFG));
+
+    EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, (EXTENDED_ADD << 8) | PARTNUM_ADD);
+    //while(!(UCB0IFG & UCRXIFG));
+
+    int i;
+    for(i = 0; i < len; i++) {
+        EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, 0);
+        //while(!(UCB0IFG & UCRXIFG));
+        EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, *pData);
+        *pData++;
+    }
+    return readVal;
+}
 
 
 
@@ -205,7 +228,7 @@ int main(void)
 	        EUSCI_B_SPI_RECEIVE_INTERRUPT);
 
 	    //Wait for slave to initialize
-	    __delay_cycles(100);
+	    //__delay_cycles(100);
 
 	    TXData = 0x2F8F;                             // Holds TX data
 
@@ -213,9 +236,13 @@ int main(void)
 	    while (!EUSCI_B_SPI_getInterruptStatus(EUSCI_B0_BASE,
 	        EUSCI_B_SPI_TRANSMIT_INTERRUPT)) ;
 
-	    //Transmit Data to slave
-	    EUSCI_B_SPI_transmitData(EUSCI_B0_BASE,TXData);
-       // DeviceID1 = EUSCI_B_SPI_receiveData(EUSCI_B0_BASE);
+//	    //Transmit Data to slave
+//	    EUSCI_B_SPI_transmitData(EUSCI_B0_BASE,TXData);
+//	    DeviceID1 = EUSCI_B_SPI_receiveData(EUSCI_B0_BASE);
+
+	    uint8_t readVal;
+	    unsigned char deviceNum;
+	    readVal = get_device_number(&deviceNum, 1);
 
 
 //	    for(i = 0; i < 8; i++){
