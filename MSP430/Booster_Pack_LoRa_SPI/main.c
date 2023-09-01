@@ -46,15 +46,15 @@ uint8_t get_device_number(uint8_t* pData, int len) {
 
     EUSCI_B_SPI_transmitData(EUSCI_B0_BASE,TXRequest);
     readVal = EUSCI_B_SPI_receiveData(EUSCI_B0_BASE);
-    while(!(UCB0IFG & UCRXIFG));
+    //while(!(UCB0IFG & UCRXIFG));
 
     EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, (EXTENDED_ADD << 8) | PARTNUM_ADD);
-    while(!(UCB0IFG & UCRXIFG));
+    //while(!(UCB0IFG & UCRXIFG));
 
     int i;
     for(i = 0; i < len; i++) {
         EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, 0);
-        while(!(UCB0IFG & UCRXIFG));
+        //while(!(UCB0IFG & UCRXIFG));
         EUSCI_B_SPI_transmitData(EUSCI_B0_BASE, *pData);
         *pData++;
     }
