@@ -27,6 +27,7 @@ main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/e
 main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/hw_memmap.h
 main.obj: C:/ti/ccs1240/ccs/ccs_base/msp430/include/msp430fr5xx_6xxgeneric.h
 main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h
+main.obj: ../FR5969_CC1125.h
 main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/gpio.h
 main.obj: C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/cs.h
 main.obj: C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h
@@ -85,6 +86,8 @@ C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/hw_memmap.h
 C:/ti/ccs1240/ccs/ccs_base/msp430/include/msp430fr5xx_6xxgeneric.h:
 
 C:/ti/ccs1240/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h:
+
+../FR5969_CC1125.h:
 
 C:/Users/matth/Documents/GreenerGreenHouses/MSP430/Final_SPI_Attempt/gpio.h:
 

@@ -9,6 +9,7 @@ CMD_SRCS += \
 ../lnk_msp430fr5969.cmd 
 
 C_SRCS += \
+../FR5969_CC1125.c \
 ../cc112x_spi.c \
 ../cs.c \
 ../eusci_a_uart.c \
@@ -17,6 +18,7 @@ C_SRCS += \
 ../main.c 
 
 C_DEPS += \
+./FR5969_CC1125.d \
 ./cc112x_spi.d \
 ./cs.d \
 ./eusci_a_uart.d \
@@ -25,6 +27,7 @@ C_DEPS += \
 ./main.d 
 
 OBJS += \
+./FR5969_CC1125.obj \
 ./cc112x_spi.obj \
 ./cs.obj \
 ./eusci_a_uart.obj \
@@ -33,6 +36,7 @@ OBJS += \
 ./main.obj 
 
 OBJS__QUOTED += \
+"FR5969_CC1125.obj" \
 "cc112x_spi.obj" \
 "cs.obj" \
 "eusci_a_uart.obj" \
@@ -41,6 +45,7 @@ OBJS__QUOTED += \
 "main.obj" 
 
 C_DEPS__QUOTED += \
+"FR5969_CC1125.d" \
 "cc112x_spi.d" \
 "cs.d" \
 "eusci_a_uart.d" \
@@ -49,6 +54,7 @@ C_DEPS__QUOTED += \
 "main.d" 
 
 C_SRCS__QUOTED += \
+"../FR5969_CC1125.c" \
 "../cc112x_spi.c" \
 "../cs.c" \
 "../eusci_a_uart.c" \

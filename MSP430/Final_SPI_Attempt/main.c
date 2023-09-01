@@ -3,11 +3,11 @@
 #include <msp430.h> 
 #include "hal_spi_rf_trxeb.h"
 #include "cc112x_spi.h"
-#include "hal_spi_rf_trxeb.h"
 #include "stdint.h"
 #include "smartRF1125.h"
 #include <stdio.h>
 #include <eusci_a_uart.h>
+#include "FR5969_CC1125.h"
 #include <gpio.h>
 #include <hw_memmap.h>
 #include <cs.h>
@@ -17,30 +17,6 @@
 //#include <wdt_a.h>
 //#include <driverlib/MSP430FR5xx_6xx/cs.h>
 
-/*
-* transmits character over UART TX transmission
-* param: c, char type, single character to transmit
-*/
-void putcha(char c){
-
- EUSCI_A_UART_transmitData(EUSCI_A0_BASE,c);
-
-}
-
-/*
-* transmits whole string over UART TX transmission, one character at a time using
-* putcha
-* param: *s, char pointer to string to transmit
-*/
-void putstring(char *s){
-    int i= 0;
-    int length = ((strlen(s)) - 1);
-
-    for(i = length; i >= 0; i--)
-    {
-        putcha(s[length - i]);
-    }
-}
 
 
 uint8_t DeviceID[8] = {0};		
@@ -123,20 +99,23 @@ int main(void)
 	//initialize SPI block, set 4 as prescaller for SCLK
 	trxRfSpiInterfaceInit(4);
 
-	//write custom slave address to device address register, length 1 (8bits)
-	cc112xSpiWriteReg(CC112X_DEV_ADDR,DevAdd, 1);
+//	//write custom slave address to device address register, length 1 (8bits)
+//	cc112xSpiWriteReg(CC112X_DEV_ADDR,DevAdd, 1);
+//
+//	//read from device address register to verify corrrect slave address set
+//	cc112xSpiReadReg(CC112X_DEV_ADDR,DeviceID, 1);
+//	uint16_t i = 0;
 
-	//read from device address register to verify corrrect slave address set
-	cc112xSpiReadReg(CC112X_DEV_ADDR,DeviceID, 1);
-	uint16_t i = 0;
-
-	//print BOOSTXL CC1125 register settings to serial terminal for correct settings verification
-    for(i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
-     sprintf(Jack,"%d\t0x%02X\t0x%02X\n", i, preferredSettings[i].data, preferredSettings[i].addr);
-     putstring(Jack);
-    }
+//	//print BOOSTXL CC1125 register settings to serial terminal for correct settings verification
+//    for(i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+//     sprintf(Jack,"%d\t0x%02X\t0x%02X\n", i, preferredSettings[i].data, preferredSettings[i].addr);
+//     putstring(Jack);
+//    }
 
 	//infinite while loop program trap
+
+	ConfigRegisters();
+
 	int j=0;
 
 	while(1){

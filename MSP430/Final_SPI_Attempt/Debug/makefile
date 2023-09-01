@@ -10,6 +10,7 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./FR5969_CC1125.obj" \
 "./cc112x_spi.obj" \
 "./cs.obj" \
 "./eusci_a_uart.obj" \
@@ -148,8 +149,8 @@ Final_SPI_Attempt.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "cc112x_spi.obj" "cs.obj" "eusci_a_uart.obj" "gpio.obj" "hal_spi_rf_trxeb.obj" "main.obj" 
-	-$(RM) "cc112x_spi.d" "cs.d" "eusci_a_uart.d" "gpio.d" "hal_spi_rf_trxeb.d" "main.d" 
+	-$(RM) "FR5969_CC1125.obj" "cc112x_spi.obj" "cs.obj" "eusci_a_uart.obj" "gpio.obj" "hal_spi_rf_trxeb.obj" "main.obj" 
+	-$(RM) "FR5969_CC1125.d" "cc112x_spi.d" "cs.d" "eusci_a_uart.d" "gpio.d" "hal_spi_rf_trxeb.d" "main.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
