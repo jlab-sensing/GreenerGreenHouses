@@ -54,7 +54,20 @@ int main(int argc, char *argv[]){
     
     registerConfig();
     
+    manualCalibration();
+    trxSpiCmdStrobe(CC112X_SRX);
+    
     rfStatus_t status = 0;
+    uint8 readByte;
+    printf("\n\n\n");
+    // Read ALL registers from radio
+    printf("Reading ALL registers\n");
+    for(uint16 i = 0; i < (sizeof(allSettings)/sizeof(registerSetting_t)); i++) {
+        status = cc112xSpiReadReg(allSettings[i].addr, &readByte, 1);
+        printf("[0x%04X]\t0x%02X\t0x%02X\n", allSettings[i].addr, readByte, status);
+    }
+    printf("\n\n\n");
+    
     uint16 address = 0x00;
     uint8 rxData[SPI_BUFFER_SIZE];
     for (int i = 0; i < sizeof(rxData); i++) rxData[i] = 0;
@@ -70,15 +83,26 @@ int main(int argc, char *argv[]){
         // printf("TX status: %X\nRX status: %X\n", cc112xGetTxStatus(), cc112xGetRxStatus());
         
         
-        status = cc112xSpiReadReg(address, rxData, 1);
-        if (address >= 0x2FD9){
-            address = 0x00;
-        }else{
-            address++;
-        }
+        // status = cc112xSpiReadReg(address, rxData, 1);
+        // if (address >= 0x2FD9){
+            // address = 0x00;
+        // }else{
+            // address++;
+        // }
         
-        printf("[0x%02X] status = 0x%02X\trxData = 0x%02X\n", address, status, rxData[0]);
+        // printf("[0x%02X] status = 0x%02X\trxData = 0x%02X\n", address, status, rxData[0]);
         
+        status = cc112xGetRxStatus();
+        printf("GetRxStatus status = 0x%02X\n", status);
+        uint8_t rxStatus_chip;
+        uint8_t rxStatus_state;
+        uint8_t rxStatus_rxfifobytes;
+        rxStatus_chip = status >> 7
+        rxStatus_state;
+        rxStatus_rxfifobytes;
+        printf("\tCHIP_RDY | STATE[2:0] | FIFO_BYTES_AVAILABLE (available bytes in the RX FIFO\n");
+        status = cc112xSpiReadRxFifo(rxData, length);
+        printf("ReadRxFifo status = 0x%02X\n", status);
         sleep(1);
     }
 
