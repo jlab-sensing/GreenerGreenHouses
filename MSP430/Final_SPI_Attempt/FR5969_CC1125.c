@@ -274,6 +274,120 @@ void ConfigRegisters(uint8_t MODE)
                 putstring("Done configuring Tx registers.\n");
         break;
 
+    case PACKET_MODE:
+
+        putstring("Configuring CC1125 for packet Rx/Tx mode\r\n");
+        // Reset radio
+        putstring("Resetting radio.\n");
+        status = trxSpiCmdStrobe(CC112X_SRES);
+        sprintf(Msg, "Status byte: 0x%02X\n", status);
+        putstring(Msg);
+        memset(Msg, 0, MSG_LENGTH);
+        // Wait for reset
+        //
+        //         for(i = 0; i <= 500000;i++){
+        //             NOP();
+        //         }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+        putstring("Reading initial register states: \n");
+        putstring("\r\n");
+        for (i = 0;
+                i < (sizeof(ETSI_CAT1_869_S1_PacketTxRx) / sizeof(registerSetting_t));
+                i++)
+        {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+            sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_PacketTxRx[i].data);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+            status = cc112xSpiReadReg(ETSI_CAT1_869_S1_PacketTxRx[i].addr, &readByte,
+                                      1);
+            sprintf(Msg, "value = 0x%02X\t", readByte);
+
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            if (readByte == ETSI_CAT1_869_S1_PacketTxRx[i].data)
+            {
+                putstring("OK\n");
+
+            }
+            else
+            {
+
+                putstring("UNEXPECTED REGISTER VALUE\n");
+
+            }
+        }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+        // Write registers to radio
+        putstring("Writing register values based on MODE selection\n");
+        putstring("MODE: RX_MODE 0\n");
+        putstring("      TX_MODE 1\r\n\r\n");
+
+        for (i = 0;i < (sizeof(ETSI_CAT1_869_S1_PacketTxRx) / sizeof(registerSetting_t)); i++)
+        {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            writeByte = ETSI_CAT1_869_S1_PacketTxRx[i].data;
+            sprintf(Msg, "writeByte = 0x%02X\t", writeByte);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            status = cc112xSpiWriteReg(ETSI_CAT1_869_S1_PacketTxRx[i].addr, &writeByte,
+                                       1);
+            sprintf(Msg, "status = 0x%02X\n", status);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+        }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+              putstring("==========================================================\r\n");
+        // Read registers from radio
+        putstring("Reading registers after write to ensure correct  Tx configuration\r\n");
+        putstring("\r\n");
+
+        for (i = 0;
+                i < (sizeof(ETSI_CAT1_869_S1_PacketTxRx) / sizeof(registerSetting_t));
+                i++)
+        {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_PacketTxRx[i].data);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            status = cc112xSpiReadReg(ETSI_CAT1_869_S1_PacketTxRx[i].addr, &readByte, 1);
+            sprintf(Msg, "value = 0x%02X\t", readByte);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            if (readByte == ETSI_CAT1_869_S1_PacketTxRx[i].data)
+            {
+                putstring("OK\n");
+
+            }
+            else
+            {
+                putstring("UNEXPECTED REGISTER VALUE\n");
+
+            }
+        }
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+
+        putstring("Done configuring packet Rx/Tx registers.\n");
+        break;
     default:
 
         break;

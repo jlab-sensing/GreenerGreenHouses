@@ -10,8 +10,9 @@
 
 #include <stdint.h>
 
-#define RX_MODE 0
-#define TX_MODE 1
+#define RX_MODE 0 //continuous Rx
+#define TX_MODE 1 //continuous Tx
+#define PACKET_MODE 2 //packet mode, same for Rx and Tx
 
 void ConfigRegisters(uint8_t MODE);
 
