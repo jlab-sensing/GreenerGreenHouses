@@ -10,6 +10,7 @@ CMD_SRCS += \
 
 C_SRCS += \
 ../FR5969_CC1125.c \
+../Uart.c \
 ../cc112x_spi.c \
 ../cs.c \
 ../eusci_a_uart.c \
@@ -19,6 +20,7 @@ C_SRCS += \
 
 C_DEPS += \
 ./FR5969_CC1125.d \
+./Uart.d \
 ./cc112x_spi.d \
 ./cs.d \
 ./eusci_a_uart.d \
@@ -28,6 +30,7 @@ C_DEPS += \
 
 OBJS += \
 ./FR5969_CC1125.obj \
+./Uart.obj \
 ./cc112x_spi.obj \
 ./cs.obj \
 ./eusci_a_uart.obj \
@@ -37,6 +40,7 @@ OBJS += \
 
 OBJS__QUOTED += \
 "FR5969_CC1125.obj" \
+"Uart.obj" \
 "cc112x_spi.obj" \
 "cs.obj" \
 "eusci_a_uart.obj" \
@@ -46,6 +50,7 @@ OBJS__QUOTED += \
 
 C_DEPS__QUOTED += \
 "FR5969_CC1125.d" \
+"Uart.d" \
 "cc112x_spi.d" \
 "cs.d" \
 "eusci_a_uart.d" \
@@ -55,6 +60,7 @@ C_DEPS__QUOTED += \
 
 C_SRCS__QUOTED += \
 "../FR5969_CC1125.c" \
+"../Uart.c" \
 "../cc112x_spi.c" \
 "../cs.c" \
 "../eusci_a_uart.c" \

@@ -1,4 +1,5 @@
 "./FR5969_CC1125.obj"
+"./Uart.obj"
 "./cc112x_spi.obj"
 "./cs.obj"
 "./eusci_a_uart.obj"

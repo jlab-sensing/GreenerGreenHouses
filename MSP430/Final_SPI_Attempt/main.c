@@ -6,7 +6,8 @@
 #include "stdint.h"
 #include "smartRF1125.h"
 #include <stdio.h>
-#include <eusci_a_uart.h>
+#include <Uart.h>
+
 #include "FR5969_CC1125.h"
 #include <gpio.h>
 #include <hw_memmap.h>

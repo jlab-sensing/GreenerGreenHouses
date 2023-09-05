@@ -10,41 +10,16 @@
 #include "stdint.h"
 #include "smartRF1125.h"
 #include <stdio.h>
-#include <eusci_a_uart.h>
+#include "Uart.h"
 #include <gpio.h>
 #include <hw_memmap.h>
 #include <cs.h>
 #include <string.h>
 
+
 #define MSG_LENGTH 256
 char Msg[MSG_LENGTH] = {0};
 
-
-/*
-* transmits character over UART TX transmission
-* param: c, char type, single character to transmit
-*/
-void putcha(char c){
-
- EUSCI_A_UART_transmitData(EUSCI_A0_BASE,c);
-
-}
-
-
-/*
-* transmits whole string over UART TX transmission, one character at a time using
-* putcha
-* param: *s, char pointer to string to transmit
-*/
-void putstring(char *s){
-    int i= 0;
-    int length = ((strlen(s)) - 1);
-
-    for(i = length; i >= 0; i--)
-    {
-        putcha(s[length - i]);
-    }
-}
 
 void ConfigRegisters(void){
 

@@ -9,9 +9,6 @@
 #define FR5969_CC1125_H_
 
 
-void putcha(char c);
-
-void putstring(char *s);
 void ConfigRegisters(void);
 
 #endif /* FR5969_CC1125_H_ */

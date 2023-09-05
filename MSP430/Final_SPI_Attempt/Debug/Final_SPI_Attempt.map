@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Fri Sep  1 16:46:02 2023
+>> Linked Tue Sep  5 10:18:25 2023
 
 OUTPUT FILE NAME:   <Final_SPI_Attempt.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 00004400
@@ -139,7 +139,7 @@ section   page    origin      length       input sections
                   00004494    0000002e                            : s_copysign.c.obj (.text:copysign)
                   000044c2    0000002c     MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib : mpu_init.o (.text:__mpu_init)
                   000044ee    0000002c     rts430x_lc_rd_eabi.lib : mult3264_f5hw.asm.obj (.text:__mpyull)
-                  0000451a    0000002c     FR5969_CC1125.obj (.text:putstring)
+                  0000451a    0000002c     Uart.obj (.text:putstring)
                   00004546    0000002c     hal_spi_rf_trxeb.obj (.text:trxSpiCmdStrobe)
                   00004572    00000028     rts430x_lc_rd_eabi.lib : fixdi.c.obj (.text:__mspabi_fixdi)
                   0000459a    00000026                            : memccpy.c.obj (.text:memccpy)
@@ -161,7 +161,7 @@ section   page    origin      length       input sections
                   0000472c    0000000e                            : strlen.c.obj (.text:strlen)
                   0000473a    0000000c     eusci_a_uart.obj (.text:EUSCI_A_UART_clearInterrupt)
                   00004746    0000000c     rts430x_lc_rd_eabi.lib : fltid.c.obj (.text:__mspabi_fltid)
-                  00004752    0000000c     FR5969_CC1125.obj (.text:putcha)
+                  00004752    0000000c     Uart.obj (.text:putcha)
                   0000475e    0000000a     rts430x_lc_rd_eabi.lib : abs.c.obj (.text:abs)
                   00004768    00000006     eusci_a_uart.obj (.text:EUSCI_A_UART_enable)
                   0000476e    00000006     rts430x_lc_rd_eabi.lib : exit.c.obj (.text:abort)
@@ -337,13 +337,14 @@ MODULE SUMMARY
        Module                       code    ro data   rw data
        ------                       ----    -------   -------
     .\
-       FR5969_CC1125.obj            848     380       256    
+       FR5969_CC1125.obj            792     380       256    
        cs.obj                       502     0         8      
        hal_spi_rf_trxeb.obj         382     0         0      
        eusci_a_uart.obj             240     0         0      
        main.obj                     214     0         0      
        cc112x_spi.obj               152     0         0      
        gpio.obj                     114     28        0      
+       Uart.obj                     56      0         0      
     +--+----------------------------+-------+---------+---------+
        Total:                       2452    408       264    
                                                              
