@@ -15,4 +15,5 @@
 
 void ConfigRegisters(uint8_t MODE);
 
+void PollRx(uint8_t MODE);
 #endif /* FR5969_CC1125_H_ */

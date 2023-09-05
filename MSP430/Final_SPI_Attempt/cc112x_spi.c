@@ -205,7 +205,7 @@ rfStatus_t cc112xGetTxStatus(void)
  *            
  *            --------------------------------------------------------------------------------
  *            |          |            |                                                      |
- *            | CHIP_RDY | STATE[2:0] | FIFO_BYTES_AVAILABLE (available bytes in the RX FIFO |
+ *            |      | FIFO_BYTES_AVAILABLE (available bytes in the RX FIFO |
  *            |          |            |                                                      |
  *            --------------------------------------------------------------------------------
  *

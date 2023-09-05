@@ -252,8 +252,7 @@ void ConfigRegisters(uint8_t MODE)
                     putstring(Msg);
                     memset(Msg, 0, MSG_LENGTH);
 
-                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte,
-                                              1);
+                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte, 1);
                     sprintf(Msg, "value = 0x%02X\t", readByte);
                     putstring(Msg);
                     memset(Msg, 0, MSG_LENGTH);

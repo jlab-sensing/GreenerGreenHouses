@@ -19,10 +19,10 @@
 //#include <driverlib/MSP430FR5xx_6xx/cs.h>
 
 
-
-uint8_t DeviceID[8] = {0};		
+#define RXSIZE 256
+uint8_t RxBuff[RXSIZE] = {0};
 uint8_t DevAdd[1] = {0xA};		//Custom slave address for BOOSTXL CC1125 LoRa pack
-char Jack[512] = {0};			//Test char array for UART transmission
+
 
 uint8_t initSpi(void){
     /* Select Port J
@@ -96,7 +96,7 @@ uint8_t initSpi(void){
 
     return 1;
 }
-
+rfStatus_t s;
 //main
 int main(void)
 {
@@ -114,12 +114,17 @@ int main(void)
 
 	ConfigRegisters(TX_MODE);
 
+
 	//dummy variable for debug break-point
 	int j=0;
     //infinite while loop program trap
 	while(1){
-
-	    j = 1;
+	    if(cc112xGetRxStatus() == CC112X_STATE_RX){
+	            cc112xSpiReadRxFifo(RxBuff,CC112X_NUM_RXBYTES);
+	            putstring(RxBuff);
+	            putstring("\r\n");
+	            memset(RxBuff,0,RXSIZE);
+	        }
 	}
 
 
