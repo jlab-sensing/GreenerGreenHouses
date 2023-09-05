@@ -12,6 +12,8 @@
 */
 
 #include "Uart.h"
+
+
 void putcha(char c){
 
  EUSCI_A_UART_transmitData(EUSCI_A0_BASE,c);

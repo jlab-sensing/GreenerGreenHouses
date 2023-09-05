@@ -115,7 +115,7 @@ int main(void)
 
 	//infinite while loop program trap
 
-	ConfigRegisters();
+	ConfigRegisters(RX_MODE);
 
 	int j=0;
 
