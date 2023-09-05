@@ -16,220 +16,271 @@
 #include <cs.h>
 #include <string.h>
 
-
 #define MSG_LENGTH 256
-char Msg[MSG_LENGTH] = {0};
+char Msg[MSG_LENGTH] = { 0 };
 
+void ConfigRegisters(uint8_t MODE)
+{
 
-void ConfigRegisters(uint8_t MODE){
+    uint8_t writeByte;
+    uint8_t readByte;
+    uint16_t i;
+    rfStatus_t status;
 
-        uint8_t writeByte;
-        uint8_t readByte;
-        uint16_t i;
-        rfStatus_t status;
+    switch (MODE)
+    {
 
-        switch(MODE)
+    case RX_MODE:
+//            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++)
+//                {
+//                    sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Rx[i].data, ETSI_CAT1_869_S1_Rx[i].addr);
+//                    putstring(Msg);
+//                    memset(Msg,0,MSG_LENGTH);
+//                }
+
+        putstring("Configuring CC1125 for Continuous Rx Mode\r\n");
+        // Reset radio
+        putstring("Resetting radio.\n");
+        status = trxSpiCmdStrobe(CC112X_SRES);
+        sprintf(Msg, "Status byte: 0x%02X\n", status);
+        putstring(Msg);
+        memset(Msg, 0, MSG_LENGTH);
+        // Wait for reset
+        //
+        //         for(i = 0; i <= 500000;i++){
+        //             NOP();
+        //         }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+        putstring("Reading initial register states: \n");
+        putstring("\r\n");
+        for (i = 0;
+                i < (sizeof(ETSI_CAT1_869_S1_Rx) / sizeof(registerSetting_t));
+                i++)
         {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+            sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_Rx[i].data);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+            status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Rx[i].addr, &readByte,
+                                      1);
+            sprintf(Msg, "value = 0x%02X\t", readByte);
 
-        case RX_MODE:
-            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++)
-                {
-                    sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Rx[i].data, ETSI_CAT1_869_S1_Rx[i].addr);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
 
+            if (readByte == ETSI_CAT1_869_S1_Rx[i].data)
+            {
+                putstring("OK\n");
 
-                }
+            }
+            else
+            {
 
+                putstring("UNEXPECTED REGISTER VALUE\n");
+
+            }
+        }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+        // Write registers to radio
+        putstring("Writing register values based on MODE selection\n");
+        putstring("MODE: RX_MODE 0\n");
+        putstring("      TX_MODE 1\r\n\r\n");
+
+        for (i = 0;i < (sizeof(ETSI_CAT1_869_S1_Rx) / sizeof(registerSetting_t)); i++)
+        {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            writeByte = ETSI_CAT1_869_S1_Rx[i].data;
+            sprintf(Msg, "writeByte = 0x%02X\t", writeByte);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            status = cc112xSpiWriteReg(ETSI_CAT1_869_S1_Rx[i].addr, &writeByte,
+                                       1);
+            sprintf(Msg, "status = 0x%02X\n", status);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+        }
+        putstring("\r\n");
+        putstring("==========================================================\r\n");
+              putstring("==========================================================\r\n");
+        // Read registers from radio
+        putstring("Reading registers after write to ensure correct configuration\r\n");
+        putstring("\r\n");
+
+        for (i = 0;
+                i < (sizeof(ETSI_CAT1_869_S1_Rx) / sizeof(registerSetting_t));
+                i++)
+        {
+            sprintf(Msg, "i = %d\t", i);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_Rx[i].data);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Rx[i].addr, &readByte,
+                                      1);
+            sprintf(Msg, "value = 0x%02X\t", readByte);
+            putstring(Msg);
+            memset(Msg, 0, MSG_LENGTH);
+
+            if (readByte == ETSI_CAT1_869_S1_Rx[i].data)
+            {
+                putstring("OK\n");
+
+            }
+            else
+            {
+                putstring("UNEXPECTED REGISTER VALUE\n");
+
+            }
+        }
+        putstring("==========================================================\r\n");
+        putstring("==========================================================\r\n");
+
+        putstring("Done configuring Rx registers.\n");
+        break;
+
+    case TX_MODE:
+
+        //            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++)
+        //                {
+        //                    sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Tx[i].data, ETSI_CAT1_869_S1_Tx[i].addr);
+        //                    putstring(Msg);
+        //                    memset(Msg,0,MSG_LENGTH);
+        //                }
+
+                putstring("Configuring CC1125 for Continuous Tx Mode\r\n");
                 // Reset radio
                 putstring("Resetting radio.\n");
                 status = trxSpiCmdStrobe(CC112X_SRES);
-                sprintf(Msg,"Status byte: 0x%02X\n", status);
+                sprintf(Msg, "Status byte: 0x%02X\n", status);
                 putstring(Msg);
-                memset(Msg,0,MSG_LENGTH);
+                memset(Msg, 0, MSG_LENGTH);
                 // Wait for reset
-      //
-      //         for(i = 0; i <= 500000;i++){
-      //             NOP();
-      //         }
-
-
-                putstring("Reading\n");
-                for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++) {
-                    sprintf(Msg,"i = %d\t", i);
+                //
+                //         for(i = 0; i <= 500000;i++){
+                //             NOP();
+                //         }
+                putstring("\r\n");
+                putstring("==========================================================\r\n");
+                putstring("==========================================================\r\n");
+                putstring("Reading initial register states: \n");
+                putstring("\r\n");
+                for (i = 0;
+                        i < (sizeof(ETSI_CAT1_869_S1_Tx) / sizeof(registerSetting_t));
+                        i++)
+                {
+                    sprintf(Msg, "i = %d\t", i);
                     putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-                    sprintf(Msg,"expect = 0x%02X\t", ETSI_CAT1_869_S1_Rx[i].data);
+                    memset(Msg, 0, MSG_LENGTH);
+                    sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_Tx[i].data);
                     putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Rx[i].addr, &readByte, 1);
-                    sprintf(Msg,"value = 0x%02X\t", readByte);
+                    memset(Msg, 0, MSG_LENGTH);
+                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte,
+                                              1);
+                    sprintf(Msg, "value = 0x%02X\t", readByte);
 
                     putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
+                    memset(Msg, 0, MSG_LENGTH);
 
-                    if (readByte == ETSI_CAT1_869_S1_Rx[i].data){
+                    if (readByte == ETSI_CAT1_869_S1_Tx[i].data)
+                    {
                         putstring("OK\n");
-
-                    }else{
-
-                       putstring("UNEXPECTED REGISTER VALUE\n");
 
                     }
-                }
+                    else
+                    {
 
-                // Write registers to radio
-                putstring("Writing\n");
-                for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++) {
-                    sprintf(Msg,"i = %d\t", i);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                    writeByte = ETSI_CAT1_869_S1_Rx[i].data;
-                    sprintf(Msg,"writeByte = 0x%02X\t", writeByte);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                    status = cc112xSpiWriteReg(ETSI_CAT1_869_S1_Rx[i].addr, &writeByte, 1);
-                    sprintf(Msg,"status = 0x%02X\n", status);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                }
-
-                // Read registers from radio
-                putstring("Reading\n");
-                for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++) {
-                    sprintf(Msg,"i = %d\t", i);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                    sprintf(Msg,"expect = 0x%02X\t", ETSI_CAT1_869_S1_Rx[i].data);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Rx[i].addr, &readByte, 1);
-                    sprintf(Msg,"value = 0x%02X\t", readByte);
-                    putstring(Msg);
-                    memset(Msg,0,MSG_LENGTH);
-
-                    if (readByte == ETSI_CAT1_869_S1_Rx[i].data){
-                        putstring("OK\n");
-
-                    }else{
                         putstring("UNEXPECTED REGISTER VALUE\n");
 
                     }
                 }
+                putstring("\r\n");
+                putstring("==========================================================\r\n");
+                putstring("==========================================================\r\n");
+                // Write registers to radio
+                putstring("Writing register values based on MODE selection\n");
+                putstring("MODE: RX_MODE 0\n");
+                putstring("      TX_MODE 1\r\n\r\n");
 
-                putstring("Done configuring Rx registers.\n");
-            break;
+                for (i = 0;i < (sizeof(ETSI_CAT1_869_S1_Tx) / sizeof(registerSetting_t)); i++)
+                {
+                    sprintf(Msg, "i = %d\t", i);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
-        case TX_MODE:
+                    writeByte = ETSI_CAT1_869_S1_Tx[i].data;
+                    sprintf(Msg, "writeByte = 0x%02X\t", writeByte);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
-            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++)
-                   {
-                       sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Tx[i].data, ETSI_CAT1_869_S1_Tx[i].addr);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
+                    status = cc112xSpiWriteReg(ETSI_CAT1_869_S1_Tx[i].addr, &writeByte,
+                                               1);
+                    sprintf(Msg, "status = 0x%02X\n", status);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
+                }
+                putstring("\r\n");
+                putstring("==========================================================\r\n");
+                      putstring("==========================================================\r\n");
+                // Read registers from radio
+                putstring("Reading registers after write to ensure correct  Tx configuration\r\n");
+                putstring("\r\n");
 
-                   }
+                for (i = 0;
+                        i < (sizeof(ETSI_CAT1_869_S1_Tx) / sizeof(registerSetting_t));
+                        i++)
+                {
+                    sprintf(Msg, "i = %d\t", i);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
-                   // Reset radio
-                   putstring("Resetting radio.\n");
-                   status = trxSpiCmdStrobe(CC112X_SRES);
-                   sprintf(Msg,"Status byte: 0x%02X\n", status);
-                   putstring(Msg);
-                   memset(Msg,0,MSG_LENGTH);
-                   // Wait for reset
-         //
-         //         for(i = 0; i <= 500000;i++){
-         //             NOP();
-         //         }
+                    sprintf(Msg, "expect = 0x%02X\t", ETSI_CAT1_869_S1_Tx[i].data);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
+                    status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte,
+                                              1);
+                    sprintf(Msg, "value = 0x%02X\t", readByte);
+                    putstring(Msg);
+                    memset(Msg, 0, MSG_LENGTH);
 
-                   putstring("Reading\n");
-                   for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++) {
-                       sprintf(Msg,"i = %d\t", i);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-                       sprintf(Msg,"expect = 0x%02X\t", ETSI_CAT1_869_S1_Tx[i].data);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-                       status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte, 1);
-                       sprintf(Msg,"value = 0x%02X\t", readByte);
+                    if (readByte == ETSI_CAT1_869_S1_Tx[i].data)
+                    {
+                        putstring("OK\n");
 
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
+                    }
+                    else
+                    {
+                        putstring("UNEXPECTED REGISTER VALUE\n");
 
-                       if (readByte == ETSI_CAT1_869_S1_Tx[i].data){
-                           putstring("OK\n");
+                    }
+                }
+                putstring("==========================================================\r\n");
+                putstring("==========================================================\r\n");
 
-                       }else{
+                putstring("Done configuring Tx registers.\n");
+        break;
 
-                          putstring("UNEXPECTED REGISTER VALUE\n");
+    default:
 
-                       }
-                   }
+        break;
+    }
 
-                   // Write registers to radio
-                   putstring("Writing\n");
-                   for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++) {
-                       sprintf(Msg,"i = %d\t", i);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                       writeByte = ETSI_CAT1_869_S1_Tx[i].data;
-                       sprintf(Msg,"writeByte = 0x%02X\t", writeByte);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                       status = cc112xSpiWriteReg(ETSI_CAT1_869_S1_Tx[i].addr, &writeByte, 1);
-                       sprintf(Msg,"status = 0x%02X\n", status);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                   }
-
-                   // Read registers from radio
-                   putstring("Reading\n");
-                   for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++) {
-                       sprintf(Msg,"i = %d\t", i);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                       sprintf(Msg,"expect = 0x%02X\t", ETSI_CAT1_869_S1_Tx[i].data);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                       status = cc112xSpiReadReg(ETSI_CAT1_869_S1_Tx[i].addr, &readByte, 1);
-                       sprintf(Msg,"value = 0x%02X\t", readByte);
-                       putstring(Msg);
-                       memset(Msg,0,MSG_LENGTH);
-
-                       if (readByte == ETSI_CAT1_869_S1_Tx[i].data){
-                           putstring("OK\n");
-
-                       }else{
-                           putstring("UNEXPECTED REGISTER VALUE\n");
-
-                       }
-                   }
-
-                   putstring("Done configuring Tx registers.\n");
-            break;
-
-        default:
-
-            break;
-        }
-
-
-          return;
-
-
+    return;
 
 }
-
 

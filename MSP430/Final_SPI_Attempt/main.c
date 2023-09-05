@@ -104,11 +104,17 @@ int main(void)
 
 	PM5CTL0 &= ~LOCKLPM5;
 
-	initSpi();
+	if(!initSpi()){
+	    return 0;
+	}
+	putstring("Test program for communication between MSP430FR5969 and CC1125 LoRa\r\n\r\n");
+	putstring("==========================================================\r\n");
+    putstring("==========================================================\r\n");
 
-	ConfigRegisters(RX_MODE);
 
-	//dummy variable for break-point
+	ConfigRegisters(TX_MODE);
+
+	//dummy variable for debug break-point
 	int j=0;
     //infinite while loop program trap
 	while(1){
