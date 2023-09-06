@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Tue Sep  5 16:21:47 2023
+>> Linked Wed Sep  6 13:35:20 2023
 
 OUTPUT FILE NAME:   <Final_SPI_Attempt.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 00004400
@@ -333,8 +333,8 @@ SYSNMI     0    0000fffc    00000002
                   000138cc    000000ea                            : _printfi.c.obj (.text:__TI_printfi:_pproc_fwp___TI_printfi)
                   000139b6    000000d8                            : cmpd.c.obj (.text:__mspabi_cmpd)
                   00013a8e    000000c8                            : _printfi.c.obj (.text:__TI_printfi:_pproc_wstr___TI_printfi)
-                  00013b56    000000c8     main.obj (.text:initSpi)
-                  00013c1e    000000b0     main.obj (.text:main)
+                  00013b56    000000c2     Uart.obj (.text:InitUart)
+                  00013c18    000000b6     main.obj (.text:main)
                   00013cce    000000a6     rts430x_lc_rd_eabi.lib : _printfi.c.obj (.text:__TI_printfi:_pproc_str___TI_printfi)
                   00013d74    000000a6                            : s_frexp.c.obj (.text:frexp)
                   00013e1a    0000009e                            : fltlid.c.obj (.text:__mspabi_fltlid)
@@ -348,13 +348,13 @@ MODULE SUMMARY
        ------                       ----    -------   -------
     .\
        FR5969_CC1125.obj            2508    1324      256    
-       main.obj                     782     156       513    
+       main.obj                     588     156       513    
        cs.obj                       502     0         8      
        hal_spi_rf_trxeb.obj         382     0         0      
+       Uart.obj                     250     0         0      
        eusci_a_uart.obj             240     0         0      
        cc112x_spi.obj               176     0         0      
        gpio.obj                     114     28        0      
-       Uart.obj                     56      0         0      
     +--+----------------------------+-------+---------+---------+
        Total:                       4760    1508      777    
                                                              
@@ -831,6 +831,7 @@ address   name
 00000147  GCCTL1_H                                  
 00000146  GCCTL1_L                                  
 000046a6  GPIO_setAsPeripheralModuleFunctionInputPin
+00013b56  InitUart                                  
 000004c4  MAC                                       
 000004da  MAC32H                                    
 000004db  MAC32H_H                                  
@@ -1399,10 +1400,9 @@ ffffffff  __c_args__
 00004400  fram_rx_start                             
 00013d74  frexp                                     
 00013d74  frexpl                                    
-00013b56  initSpi                                   
 000132c6  ldexp                                     
 000132c6  ldexpl                                    
-00013c1e  main                                      
+00013c18  main                                      
 00004e9c  memccpy                                   
 00004fbe  memcpy                                    
 00013fe2  memset                                    
@@ -2375,8 +2375,8 @@ address   name
 000132c6  scalbnl                                   
 00013568  CS_setDCOFreq                             
 000139b6  __mspabi_cmpd                             
-00013b56  initSpi                                   
-00013c1e  main                                      
+00013b56  InitUart                                  
+00013c18  main                                      
 00013d74  frexp                                     
 00013d74  frexpl                                    
 00013e1a  __mspabi_fltlid                           

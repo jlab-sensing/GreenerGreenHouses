@@ -406,16 +406,16 @@ void SendTx(){
     //Mock Temp: 72 -> 0100 1000
     //Mock Humidity: 66 -> 0100 0010
 
-    uint8_t CmdByte = 0x0;
-    CmdByte = 47;
+
+    uint8_t CmdByte = MSG_LENGTH;
     TxBuffer[0] = DEV_ID_1;
     TxBuffer[1] = 0b11111111;
     TxBuffer[2] = 0b11111100;
     TxBuffer[3] = 0b00000000;
 
     //configure packet length register
-    cc112xSpiWriteReg(CC112X_PKT_LEN,TX_MSG_SIZE, 1);
-    cc112xSpiWriteTxFifo(TxBuffer, len)
+    cc112xSpiWriteReg(CC112X_PKT_LEN,&CmdByte, 1);
+  //  cc112xSpiWriteTxFifo(TxBuffer, len)
 
     // Fill up the TX FIFO
 
