@@ -261,7 +261,8 @@ int main(void)
 	                {
 	                    SerialMsg[j] = (char)RxBuff[j];
 	                }
-
+                    
+                    //print the message received, and the size of the RX buffer
 	                putstring("RX RECEIVED MSG:");
 	                putstring(SerialMsg);
 	                putstring("\r\n");
