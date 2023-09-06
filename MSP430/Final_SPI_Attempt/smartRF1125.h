@@ -125,7 +125,7 @@ static const registerSetting_t ETSI_CAT1_869_S1_Tx[] = {
 };
 
 //Packet mode preferred register settings
-static const registerSetting_t preferredSettings[] = {
+static const registerSetting_t ETSI_CAT1_869_S1_PacketTxRx[] = {
     {CC112X_IOCFG3,         0xB0},
     {CC112X_IOCFG2,         0x06},
     {CC112X_IOCFG1,         0xB0},

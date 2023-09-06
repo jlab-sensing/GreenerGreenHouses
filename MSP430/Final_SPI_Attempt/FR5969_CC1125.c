@@ -408,14 +408,17 @@ void SendTx(){
 
     uint8_t CmdByte = 0x0;
     CmdByte = 47;
-
+    TxBuffer[0] = DEV_ID_1;
+    TxBuffer[1] = 0b11111111;
+    TxBuffer[2] = 0b11111100;
+    TxBuffer[3] = 0b00000000;
 
     //configure packet length register
-    cc112xSpiWriteReg(CC112X_PKT_LEN, &CmdByte, 1);
-
+    cc112xSpiWriteReg(CC112X_PKT_LEN,TX_MSG_SIZE, 1);
+    cc112xSpiWriteTxFifo(TxBuffer, len)
 
     // Fill up the TX FIFO
-    cc112xSpiWriteTxFifo(CmdByte, );
+
 
     trxSpiCmdStrobe(CC112X_STX);
 
