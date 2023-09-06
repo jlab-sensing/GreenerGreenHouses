@@ -10,8 +10,22 @@
 #define UART_H_
 
 #include <eusci_a_uart.h>
+#include <string.h>//Essential includes
+#include <msp430.h>
+#include "hal_spi_rf_trxeb.h"
+#include "cc112x_spi.h"
+#include "stdint.h"
+#include "smartRF1125.h"
+#include <stdio.h>
+#include <Uart.h>
+
+#include "FR5969_CC1125.h"
+#include <gpio.h>
+#include <hw_memmap.h>
+#include <cs.h>
 #include <string.h>
 
+uint8_t InitUart(void);
 /*
 * transmits character over UART TX transmission
 * param: c, char type, single character to transmit

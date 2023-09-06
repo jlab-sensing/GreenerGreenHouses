@@ -18,8 +18,8 @@
 #include <string.h>
 
 #define MSG_LENGTH 256
-#define TX_MSG_SIZE 48
-#define DEV_ID_1 0xABCD
+#define TX_MSG_SIZE 4
+#define DEV_ID_1 0b0110
 uint8_t TxBuffer[TX_MSG_SIZE] = {0};
 char Msg[MSG_LENGTH] = { 0 };
 
@@ -408,8 +408,7 @@ void SendTx(){
 
     uint8_t CmdByte = 0x0;
     CmdByte = 47;
-//    uint8_t FIFO_SIZE = 500;
-//    uint8_t TxData[FIFO_SIZE] = {0};
+
 
     //configure packet length register
     cc112xSpiWriteReg(CC112X_PKT_LEN, &CmdByte, 1);
