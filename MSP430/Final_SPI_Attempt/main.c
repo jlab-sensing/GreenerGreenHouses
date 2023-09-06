@@ -260,6 +260,7 @@ int main(void)
 	                for(j = 0; j < RxLength; j++)
 	                {
 	                    SerialMsg[j] = (char)RxBuff[j];
+
 	                }
 
 	                putstring("RX RECEIVED MSG:");

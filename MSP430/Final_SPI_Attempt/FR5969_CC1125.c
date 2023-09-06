@@ -15,8 +15,12 @@
 #include <hw_memmap.h>
 #include <cs.h>
 #include <string.h>
+#include <string.h>
 
 #define MSG_LENGTH 256
+#define TX_MSG_SIZE 48
+#define DEV_ID_1 0xABCD
+uint8_t TxBuffer[TX_MSG_SIZE] = {0};
 char Msg[MSG_LENGTH] = { 0 };
 
 void ConfigRegisters(uint8_t MODE)
@@ -397,3 +401,23 @@ void ConfigRegisters(uint8_t MODE)
 
 }
 
+void SendTx(){
+    //Mock DevID: 1 -> 0001
+    //Mock Temp: 72 -> 0100 1000
+    //Mock Humidity: 66 -> 0100 0010
+
+    uint8_t CmdByte = 0x0;
+    CmdByte = 47;
+//    uint8_t FIFO_SIZE = 500;
+//    uint8_t TxData[FIFO_SIZE] = {0};
+
+    //configure packet length register
+    cc112xSpiWriteReg(CC112X_PKT_LEN, &CmdByte, 1);
+
+
+    // Fill up the TX FIFO
+    cc112xSpiWriteTxFifo(CmdByte, );
+
+    trxSpiCmdStrobe(CC112X_STX);
+
+}
