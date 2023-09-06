@@ -14,6 +14,10 @@
 #define TX_MODE 1 //continuous Tx
 #define PACKET_MODE 2 //packet mode, same for Rx and Tx
 
+/*
+ * Configure Registers: configures and sets registers found in CC1125 to correct modes given input
+ * Param: MODE, the mode with which you want to control the CC1125, RX, TX, or continuous PACKET mode
+*/
 void ConfigRegisters(uint8_t MODE);
 
 void SendTx();
