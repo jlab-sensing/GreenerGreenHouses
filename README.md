@@ -14,11 +14,9 @@ This repository contains concurrent work for the Greener Greenhouses research pr
 
 - **RH_T_Replacement_Board**
 
-    Contains .ino test harness and data storage files for HDC2021 sensor testing using Arduino
+    Contains .ino test harness and data storage files for HDC2021 sensor testing using Arduino. Also contains Eagle hardware files for the GGH RH/T replacement board
     
-- **Sensor Power Comparison**
 
-    Power consumption models for temperature & humidity sensor comparison, as well as CCS project for power trace measurement on MSP430 programs
 
 - **BeagleBoneBlack**
 
