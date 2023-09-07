@@ -119,8 +119,10 @@ static void manualCalibration(void) {
     }
 }
 
+#define PACKET_LENGTH       50
 
 
+rfStatus_t s;
 
 //main
 int main(void)
@@ -139,70 +141,101 @@ int main(void)
 	putstring("==========================================================\r\n");
     putstring("==========================================================\r\n");
 
+    char TXBuff[] = "Test";
 
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
-	trxSpiCmdStrobe(CC112X_SRX);
-	//dummy variable for debug break-point
-	int j=0;
-    //infinite while loop program trap
-	while(1){
+	int j = 0;
+	uint8_t writeByte;
 
-	    //if the rx status is not idle
-	  //  s = cc112xGetRxStatus();
-	   // char status = (char)s;
-//	    if (j <= 100)
-//	    {
-//	    sprintf(Debug_Msg,"STATUS: 0x%x",s);
-//	    putstring(Debug_Msg);
-//	    putstring("\r\n");
-//
-//	    j++;
-//	    }
+	//trxSpiCmdStrobe(CC112X_STX);
+	trxSpiCmdStrobe(CC112X_SFTX);
+	//Fifo size = 15
+	cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+	trxSpiCmdStrobe(CC112X_STX);
 
-//	    if(cc112xGetRxStatus() == CC112X_STATE_RX){
-//	            //get number of bytes in CC1125 Rx Fifo
-//	            cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
-//	            putstring("RX FIFO SIZE:");
-//	            putcha(RxLength);
-//	            //read CC1125 Rx Fifo
-//	            cc112xSpiReadRxFifo(RxBuff,RxLength);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//	switch(test){
+//	    case RxPacketTestHarness:
+//	        trxSpiCmdStrobe(CC112X_SRX);
+//	        //dummy variable for debug break-point
+//	        int j=0;
+//	        //infinite while loop program trap
+//	        while(1){
+//	            if(cc112xGetRxStatus() == 0x9){
+//	                //get number of bytes in CC1125 Rx Fifo
+//	                cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
 //
-//	            //cast CC1125 Rx from int to char
-//	            for(j = 0; j < RxLength; j++)
-//	            {
-//	                SerialMsg[j] = (char)RxBuff[j];
-//	            }
-//	            putstring(SerialMsg);
-//	            putstring("\r\n");
-//	            memset(RxBuff,0,RXSIZE);
-//	        }
-	    if(cc112xGetRxStatus() == 0x9){
-	                //get number of bytes in CC1125 Rx Fifo
-	                cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
-//	                putstring("RX FIFO SIZE:");
-//	                putcha(RxLength);
+//	                //read CC1125 Rx Fifo
+//	                cc112xSpiReadRxFifo(RxBuff,RxLength);
+//
+//	                //cast CC1125 Rx from int to char
+//	                for(j = 0; j < RxLength; j++)
+//	                {
+//	                    SerialMsg[j] = (char)RxBuff[j];
+//
+//	                }
+//
+//                    //print the message received, and the size of the RX buffer
+//	                putstring("RX RECEIVED MSG:");
+//	                putstring(SerialMsg);
 //	                putstring("\r\n");
-	                //read CC1125 Rx Fifo
-	                cc112xSpiReadRxFifo(RxBuff,RxLength);
-
-	                //cast CC1125 Rx from int to char
-	                for(j = 0; j < RxLength; j++)
-	                {
-	                    SerialMsg[j] = (char)RxBuff[j];
-
-	                }
-                    
-                    //print the message received, and the size of the RX buffer
-	                putstring("RX RECEIVED MSG:");
-	                putstring(SerialMsg);
-	                putstring("\r\n");
-	                memset(RxBuff,0,RXSIZE);
-	                trxSpiCmdStrobe(CC112X_SRX);
-
-	            }
-	}
+//	                memset(RxBuff,0,RXSIZE);
+//	                trxSpiCmdStrobe(CC112X_SRX);
+//
+//	            }
+//	        }
+//	        break;
+//
+//	    case TxPacketTestHarness:
+//	        trxSpiCmdStrobe(CC112X_STX);
+//	        while(1){
+//	            s = cc112xGetRxStatus();
+//	            char status = (char)s;
+//	            if (j <= 100){
+//	                sprintf(Debug_Msg,"STATUS: 0x%x",s);
+//	                putstring(Debug_Msg);
+//	                putstring("\r\n");
+//	                j++;
+//	            }
+//	        }
+//    }
 
 
 	//return 0;
+
+	while(1);
 }

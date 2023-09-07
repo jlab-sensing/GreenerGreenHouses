@@ -148,8 +148,10 @@ static const registerSetting_t ETSI_CAT1_869_S1_PacketTxRx[] = {
 {CC112X_FIFO_CFG,          0x00},
 {CC112X_SETTLING_CFG,      0x03},
 {CC112X_FS_CFG,            0x12},
-{CC112X_PKT_CFG0,          0x20},
-{CC112X_PKT_LEN,           0xFF},
+//0x20 variable length mode, 0x00 for fixed length mode
+{CC112X_PKT_CFG0,          0x00},
+//set to 0x04, fixed packet length of "Test"
+{CC112X_PKT_LEN,           0x04},
 {CC112X_IF_MIX_CFG,        0x00},
 {CC112X_FREQOFF_CFG,       0x22},
 {CC112X_FREQ2,             0x56},
