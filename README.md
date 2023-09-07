@@ -14,11 +14,11 @@ This repository contains concurrent work for the Greener Greenhouses research pr
 
 - **RH_T_Replacement_Board**
 
-    Contains .ino test harness and data storage files for HDC2021 sensor testing using Arduino
+    Contains .ino test harness and data storage files for HDC2021 sensor testing using Arduino. Also contains Eagle hardware files for the GGH RH/T replacement board
     
-- **Sensor Power Comparison**
+- **LoRa_BoosterPack_Registers**
 
-    Power consumption models for temperature & humidity sensor comparison, as well as CCS project for power trace measurement on MSP430 programs
+    Currently only contains register names and settings for ETSI CAT1 869MHz. 1.2Kbps, 2-GFSK, 25Khz channel spacing, ETSI EN 300 220 CAT1 setting with the [CC1125 LoRa module Boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125). Register names and values exported from [SmartRFStudio v7.0](https://www.ti.com/tool/SMARTRFTM-STUDIO) for packet Tx/Rx.
 
 - **BeagleBoneBlack**
 
