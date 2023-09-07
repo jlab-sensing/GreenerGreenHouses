@@ -40,6 +40,8 @@ rfStatus_t s;
 #define FS_VCO2_INDEX 0
 #define FS_VCO4_INDEX 1
 #define FS_CHP_INDEX 2
+
+
 static void manualCalibration(void) {
 
     uint8 original_fs_cal2;
@@ -123,7 +125,7 @@ static void manualCalibration(void) {
 
 
 rfStatus_t s;
-
+char TXBuff[6] = {0};
 //main
 int main(void)
 {
@@ -141,25 +143,29 @@ int main(void)
 	putstring("==========================================================\r\n");
     putstring("==========================================================\r\n");
 
-    char TXBuff[6] = {0};
+  //  char TXBuff[6] = {0};
     char message[] = "Test";
     int packet_count = 0;
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
-//	int j = 0;
-//	uint8_t writeByte;
 
 	//flush FIFO stack
-	trxSpiCmdStrobe(CC112X_SFTX);
-
+	//trxSpiCmdStrobe(CC112X_SFTX);
+	int j = 0;
 	//transmit message "Test" with packet number after it every second
 	int i = 0;
-	for(i = 0; i < 10; i++) {
-	    sprintf(TXBuff, "%s %c\n", message, (char)packet_count);
+//    sprintf(TXBuff, "%s %c\n", message, (char)packet_count);
 
-	    cc112xSpiWriteTxFifo((uint8_t*)TXBuff, sizeof(TXBuff));
+	for(i = 0; i < 10; i++) {
+	    sprintf(TXBuff, "%s %d\n", message, packet_count);
+
+	    cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
 	    trxSpiCmdStrobe(CC112X_STX);
-	    __delay_cycles(16000000);
+	    memset(TXBuff,0,6);
+	     packet_count++;
+	    __delay_cycles(1000000);
+
+
 	}
 
 	while(1);
