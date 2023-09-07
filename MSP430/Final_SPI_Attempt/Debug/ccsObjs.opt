@@ -1,11 +1,13 @@
 "./FR5969_CC1125.obj"
+"./HDC2021.obj"
+"./MSP430_I2C.obj"
 "./Uart.obj"
 "./cc112x_spi.obj"
 "./cs.obj"
 "./eusci_a_uart.obj"
 "./gpio.obj"
 "./hal_spi_rf_trxeb.obj"
-"./main.obj"
+"./main_tester.obj"
 "../lnk_msp430fr5969.cmd"
 -llibmpu_init.a
 -llibmath.a

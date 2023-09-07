@@ -7,7 +7,8 @@
 #include "smartRF1125.h"
 #include <stdio.h>
 #include <Uart.h>
-
+#include "HDC2021.h"
+#include "MSP430_I2C.h"
 #include "FR5969_CC1125.h"
 #include <gpio.h>
 #include <hw_memmap.h>
@@ -149,12 +150,8 @@ int main(void)
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
 
-	//flush FIFO stack
-	//trxSpiCmdStrobe(CC112X_SFTX);
-	int j = 0;
 	//transmit message "Test" with packet number after it every second
 	int i = 0;
-//    sprintf(TXBuff, "%s %c\n", message, (char)packet_count);
 
 	for(i = 0; i < 10; i++) {
 	    sprintf(TXBuff, "%s %d\n", message, packet_count);
