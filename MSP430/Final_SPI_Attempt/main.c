@@ -122,12 +122,13 @@ static void manualCalibration(void) {
     }
 }
 
-#define PACKET_LENGTH       50
+enum modes {
+    RX_test,
+    TX_test
+};
 
+const int test_select = TX_test;
 
-rfStatus_t s;
-char TXBuff[6] = {0};
-//main
 int main(void)
 {
 	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
@@ -143,106 +144,70 @@ int main(void)
 	putstring("Test program for communication between MSP430FR5969 and CC1125 LoRa\r\n\r\n");
 	putstring("==========================================================\r\n");
     putstring("==========================================================\r\n");
+    if(test_select == TX_test) {
+        putstring("TX transmission test mode\r\n");
+    }
+    else if(test_seelct == RX_test) {
+        putstring("RX recieving test mode\r\n");
+    }
 
-  //  char TXBuff[6] = {0};
-    char message[] = "Test";
-    int packet_count = 0;
+
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
 
-	//transmit message "Test" with packet number after it every second
-	int i = 0;
+    switch(test_select) {
+        case TX_test:
+            char TXBuff[6] = {0};
+            char message[] = "Test";
+            int packet_count = 0;
+            //transmit message "Test" with packet number after it every second
+	        int i = 0;
 
-	for(i = 0; i < 10; i++) {
-	    sprintf(TXBuff, "%s %d\n", message, packet_count);
+	        for(i = 0; i < 10; i++) {
+	            sprintf(TXBuff, "%s %d\n", message, packet_count);
 
-	    cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
-	    trxSpiCmdStrobe(CC112X_STX);
-	    memset(TXBuff,0,6);
-	     packet_count++;
-	    __delay_cycles(1000000);
+	            cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+	            trxSpiCmdStrobe(CC112X_STX);
+	            memset(TXBuff,0,6);
+	            packet_count++;
+	            __delay_cycles(1000000);
+	        }
+            break;
+        
 
 
-	}
+        case RX_test:
+            trxSpiCmdStrobe(CC112X_SRX);
+	        //dummy variable for debug break-point
+	        int j=0;
+	        //infinite while loop program trap
+	        while(1){
+	            if(cc112xGetRxStatus() == 0x9){
+	                //get number of bytes in CC1125 Rx Fifo
+	                cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
+
+	                //read CC1125 Rx Fifo
+	                cc112xSpiReadRxFifo(RxBuff,RxLength);
+
+	                //cast CC1125 Rx from int to char
+	                for(j = 0; j < RxLength; j++)
+	                {
+	                    SerialMsg[j] = (char)RxBuff[j];
+
+	                }
+
+                   //print the message received, and the size of the RX buffer
+	                putstring("RX RECEIVED MSG:");
+	                putstring(SerialMsg);
+	                putstring("\r\n");
+	                memset(RxBuff,0,RXSIZE);
+	                trxSpiCmdStrobe(CC112X_SRX);
+
+	            }
+	        }
+	        break;
+    }
 
 	while(1);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//---------------------------------------------Temporary, RX code, might not be necessary since MSP430 will only handle data transmission----------------------
-
-
-
-//	switch(test){
-//	    case RxPacketTestHarness:
-//	        trxSpiCmdStrobe(CC112X_SRX);
-//	        //dummy variable for debug break-point
-//	        int j=0;
-//	        //infinite while loop program trap
-//	        while(1){
-//	            if(cc112xGetRxStatus() == 0x9){
-//	                //get number of bytes in CC1125 Rx Fifo
-//	                cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
-//
-//	                //read CC1125 Rx Fifo
-//	                cc112xSpiReadRxFifo(RxBuff,RxLength);
-//
-//	                //cast CC1125 Rx from int to char
-//	                for(j = 0; j < RxLength; j++)
-//	                {
-//	                    SerialMsg[j] = (char)RxBuff[j];
-//
-//	                }
-//
-//                    //print the message received, and the size of the RX buffer
-//	                putstring("RX RECEIVED MSG:");
-//	                putstring(SerialMsg);
-//	                putstring("\r\n");
-//	                memset(RxBuff,0,RXSIZE);
-//	                trxSpiCmdStrobe(CC112X_SRX);
-//
-//	            }
-//	        }
-//	        break;
-//
-//	    case TxPacketTestHarness:
-//	        trxSpiCmdStrobe(CC112X_STX);
-//	        while(1){
-//	            s = cc112xGetRxStatus();
-//	            char status = (char)s;
-//	            if (j <= 100){
-//	                sprintf(Debug_Msg,"STATUS: 0x%x",s);
-//	                putstring(Debug_Msg);
-//	                putstring("\r\n");
-//	                j++;
-//	            }
-//	        }
-//    }
-
-
-	//return 0;
 }
