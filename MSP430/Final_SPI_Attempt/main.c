@@ -141,18 +141,27 @@ int main(void)
 	putstring("==========================================================\r\n");
     putstring("==========================================================\r\n");
 
-    char TXBuff[] = "Test";
-
+    char TXBuff[6] = {0};
+    char message[] = "Test";
+    int packet_count = 0;
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
 	int j = 0;
 	uint8_t writeByte;
 
-	//trxSpiCmdStrobe(CC112X_STX);
+	//flush FIFO stack
 	trxSpiCmdStrobe(CC112X_SFTX);
-	//Fifo size = 15
-	cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
-	trxSpiCmdStrobe(CC112X_STX);
+
+	//transmit message "Test" with packet number after it every second
+	int i = 0;
+	for(i = 0; i < 10; i++) {
+	    sprintf(TXBuff, "%s %c\n", message, char(packet_count));
+	    cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+	    trxSpiCmdStrobe(CC112X_STX);
+	    __delay_cycles(16000000);
+	}
+
+	while(1);
 
 
 
@@ -180,11 +189,7 @@ int main(void)
 
 
 
-
-
-
-
-
+//---------------------------------------------Temporary, RX code, might not be necessary since MSP430 will only handle data transmission----------------------
 
 
 
@@ -236,6 +241,4 @@ int main(void)
 
 
 	//return 0;
-
-	while(1);
 }
