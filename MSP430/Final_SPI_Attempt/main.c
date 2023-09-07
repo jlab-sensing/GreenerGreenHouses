@@ -146,8 +146,8 @@ int main(void)
     int packet_count = 0;
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
-	int j = 0;
-	uint8_t writeByte;
+//	int j = 0;
+//	uint8_t writeByte;
 
 	//flush FIFO stack
 	trxSpiCmdStrobe(CC112X_SFTX);
@@ -155,8 +155,9 @@ int main(void)
 	//transmit message "Test" with packet number after it every second
 	int i = 0;
 	for(i = 0; i < 10; i++) {
-	    sprintf(TXBuff, "%s %c\n", message, char(packet_count));
-	    cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+	    sprintf(TXBuff, "%s %c\n", message, (char)packet_count);
+
+	    cc112xSpiWriteTxFifo((uint8_t*)TXBuff, sizeof(TXBuff));
 	    trxSpiCmdStrobe(CC112X_STX);
 	    __delay_cycles(16000000);
 	}
