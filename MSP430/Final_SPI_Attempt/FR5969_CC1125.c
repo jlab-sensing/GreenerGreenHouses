@@ -35,12 +35,6 @@ void ConfigRegisters(uint8_t MODE)
     {
 
     case RX_MODE:
-//            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Rx)/sizeof(registerSetting_t)); i++)
-//                {
-//                    sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Rx[i].data, ETSI_CAT1_869_S1_Rx[i].addr);
-//                    putstring(Msg);
-//                    memset(Msg,0,MSG_LENGTH);
-//                }
 
         putstring("Configuring CC1125 for Continuous Rx Mode\r\n");
         // Reset radio
@@ -49,11 +43,7 @@ void ConfigRegisters(uint8_t MODE)
         sprintf(Msg, "Status byte: 0x%02X\n", status);
         putstring(Msg);
         memset(Msg, 0, MSG_LENGTH);
-        // Wait for reset
-        //
-        //         for(i = 0; i <= 500000;i++){
-        //             NOP();
-        //         }
+
         putstring("\r\n");
         putstring("==========================================================\r\n");
         putstring("==========================================================\r\n");
@@ -158,13 +148,6 @@ void ConfigRegisters(uint8_t MODE)
 
     case TX_MODE:
 
-        //            for(i = 0; i < (sizeof(ETSI_CAT1_869_S1_Tx)/sizeof(registerSetting_t)); i++)
-        //                {
-        //                    sprintf(Msg,"%d\t0x%02X\t0x%02X\n", i, ETSI_CAT1_869_S1_Tx[i].data, ETSI_CAT1_869_S1_Tx[i].addr);
-        //                    putstring(Msg);
-        //                    memset(Msg,0,MSG_LENGTH);
-        //                }
-
                 putstring("Configuring CC1125 for Continuous Tx Mode\r\n");
                 // Reset radio
                 putstring("Resetting radio.\n");
@@ -172,11 +155,7 @@ void ConfigRegisters(uint8_t MODE)
                 sprintf(Msg, "Status byte: 0x%02X\n", status);
                 putstring(Msg);
                 memset(Msg, 0, MSG_LENGTH);
-                // Wait for reset
-                //
-                //         for(i = 0; i <= 500000;i++){
-                //             NOP();
-                //         }
+
                 putstring("\r\n");
                 putstring("==========================================================\r\n");
                 putstring("==========================================================\r\n");
@@ -287,11 +266,7 @@ void ConfigRegisters(uint8_t MODE)
         sprintf(Msg, "Status byte: 0x%02X\n", status);
         putstring(Msg);
         memset(Msg, 0, MSG_LENGTH);
-        // Wait for reset
-        //
-        //         for(i = 0; i <= 500000;i++){
-        //             NOP();
-        //         }
+
         putstring("\r\n");
         putstring("==========================================================\r\n");
         putstring("==========================================================\r\n");

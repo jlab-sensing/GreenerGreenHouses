@@ -21,10 +21,15 @@
 
 
 #define RXSIZE 256
+#define MESSAGE_SIZE 6
+
 char Debug_Msg[RXSIZE] = {0};
+uint8_t TxBuff[MESSAGE_SIZE] = {0};
 uint8_t RxBuff[RXSIZE] = {0}; //uint8_t array to store value from CC1125 Rx Fifo buffer
 char SerialMsg[RXSIZE] = {0}; //char array to send out over Uart to terminal
 uint8_t RxLength = 0;		//Custom slave address for BOOSTXL CC1125 LoRa pack
+char message = "Test";
+int packet_count = 0;
 
 rfStatus_t s;
 
@@ -147,7 +152,7 @@ int main(void)
     if(test_select == TX_test) {
         putstring("TX transmission test mode\r\n");
     }
-    else if(test_seelct == RX_test) {
+    else if(test_select == RX_test) {
         putstring("RX recieving test mode\r\n");
     }
 
@@ -155,20 +160,17 @@ int main(void)
 	ConfigRegisters(PACKET_MODE);
 	manualCalibration();
 
+	int i = 0;
+
     switch(test_select) {
         case TX_test:
-            char TXBuff[6] = {0};
-            char message[] = "Test";
-            int packet_count = 0;
             //transmit message "Test" with packet number after it every second
-	        int i = 0;
-
 	        for(i = 0; i < 10; i++) {
-	            sprintf(TXBuff, "%s %d\n", message, packet_count);
+	            sprintf(TxBuff, "%s %d\n", message, packet_count);
 
-	            cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+	            cc112xSpiWriteTxFifo(TxBuff, sizeof(TxBuff));
 	            trxSpiCmdStrobe(CC112X_STX);
-	            memset(TXBuff,0,6);
+	            memset(TxBuff,0,6);
 	            packet_count++;
 	            __delay_cycles(1000000);
 	        }
