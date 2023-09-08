@@ -54,14 +54,21 @@ extern "C" {
  * CONSTANTS
  */
 
-#define TRXEM_PORT_SEL0      P1SEL0
-#define TRXEM_PORT_SEL1      P1SEL1
-#define TRXEM_PORT_OUT       P1OUT
-#define TRXEM_PORT_DIR       P1DIR
-#define TRXEM_PORT_IN        P1IN
+#define TRXEM_PORT_SEL0      P2SEL0
+#define TRXEM_PORT_SEL1      P2SEL1
+#define TRXEM_PORT_OUT       P2OUT
+#define TRXEM_PORT_DIR       P2DIR
+#define TRXEM_PORT_IN        P2IN
 
-#define TRXEM_SPI_MOSI_PIN   BIT6
-#define TRXEM_SPI_MISO_PIN   BIT7
+#define TRXEM_PORT_CS_SEL0      P1SEL0
+#define TRXEM_PORT_CS_SEL1      P1SEL1
+#define TRXEM_PORT_CS_OUT       P1OUT
+#define TRXEM_PORT_CS_DIR       P1DIR
+#define TRXEM_PORT_CS_IN        P1IN
+
+
+#define TRXEM_SPI_MOSI_PIN   BIT5
+#define TRXEM_SPI_MISO_PIN   BIT6
 #define TRXEM_SPI_SC_N_PIN   BIT3
 
 #define RF_RESET_N_PORT_OUT  P8OUT
@@ -87,10 +94,10 @@ extern "C" {
  */
 
 /* Macros for Tranceivers(TRX) */
-#define TRXEM_SPI_BEGIN()              st( TRXEM_PORT_OUT &= ~TRXEM_SPI_SC_N_PIN; NOP(); )
-#define TRXEM_SPI_TX(x)                st( UCB0IFG &= ~UCRXIFG; UCB0TXBUF= (x); )
-#define TRXEM_SPI_WAIT_DONE()          st( while(!(UCB0IFG & UCRXIFG)); )
-#define TRXEM_SPI_RX()                 UCB0RXBUF
+#define TRXEM_SPI_BEGIN()              st( TRXEM_PORT_CS_OUT &= ~TRXEM_SPI_SC_N_PIN; NOP(); )
+#define TRXEM_SPI_TX(x)                st( UCA1IFG &= ~UCRXIFG; UCA1TXBUF= (x); )
+#define TRXEM_SPI_WAIT_DONE()          st( while(!(UCA1IFG & UCRXIFG)); )
+#define TRXEM_SPI_RX()                 UCA1RXBUF
 #define TRXEM_SPI_WAIT_MISO_LOW(x)     st( uint8 count = 200; \
                                            while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN) \
                                            { \
@@ -101,7 +108,7 @@ extern "C" {
                                            if(count>0) (x) = 1; \
                                            else (x) = 0; )
 
-#define TRXEM_SPI_END()                st( NOP(); TRXEM_PORT_OUT |= TRXEM_SPI_SC_N_PIN; )
+#define TRXEM_SPI_END()                st( NOP(); TRXEM_PORT_CS_OUT |= TRXEM_SPI_SC_N_PIN; )
 
 /******************************************************************************
  * TYPEDEFS

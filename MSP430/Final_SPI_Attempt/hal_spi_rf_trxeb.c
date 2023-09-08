@@ -76,7 +76,7 @@ void trxRfSpiInterfaceInit(uint8 prescalerValue)
 {
 
   /* Keep peripheral in reset state*/
-  UCB0CTL1 |= UCSWRST;
+  UCA1CTL1 |= UCSWRST;
 
   /* Configuration
    * -  8-bit
@@ -91,11 +91,11 @@ void trxRfSpiInterfaceInit(uint8 prescalerValue)
    *    supported by the supported radios: this could be optimized and done
    *    after chip detect.
    */
-  UCB0CTLW0  =  0x00 + UCMST + UCSYNC + UCMODE_0 + UCMSB + UCCKPH + UCSSEL_2;
+  UCA1CTLW0  =  0x00 + UCMST + UCSYNC + UCMODE_0 + UCMSB + UCCKPH + UCSSEL_2;
  // UCB0CTL1 |=  UCSSEL_2;
 
-  UCB0BRW   =  0x00;
-  UCB0BRW = prescalerValue;
+  UCA1BRW   =  0x00;
+  UCA1BRW = prescalerValue;
 
   ///* Configuring UCB0BR0
   // * Set up spi clk to comply with the maximum spi clk speed for the radios
@@ -145,17 +145,18 @@ void trxRfSpiInterfaceInit(uint8 prescalerValue)
   TRXEM_PORT_SEL0 &= ~(TRXEM_SPI_MOSI_PIN + TRXEM_SPI_MISO_PIN);
   TRXEM_PORT_SEL1 |= TRXEM_SPI_MOSI_PIN + TRXEM_SPI_MISO_PIN;
 
-  TRXEM_PORT_SEL0 &= ~BIT3;
-  TRXEM_PORT_SEL1 &= ~BIT3;
+  TRXEM_PORT_CS_SEL0 &= ~BIT3;
+  TRXEM_PORT_CS_SEL1 &= ~BIT3;
 
- P2SEL0  &= ~BIT2;
- P2SEL1  |= BIT2;
-
-
-  TRXEM_PORT_OUT |= TRXEM_SPI_SC_N_PIN + TRXEM_SPI_MISO_PIN;/* Pullup on MISO */
+ P2SEL0  &= ~BIT4;
+ P2SEL1  |= BIT4;
 
 
-  TRXEM_PORT_DIR |= TRXEM_SPI_SC_N_PIN;
+  TRXEM_PORT_OUT |= TRXEM_SPI_MISO_PIN;/* Pullup on MISO */
+  TRXEM_PORT_CS_OUT |= TRXEM_SPI_SC_N_PIN;
+
+
+  TRXEM_PORT_CS_DIR |= TRXEM_SPI_SC_N_PIN;
 
 //  /* In case not automatically set */
 //  TRXEM_PORT_DIR |= TRXEM_SPI_MOSI_PIN + TRXEM_SPI_SCLK_PIN;
@@ -163,7 +164,7 @@ void trxRfSpiInterfaceInit(uint8 prescalerValue)
 //  P2OUT |= BIT2;
 
   /* Release for operation */
-  UCB0CTL1 &= ~UCSWRST;
+  UCA1CTL1 &= ~UCSWRST;
   return;
 }
 

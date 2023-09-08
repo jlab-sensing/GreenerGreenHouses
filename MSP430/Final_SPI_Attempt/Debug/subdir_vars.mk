@@ -18,7 +18,7 @@ C_SRCS += \
 ../eusci_a_uart.c \
 ../gpio.c \
 ../hal_spi_rf_trxeb.c \
-../main_tester.c 
+../main.c 
 
 C_DEPS += \
 ./FR5969_CC1125.d \
@@ -30,7 +30,7 @@ C_DEPS += \
 ./eusci_a_uart.d \
 ./gpio.d \
 ./hal_spi_rf_trxeb.d \
-./main_tester.d 
+./main.d 
 
 OBJS += \
 ./FR5969_CC1125.obj \
@@ -42,7 +42,7 @@ OBJS += \
 ./eusci_a_uart.obj \
 ./gpio.obj \
 ./hal_spi_rf_trxeb.obj \
-./main_tester.obj 
+./main.obj 
 
 OBJS__QUOTED += \
 "FR5969_CC1125.obj" \
@@ -54,7 +54,7 @@ OBJS__QUOTED += \
 "eusci_a_uart.obj" \
 "gpio.obj" \
 "hal_spi_rf_trxeb.obj" \
-"main_tester.obj" 
+"main.obj" 
 
 C_DEPS__QUOTED += \
 "FR5969_CC1125.d" \
@@ -66,7 +66,7 @@ C_DEPS__QUOTED += \
 "eusci_a_uart.d" \
 "gpio.d" \
 "hal_spi_rf_trxeb.d" \
-"main_tester.d" 
+"main.d" 
 
 C_SRCS__QUOTED += \
 "../FR5969_CC1125.c" \
@@ -78,6 +78,6 @@ C_SRCS__QUOTED += \
 "../eusci_a_uart.c" \
 "../gpio.c" \
 "../hal_spi_rf_trxeb.c" \
-"../main_tester.c" 
+"../main.c" 
 
 

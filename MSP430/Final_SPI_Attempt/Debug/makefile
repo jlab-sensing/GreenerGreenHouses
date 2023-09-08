@@ -19,7 +19,7 @@ ORDERED_OBJS += \
 "./eusci_a_uart.obj" \
 "./gpio.obj" \
 "./hal_spi_rf_trxeb.obj" \
-"./main_tester.obj" \
+"./main.obj" \
 "../lnk_msp430fr5969.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibmpu_init.a \
@@ -152,8 +152,8 @@ Final_SPI_Attempt.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "FR5969_CC1125.obj" "HDC2021.obj" "MSP430_I2C.obj" "Uart.obj" "cc112x_spi.obj" "cs.obj" "eusci_a_uart.obj" "gpio.obj" "hal_spi_rf_trxeb.obj" "main_tester.obj" 
-	-$(RM) "FR5969_CC1125.d" "HDC2021.d" "MSP430_I2C.d" "Uart.d" "cc112x_spi.d" "cs.d" "eusci_a_uart.d" "gpio.d" "hal_spi_rf_trxeb.d" "main_tester.d" 
+	-$(RM) "FR5969_CC1125.obj" "HDC2021.obj" "MSP430_I2C.obj" "Uart.obj" "cc112x_spi.obj" "cs.obj" "eusci_a_uart.obj" "gpio.obj" "hal_spi_rf_trxeb.obj" "main.obj" 
+	-$(RM) "FR5969_CC1125.d" "HDC2021.d" "MSP430_I2C.d" "Uart.d" "cc112x_spi.d" "cs.d" "eusci_a_uart.d" "gpio.d" "hal_spi_rf_trxeb.d" "main.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

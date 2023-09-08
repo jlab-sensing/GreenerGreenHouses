@@ -128,12 +128,21 @@ void CopyRxArray(uint8_t *dest, uint8_t count)
 
 void initGPIO()
 {
-    // Configure GPIO
+    // Configu  re GPIO
     P1OUT &= ~BIT0;                           // Clear P1.0 output latch
     P1DIR |= BIT0;                            // For LED
-    P1SEL1 |= BIT6 | BIT7;                    // I2C pins
+    P1SEL1 |= BIT6 | BIT7;   // I2C pins
+
+//    P1SEL1 &= ~BIT3;
+//    P1SEL0 |= BIT3;
+//    P1SEL1 &= ~BIT2;
+//    P1SEL0 |= BIT2;
+//    P3OUT &= ~BIT0;
+//    P3DIR |= BIT0;
+//    P3SEL1 |= BIT5 | BIT6;
     // Disable the GPIO power-on default high-impedance mode to activate
     // previously configured port settings
+    UCB0CTLW0 |= UCSWRST;
     PM5CTL0 &= ~LOCKLPM5;
 }
 
@@ -153,12 +162,14 @@ void initClockTo16MHz()
 
 void initI2C(uint8_t dev_add)
 {
+    WDTCTL = WDTPW | WDTHOLD;
     UCB0CTLW0 = UCSWRST;                      // Enable SW reset
     UCB0CTLW0 |= UCMODE_3 | UCMST | UCSSEL__SMCLK | UCSYNC; // I2C controller mode, SMCLK
     UCB0BRW = 160;                            // fSCL = SMCLK/160 = ~100kHz
     UCB0I2CSA = dev_add;                   // peripheral Address
     UCB0CTLW0 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= UCNACKIE;}
+    UCB0IE |= UCNACKIE;
+}
 
 //******************************************************************************
 // I2C Interrupt ***************************************************************
