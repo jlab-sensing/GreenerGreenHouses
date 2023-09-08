@@ -223,3 +223,29 @@ rfStatus_t cc112xGetRxStatus(void)
 {
     return(trxSpiCmdStrobe(CC112X_SNOP | RADIO_READ_ACCESS));
 }
+
+/******************************************************************************
+ *
+ *  @fn       cc112xGetRxStatus(void)
+ *
+ *  @brief
+ *            This function transmits a No Operation Strobe (SNOP) with the
+ *            read bit set to get the status of the radio and the number of
+ *            available bytes in the RXFIFO.
+ *
+ *
+ *
+ * input parameters
+ *
+ * @param
+ *
+ * output parameters
+ *
+ * @return    rfStatus_t
+ *
+ */
+uint32_t createPacket(uint16_t temp, uint16_t hum, uint8_t deviceID) {
+    uint32_t packet;
+    packet = hum | (temp << 14) | (deviceID << 28);
+    return packet;
+}

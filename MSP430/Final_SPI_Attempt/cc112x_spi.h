@@ -45,6 +45,7 @@ extern "C" {
  * INCLUDES
  */
 #include "hal_types.h"
+#include "stdint.h"
 #ifdef MSP_EXP430G2
   #include "hal_msp_exp430g2_spi.h"
 #else
@@ -291,6 +292,7 @@ rfStatus_t cc112xGetRxStatus(void);
 rfStatus_t cc112xSpiWriteReg(uint16 addr, uint8 *data, uint8 len);
 rfStatus_t cc112xSpiWriteTxFifo(uint8 *pWriteData, uint8 len);
 rfStatus_t cc112xSpiReadRxFifo(uint8 *pReadData, uint8 len);
+uint32_t createPacket(uint16_t temp, uint16_t hum, uint8_t deviceID);
 
 #ifdef  __cplusplus
 }
