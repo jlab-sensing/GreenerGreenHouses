@@ -398,3 +398,11 @@ void SendTx(){
     trxSpiCmdStrobe(CC112X_STX);
 
 }
+
+uint32_t createPacket(uint16_t temp, uint16_t hum, uint8_t deviceID) {
+    uint32_t packet;
+    packet = hum;
+    packet |= ((uint32_t)temp << 14);
+    packet |= ((uint32_t)deviceID << 28);
+    return packet;
+}

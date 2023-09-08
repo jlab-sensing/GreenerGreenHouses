@@ -23,4 +23,6 @@ void ConfigRegisters(uint8_t MODE);
 void SendTx();
 
 void PollRx(uint8_t MODE);
+
+uint32_t createPacket(uint16_t temp, uint16_t hum, uint8_t deviceID);
 #endif /* FR5969_CC1125_H_ */
