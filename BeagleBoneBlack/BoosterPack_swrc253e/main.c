@@ -20,6 +20,9 @@
 #define VARIABLE_LENGTH_PACKET
 // #define FIXED_PACKET_LENGTH 6
 
+#define TEST_TX_MODE
+// #define TEST_RX_MODE
+
 #define SPI_DEV_BUS0_CS0 "/dev/spidev0.0"
 
 #define CC1125_REG_READ_nWRITE 0x80
@@ -84,7 +87,7 @@ int main(int argc, char *argv[]){
     // uint16 address = 0x00;
     uint8 rxBuffer[SPI_BUFFER_SIZE] = {0};
     // for (int i = 0; i < sizeof(rxData); i++) rxData[i] = 0;
-    uint8 rxBytes;
+    uint8_t rxBytes;
     uint8 marcState;
     
     printf("Set RX mode\n");
@@ -122,6 +125,28 @@ int main(int argc, char *argv[]){
         // printf("\tCHIP_RDY | STATE[2:0] | FIFO_BYTES_AVAILABLE (available bytes in the RX FIFO\n");
         */
         
+#ifdef TEST_TX_MODE
+        char txBuffer[] = "test";
+        cc112xSpiWriteTxFifo((uint8*)txBuffer, sizeof(txBuffer)/sizeof(txBuffer[0]));
+        trxSpiCmdStrobe(CC112X_STX);
+        printf("TX: %s\n", txBuffer);
+        sleep(1);
+#elif defined TEST_RX_MODE
+        status = cc112xGetRxStatus();
+        switch (status){
+            case 0x10: // idle
+                continue;
+                break;
+            case 0x6F: // RX_FIFO_ERR and full bytes
+                trxSpiCmdStrobe(CC112X_SFRX);
+                break;
+            default:
+                printf("Unknown case 0x%02X\n", status);
+                break;
+        }
+        
+        // continue;
+        
         status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
         
         if (rxBytes != 0){
@@ -136,6 +161,7 @@ int main(int argc, char *argv[]){
                 // Flush RX FIFO
                 trxSpiCmdStrobe(CC112X_SFRX);
             } else {
+                printf("%d\n", rxBytes);
                 status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
                 // status = cc112xSpiReadRxFifo(rxBuffer, SPI_BUFFER_SIZE);
                 printf("FIFO (0x%02X) {hex} : ", status);
@@ -150,7 +176,7 @@ int main(int argc, char *argv[]){
             trxSpiCmdStrobe(CC112X_SRX);
             usleep(10);
         }
-        // trxSpiCmdStrobe(CC112X_SRX);
+#endif
     }
 
     printf("Closing %s.\n", SPI_DEV_BUS0_CS0);
