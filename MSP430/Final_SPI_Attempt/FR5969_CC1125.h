@@ -20,7 +20,7 @@
 */
 void ConfigRegisters(uint8_t MODE);
 
-void SendTx();
+void manualCalibration(void);
 
 void PollRx(uint8_t MODE);
 
