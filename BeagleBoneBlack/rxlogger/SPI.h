@@ -24,6 +24,9 @@
 // Returns the file descriptor
 int SPI_initPort(char* spiDevice, int mode, int freqHz);
 
+// Close the file descriptor
+int SPI_closePort(int spiFileDesc);
+
 // Prints the settings for the provided spiFileDesc.
 // Status >= 0 is success, < 0 is error
 int SPI_readSettings(int spiFileDesc);

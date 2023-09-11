@@ -40,7 +40,6 @@
 /******************************************************************************
  * INCLUDES
  */
-// #include <msp430.h>
 #include "hal_types.h"
 #include "hal_defs.h"
 #include "hal_spi_rf_trxeb.h"
@@ -49,7 +48,7 @@
 #include <linux/spi/spidev.h>
 #include <stdio.h>
 
-extern int spiFileDesc; // from main.c
+static int spiFileDesc; // from main.c
 
 static uint8_t txBuffer[SPI_BUFFER_SIZE];
 static uint8_t rxBuffer[SPI_BUFFER_SIZE];
@@ -78,94 +77,29 @@ static uint8_t rxBuffer[SPI_BUFFER_SIZE];
  *
  * @return      void
  */
-void trxRfSpiInterfaceInit(uint8 prescalerValue)
+int trxRfSpiInterfaceInit(char* spiDevice, int mode, int freqHz)
 {
-    spiFileDesc = SPI_initPort(SPI_DEV_BUS0_CS0, SPI_MODE_0, 1000000);
+    // int spiFileDesc = 0;
+    if (freqHz < 0){
+        printf("trxRfSpiInterfaceInit(): freqHz must be greater than 0.\n");
+    }
+    
+    spiFileDesc = SPI_initPort(spiDevice, mode, freqHz);
+    if (spiFileDesc < 0) {
+		printf("Error: Can't open device %s", spiDevice);
+        return 0;
+    }
     
     for (int i = 0; i < SPI_BUFFER_SIZE; i++){
         txBuffer[i] = 0;
         rxBuffer[i] = 0;
     }
-    return;
-  // /* Keep peripheral in reset state*/
-  // UCB0CTL1 |= UCSWRST;
+    return spiFileDesc;
+}
 
-  // /* Configuration
-   // * -  8-bit
-   // * -  Master Mode
-   // * -  3-pin
-   // * -  synchronous mode
-   // * -  MSB first
-   // * -  Clock phase select = captured on first edge
-   // * -  Inactive state is low
-   // * -  SMCLK as clock source
-   // * -  Spi clk is adjusted corresponding to systemClock as the highest rate
-   // *    supported by the supported radios: this could be optimized and done
-   // *    after chip detect.
-   // */
-  // UCB0CTL0  =  0x00+UCMST + UCSYNC + UCMODE_0 + UCMSB + UCCKPH;
-  // UCB0CTL1 |=  UCSSEL_2;
-  // UCB0BR1   =  0x00;
-
-  // UCB0BR0 = prescalerValue;
-
-  ///* Configuring UCB0BR0
-  // * Set up spi clk to comply with the maximum spi clk speed for the radios
-  // * according to userguides. Takes the slowest spi clk into account.
-  // */
-  //switch(systemClock)
-  //{
-  //  case 0:
-  //    /* Do not divide SMCLK */
-  //    UCB0BR0 = 0x01;
-  //    break;
-  //  case 1:
-  //    /* Do not divide SMCLK */
-  //    UCB0BR0 = 0x01;
-  //    break;
-  //  case 2:
-  //    /* Divide SMCLK by 2*/
-  //    UCB0BR0 = 0x02;
-  //    break;
-  //  case 3:
-  //    /* Divide SMCLK by 2*/
-  //    UCB0BR0 = 0x02;
-  //    break;
-  //  case 4:
-  //    /* Divide SMCLK by 3*/
-  //    UCB0BR0 = 0x03;
-  //    break;
-  //  case 5:
-  //    /* Divide SMCLK by 4*/
-  //    UCB0BR0 = 0x04;
-  //    break;
-  //  case 6:
-  //    /* Divide SMCLK by 4*/
-  //    UCB0BR0 = 0x04;
-  //    break;
-  //  default:
-  //    /* Divide SMCLK by 4*/
-  //    UCB0BR0 = 0x04;
-  //    break;
-  //}
-
-  // /* Configure port and pins
-   // * - MISO/MOSI/SCLK GPIO controlled by peripheral
-   // * - CS_n GPIO controlled manually, set to 1
-   // */
-  // TRXEM_PORT_SEL |= TRXEM_SPI_MOSI_PIN + TRXEM_SPI_MISO_PIN + TRXEM_SPI_SCLK_PIN;
-  // TRXEM_PORT_SEL &= ~TRXEM_SPI_SC_N_PIN;
-  // TRXEM_PORT_OUT |= TRXEM_SPI_SC_N_PIN + TRXEM_SPI_MISO_PIN;/* Pullup on MISO */
-
-
-  // TRXEM_PORT_DIR |= TRXEM_SPI_SC_N_PIN;
-  // /* In case not automatically set */
-  // TRXEM_PORT_DIR |= TRXEM_SPI_MOSI_PIN + TRXEM_SPI_SCLK_PIN;
-  // TRXEM_PORT_DIR &= ~TRXEM_SPI_MISO_PIN;
-
-  // /* Release for operation */
-  // UCB0CTL1 &= ~UCSWRST;
-  // return;
+int trxRfSpiInterfaceClose(void)
+{
+    return SPI_closePort(spiFileDesc);
 }
 
 
@@ -213,27 +147,8 @@ rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint
         // do not overwrite pData
     }
     
-    // for (int i = 0; i < len + 1; i++){
-        // printf("[%02d]\tTX: 0x%02X\tRX: 0x%02X\tpD: 0x%02X\n", i, txBuffer[i], rxBuffer[i], pData[i]);
-    // }
     /* return the status byte value */
-    // printf("Returning pData[1] = 0x%02X\n", pData[1]);
     return rxBuffer[0];
-    
-  // uint8 readValue;
-
-  // /* Pull CS_N low and wait for SO to go low before communication starts */
-  // TRXEM_SPI_BEGIN();
-  // while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);
-  // /* send register address byte */
-  // TRXEM_SPI_TX(accessType|addrByte);
-  // TRXEM_SPI_WAIT_DONE();
-  // /* Storing chip status */
-  // readValue = TRXEM_SPI_RX();
-  // trxReadWriteBurstSingle(accessType|addrByte,pData,len);
-  // TRXEM_SPI_END();
-  // /* return the status byte value */
-  // return(readValue);
 }
 
 /******************************************************************************
@@ -281,31 +196,8 @@ rfStatus_t trx16BitRegAccess(uint8 accessType, uint8 extAddr, uint8 regAddr, uin
         // do not overwrite pData
     }
     
-    
-    // for (int i = 0; i < len + 2; i++){
-        // printf("[%02d]\tTX: 0x%02X\tRX: 0x%02X\n", i, txBuffer[i], pData[i]);
-    // }
-    
     /* return the status byte value */
     return rxBuffer[0];
-    
-    
-  // uint8 readValue;
-
-  // TRXEM_SPI_BEGIN();
-  // while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);
-  // /* send extended address byte with access type bits set */
-  // TRXEM_SPI_TX(accessType|extAddr);
-  // TRXEM_SPI_WAIT_DONE();
-  // /* Storing chip status */
-  // readValue = TRXEM_SPI_RX();
-  // TRXEM_SPI_TX(regAddr);
-  // TRXEM_SPI_WAIT_DONE();
-  // /* Communicate len number of bytes */
-  // trxReadWriteBurstSingle(accessType|extAddr,pData,len);
-  // TRXEM_SPI_END();
-  // /* return the status byte value */
-  // return(readValue);
 }
 
 /*******************************************************************************
@@ -332,15 +224,6 @@ rfStatus_t trxSpiCmdStrobe(uint8 cmd)
     
     /* return the status byte value */
     return rxBuffer[0];
-    
-    // uint8 rc;
-    // TRXEM_SPI_BEGIN();
-    // while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);
-    // TRXEM_SPI_TX(cmd);
-    // TRXEM_SPI_WAIT_DONE();
-    // rc = TRXEM_SPI_RX();
-    // TRXEM_SPI_END();
-    // return(rc);
 }
 
 /*******************************************************************************

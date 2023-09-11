@@ -48,6 +48,11 @@ int SPI_initPort(char* spiDevice, int mode, int freqHz)
     return spiFileDesc;
 }
 
+int SPI_closePort(int spiFileDesc)
+{
+    return close(spiFileDesc);
+}
+
 int SPI_readSettings(int spiFileDesc)
 {
     uint8_t spiMode;

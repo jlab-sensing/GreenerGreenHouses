@@ -1,115 +1,168 @@
-#include <fcntl.h> // open()
-#include <sys/ioctl.h>
-#include <linux/spi/spidev.h>
-// #include <linux/types.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <signal.h>
-
+#include <linux/spi/spidev.h>
+// #include <linux/types.h>
+// #include <sys/ioctl.h>
+// #include <fcntl.h>
+#include <modbus/modbus.h>
 #include "cc112x_spi.h"
-#include "SPI.h"
 #include "cc112x_easy_link_reg_config.h"
-
-#define RX_BUFFER_SIZE 16
 
 // #define LIST_ALL_REGISTERS
 // #define PACKET_PARSER
+#define SKIP_LORA
+
+#define RX_BUFFER_SIZE 16
 
 #define SPI_DEV_BUS0_CS0 "/dev/spidev0.0"
 
-#define CC1125_REG_READ_nWRITE 0x80
-#define CC1125_REG_BURST 0x40
-
 #define RX_FIFO_ERROR 0x11
 
+#define MODBUS_SLAVE_ID 0xAB
+
+#define MAP_SIZE_BITS 4
+#define MAP_SIZE_IBITS 8
+#define MAP_SIZE_IREGS 16
+#define MAP_SIZE_REGS 16
+
+#define RTU_PORT        "/dev/ttyUSB0"
+#define RTU_BAUD        19200
+#define RTU_PARITY      'N'
+#define RTU_DATA_BITS   8
+#define RTU_STOP_BITS   1
+
 // Global
-int spiFileDesc = 0;
-FILE* fp = NULL;
+static FILE* fp = NULL;
+static modbus_t *mb = NULL;
+static modbus_mapping_t *map;
 
 static void manualCalibration(void);
 static void registerConfig(const registerSetting_t *reg, int numRegisters);
 static void packetParser(uint8 *packet, uint8 length);
-void intHandler(int dummy);
+void intHandler(int sig);
+modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit);
+void print_modbus_mapping(void);
 
-int main(int argc, char *argv[]){
-    
-    printf("Program start.\n");
-    
-    signal(SIGINT, intHandler);
-    
+int spi_init(void);
+int radio_init(void);
+int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsigned int regs);
+
+int spi_init(void)
+{
     printf("Opening %s in O_RDWR (r+).\n", SPI_DEV_BUS0_CS0);
-    trxRfSpiInterfaceInit(0);
-    if (spiFileDesc < 0){
-        printf("Error: Could not init SPI.\n");
-        exit(1);
-    }
+    trxRfSpiInterfaceInit(SPI_DEV_BUS0_CS0, SPI_MODE_0, 1000000);
 
-    if (SPI_readSettings(spiFileDesc) < 0){
-        printf("Error: Could not read SPI mode settings.\n");
-        exit(1);
-    }
-    
-    printf("sizeof(preferredSettings) = %d\n", sizeof(preferredSettings));
-    printf("sizeof(&preferredSettings) = %d\n", sizeof(&preferredSettings));
-    printf("sizeof(registerSetting_t) = %d\n", sizeof(registerSetting_t));
+    // if (SPI_readSettings(spiFileDesc) < 0){
+        // printf("Error: Could not read SPI mode settings.\n");
+        // exit(1);
+    // }
+    return 0;
+}
+
+int radio_init(void)
+{
     registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
-    
     manualCalibration();
-    
-    rfStatus_t status = 0;
-    uint8 readByte;
-    printf("\n\n\n");
     
 #ifdef LIST_ALL_REGISTERS
     // Read ALL registers from radio
     printf("Reading ALL registers\n");
     printf("addr\tvalue\tstatus\n");
-    for(uint16 i = 0; i < (sizeof(allSettings)/sizeof(registerSetting_t)); i++) {
+    for(int i = 0; i < (sizeof(allSettings)/sizeof(registerSetting_t)); i++) {
         status = cc112xSpiReadReg(allSettings[i].addr, &readByte, 1);
         printf("0x%04X\t0x%02X\t0x%02X\n", allSettings[i].addr, readByte, status);
     }
     printf("Done reading ALL registers\n\n\n");
 #endif
+    return 0;
+}
+
+int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsigned int regs)
+{
+    printf("Setting up modbus struct and config.\n");
+    mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
+    printf("mb = 0x%02X\n", (unsigned int) mb);
+    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
+    if (modbus_set_slave(mb, MODBUS_SLAVE_ID) < 0)
+    {
+        printf("modbus_set_slave failed to set the slave number.\n");
+    }
     
+    printf("Opening connection.\n");
+    if (modbus_connect(mb) != 0){
+        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (unsigned int) mb);
+        return -1;
+    }
+    
+    printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
+    
+    printf("Mapping\n");
+    // map = modbus_mapping_new_start_address();
+    map = modbus_mapping_new(bits, ibits, iregs, regs);
+    /* 
+        map->tab_bits[0]
+        map->tab_input_bits[0]
+        map->tab_input_registers[0]
+        map->tab_registers[0]
+    */
+    
+    if (map == NULL){
+        printf("modbus_mapping_new failed to allocate.\n");
+        return -1;
+    }else{
+        printf("map located at 0x%X\n", (unsigned int) map);
+        printf("sizeof(map) = %d\n", sizeof(map));
+    }
+    return 0;
+}
+
+int main(int argc, char *argv[]){
+    rfStatus_t status = 0;
     uint8 rxBuffer[RX_BUFFER_SIZE] = {0};
     uint8_t rxBytes;
     uint8 marcState;
     uint8 lastMarcState;
+    int req_length;
+    uint8_t req[MODBUS_MAX_ADU_LENGTH];
     
-    printf("Marcstate loop\n");
-    int iteration = 0;
-    printf("RX mode\n");
-    trxSpiCmdStrobe(CC112X_SRX);
+    printf("Program start.\n");
+    
+    signal(SIGINT, intHandler);
+    
+    spi_init();
+#ifndef SKIP_LORA
+    radio_init();
+#endif
+    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_IREGS, MAP_SIZE_REGS);
 
     fp = fopen("data", "w");
     if (fp == NULL){
         printf("null\n");
     }
     
+    printf("Strobing SRX and entering main loop.\n");
+    trxSpiCmdStrobe(CC112X_SRX);
+    
     while(1){
+        // LoRa
+#ifndef SKIP_LORA
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
         if (marcState == lastMarcState){
             continue;
         }
         
-        // printf("[%d] marcstate = 0x%02X, status = 0x%02X\n", iteration++, marcState, status);
+        if((marcState & 0x1F) == RX_FIFO_ERROR) {
+            printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
+            trxSpiCmdStrobe(CC112X_SFRX);
+        }
+        
         status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
-        /*
-        // if((marcState & 0x1F) == RX_FIFO_ERROR) {
-            // Flush RX FIFO
-            // printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
-            // trxSpiCmdStrobe(CC112X_SFRX);
-        // }else if ((marcState & 0x6D) == 0x6D) { // RX
-            // printf("\tRX\n");
-        // }else if ((marcState & 0x6E) == 0x6E) { // RX_END
-            // printf("\tRX_END\n");
-        // }
-        */
         if (rxBytes != 0){
-            printf("\trxBytes = %d (0x%02X)\n", rxBytes, status);
+            printf("rxBytes = %d (0x%02X)\n", rxBytes, status);
             status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
             printf("FIFO (0x%02X) {hex} : ", status);
             for (int i = 0; i < rxBytes; i++){
@@ -120,53 +173,57 @@ int main(int argc, char *argv[]){
             printf("writing\n");
             fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fp);
         }
-        
         lastMarcState = marcState;
         trxSpiCmdStrobe(CC112X_SRX);
-        continue;
+#endif
+        // Modbus
         
-        
-        
-        
-        
-        status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
-        
-        if (rxBytes != 0){
-            printf("RX FIFO %d bytes, status = 0x%02X\n", rxBytes, status);
-            // Check MARCSTATE for RX FIFO error
-            // Flush RX FIFO if error
-            // Else read RX FIFO
-            status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
-
-            // Mask out MARCSTATE bits and check if we have a RX FIFO error
-            if((marcState & 0x1F) == RX_FIFO_ERROR) {
-                // Flush RX FIFO
-                printf("MARCSTATE RX_FIFO_ERROR, flushing\n");
-                trxSpiCmdStrobe(CC112X_SFRX);
-            } else {
-                printf("marcstate = 0x%02X, rxBytes = %d\n", marcState, rxBytes);
-
-                // status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
-                status = cc112xSpiReadRxFifo(rxBuffer, RX_BUFFER_SIZE);
-
-                printf("FIFO (0x%02X) {hex} : ", status);
-                for (int i = 0; i < RX_BUFFER_SIZE; i++){
-                    printf("%02X ", rxBuffer[i]);
+        print_modbus_mapping();
+        printf("waiting on modbus_receive\n");
+        req_length = modbus_receive(mb, req);
+        switch(req_length){
+            case 0:
+                printf("Ignore request (other slave address)\n");
+                break;
+            case -1:
+                printf("Error receiving\n");
+                break;
+            default:
+                printf("Handling request (length %d)\n", req_length);
+                sleep(1);
+                status = modbus_reply(mb, req, req_length, map);
+                if (status == -1){
+                    printf("Could not reply\n");
+                }else{
+                    printf("Sent reply (length %d)\n", status);
                 }
-                printf("\n");
-            }
-            trxSpiCmdStrobe(CC112X_SRX);
-            usleep(100);
+                break;
         }
     }
-
+        
     printf("Closing %s.\n", SPI_DEV_BUS0_CS0);
-    // fclose(spiFileDesc);
+    trxRfSpiInterfaceClose();
+    printf("Closing data.\n");
+    fclose(fp);
     return 0;
 }
 
-void intHandler(int dummy) {
-    fclose(fp);
+void intHandler(int sig) {
+    if (fp != NULL) fclose(fp);
+    trxRfSpiInterfaceClose();
+    
+    modbus_mapping_free(map);
+    
+    modbus_close(mb);
+    printf("Flushing non-transmitted data.\n");
+    int bytes_flushed;
+    bytes_flushed = modbus_flush(mb);
+    printf("Flushed %d bytes.\n", bytes_flushed);
+    
+    printf("Freeing mb = 0x%02X\n", (unsigned int) mb);
+    modbus_free(mb);
+    
+    printf("Program end.\n");
     exit(0);
 }
 
@@ -390,5 +447,95 @@ static void packetParser(uint8 *packet, uint8 length)
         printf("\tCRC16:\t0x%04X\n", crc);
     }else{
         printf("Unrecognized packet format\n");
+    }
+}
+
+modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit)
+{
+    modbus_t *mb;
+    // printf("\t(before) mb = 0x%02X\n", mb);
+    printf("\tInstantiating Modbus RTU on %s at %d baud (%d%c%d).\n", device, baud, data_bit, parity, stop_bit);
+    mb = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
+    printf("\t(after) mb = 0x%02X\n", (unsigned int) mb);
+    
+#ifdef MODBUS_DEBUG_ENABLE
+    printf("\tMODBUS_DEBUG_ENABLE\n");
+    if (modbus_set_debug(mb, TRUE) != 0){
+        printf("Failed to enable debug on mb = 0x%02X with flag %d\n", mb, TRUE);
+        // return 0;
+    }
+    // printf("Enabled debug.\n");
+#endif
+    
+    printf("\tCheck Modbus RTU settings:\n");
+    int serial_mode = modbus_rtu_get_serial_mode(mb);
+    printf("\t\tSerial mode: %d ", serial_mode);
+    switch(serial_mode){
+        case MODBUS_RTU_RS232:
+            printf("MODBUS_RTU_RS232\n");
+            break;
+        case MODBUS_RTU_RS485:
+            printf("MODBUS_RTU_RS485\n");
+            break;
+        default:
+            printf("ERROR\n");
+            break;
+    }
+    int rts_mode = modbus_rtu_get_rts(mb);
+    printf("\t\tRTS mode: %d ", rts_mode);
+    switch(serial_mode){
+        case MODBUS_RTU_RTS_NONE:
+            printf("MODBUS_RTU_RTS_NONE\n");
+            break;
+        case MODBUS_RTU_RTS_UP:
+            printf("MODBUS_RTU_RTS_UP\n");
+            break;
+        case MODBUS_RTU_RTS_DOWN:
+            printf("MODBUS_RTU_RTS_DOWN\n");
+            break;
+        default:
+            printf("ERROR\n");
+            break;
+    }
+    int rts_delay = modbus_rtu_get_rts_delay(mb);
+    printf("\t\tRTS delay: %d us\n", rts_delay);
+    if (rts_delay == -1) printf("ERROR\n");
+    
+    return mb;
+}
+
+void print_modbus_mapping(void)
+{
+    // printf("Dumping data (hex):\n");
+    // printf("info: %d, reg %d, reg0 %d\n", sizeof(mbmap), sizeof(mbmap->tab_registers), sizeof(mbmap->tab_registers[0]));
+    printf("addr\tbit\tibit\tireg\treg\n");
+    printf("------------------------------------\n");
+    for (int i = 0; (i < MAP_SIZE_BITS) || (i < MAP_SIZE_IBITS) || (i < MAP_SIZE_IREGS) || (i < MAP_SIZE_REGS); i++){
+        printf("%04X|\t", i);
+        if (i < MAP_SIZE_BITS){
+            printf("%04X\t", map->tab_bits[i]);
+        }else{
+            printf("\t");
+        }
+        usleep(1000);
+        if (i < MAP_SIZE_IBITS){
+            printf("%04X\t", map->tab_input_bits[i]);
+        }else{
+            printf("\t");
+        }
+        usleep(1000);
+        if (i < MAP_SIZE_IREGS){
+            // printf("ireg %d\n", i);
+            printf("%04X\t", map->tab_input_registers[i]);
+        }else{
+            printf("\t");
+        }
+        usleep(1000);
+        if (i < MAP_SIZE_REGS){
+            printf("%04X\n", map->tab_registers[i]);
+        }else{
+            printf("\t\n");
+        }
+        usleep(1000);
     }
 }

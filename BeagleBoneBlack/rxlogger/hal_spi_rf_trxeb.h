@@ -55,7 +55,7 @@ extern "C" {
  */
 
 #define SPI_BUFFER_SIZE      256
-
+/*
 #define TRXEM_PORT_SEL       P3SEL
 #define TRXEM_PORT_OUT       P3OUT
 #define TRXEM_PORT_DIR       P3DIR
@@ -70,7 +70,7 @@ extern "C" {
 #define RF_RESET_N_PORT_SEL  P8SEL
 #define RF_RESET_N_PORT_DIR  P8DIR
 #define RF_RESET_N_PIN       BIT0
-
+*/
 
 #define RADIO_BURST_ACCESS   0x40
 #define RADIO_SINGLE_ACCESS  0x00
@@ -89,6 +89,7 @@ extern "C" {
  */
 
 /* Macros for Tranceivers(TRX) */
+/*
 #define TRXEM_SPI_BEGIN()              st( TRXEM_PORT_OUT &= ~TRXEM_SPI_SC_N_PIN; NOP(); )
 #define TRXEM_SPI_TX(x)                st( UCB0IFG &= ~UCRXIFG; UCB0TXBUF= (x); )
 #define TRXEM_SPI_WAIT_DONE()          st( while(!(UCB0IFG & UCRXIFG)); )
@@ -104,6 +105,7 @@ extern "C" {
                                            else (x) = 0; )
 
 #define TRXEM_SPI_END()                st( NOP(); TRXEM_PORT_OUT |= TRXEM_SPI_SC_N_PIN; )
+*/
 
 /******************************************************************************
  * TYPEDEFS
@@ -121,7 +123,8 @@ typedef uint8 rfStatus_t;
  * PROTOTYPES
  */
 
-void trxRfSpiInterfaceInit(uint8 clockDivider);
+int trxRfSpiInterfaceInit(char* spiDevice, int mode, int freqHz);
+int trxRfSpiInterfaceClose(void);
 rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint16 len);
 rfStatus_t trxSpiCmdStrobe(uint8 cmd);
 
