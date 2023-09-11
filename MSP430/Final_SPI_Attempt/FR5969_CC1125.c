@@ -483,3 +483,11 @@ void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
      Pkt[3] = (temporary & 0x000000ff);
 
 }
+
+
+void InitTxTimer(void){
+    TA0CCTL0 |= CCIE;
+    TA0CCR0 = 32678;
+    TA0CTL |= TASSEL__ACLK | MC__CONTINUOUS;
+    __bis_SR_register(LPM0_bits | GIE);
+}

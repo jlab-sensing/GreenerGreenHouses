@@ -3,6 +3,7 @@
  *
  *  Created on: Sep 7, 2023
  *      Author: matth
+ *
  */
 
 //required libraries for example to work
@@ -18,29 +19,31 @@
 #include "smartRF1125.h"
 #include "FR5969_CC1125.h"
 
-uint8_t Msgg[4] = {0};
 
-
-void initTimer(){
-    TA0CCTL0 |= CCIE;
-    TA0CCR0 = 32678;
-    TA0CTL |= TASSEL__ACLK | MC__CONTINUOUS;
-    __bis_SR_register(LPM0_bits | GIE);
-}
 int main()
 {
     WDTCTL = WDTPW | WDTHOLD; //Disable Watchdog Timer
     PM5CTL0 &= ~LOCKLPM5;
 
-    uint8_t Temperature, Humidity;
+    //variables to store raw temp and humidity values
+    uint16_t Temperature, Humidity;
+
+    //array to store packet information, filled in createPacket()
+    uint8_t Msgg[4] = {0};
+
     //basic I2C library initialization
     initClockTo16MHz();
     initGPIO();
-
-    InitUart();
     initI2C(HDC2021_ADDRESS);
+
+    //uart initialization, used for debugging
+    InitUart();
+
+  //Timer initialization for timed wakeup and low-power sleep
+    InitTxTimer();
+
+    //SPI and CC1125 initialization
     trxRfSpiInterfaceInit(4);
-    initTimer();
     ConfigRegisters(PACKET_MODE);
     manualCalibration();
 
@@ -57,14 +60,20 @@ int main()
     Temperature = Sensor_ReadRawTemp();
     Humidity = Sensor_ReadRawHumidity();
 
+    //only entered when out of low power mode
     while (1){
+        //trigger and store measurements
         Sensor_TriggerMeasurement();
         Temperature = Sensor_ReadRawTemp();
         Humidity = Sensor_ReadRawHumidity();
-        //transmit message "Test" with packet number after it every second
+
+        //create and send packet array based on temp,humidity, and
+        //constant device ID set in FR5969_CC1125.h (0x0A)
         createPacket(Msgg,Temperature,Humidity,DEVICE_ID);
         cc112xSpiWriteTxFifo(Msgg, sizeof(Msgg));
         trxSpiCmdStrobe(CC112X_STX);
+
+
         //Re-enter LP mode
 
     }
@@ -84,6 +93,8 @@ int main()
        {
 
            //wake up from LP mode here
+
+           //reset rollover (effectively lowering IF)
            TA0CCR0 += 32678;                             // Add Offset to TACCR0
        }
 
