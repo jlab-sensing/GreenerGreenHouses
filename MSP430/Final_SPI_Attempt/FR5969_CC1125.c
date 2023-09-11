@@ -378,9 +378,16 @@ void ConfigRegisters(uint8_t MODE)
 
 
 
-void createPacket(uint32_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
-    *Pkt  = hum;
-    *Pkt |= ((uint32_t)temp << 14);
-    *Pkt |= ((uint32_t)deviceID << 28);
+void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
+    uint32_t temporary;
+
+    temporary  = hum;
+    temporary |= ((uint32_t)temp << 14);
+    temporary |= ((uint32_t)deviceID << 28);
+
+     Pkt[0] = (temporary & 0xff000000) >> 24;
+     Pkt[1] = (temporary & 0x00ff0000) >> 16;
+     Pkt[2] = (temporary & 0x0000ff00) >> 8;
+     Pkt[3] = (temporary & 0x000000ff);
 
 }

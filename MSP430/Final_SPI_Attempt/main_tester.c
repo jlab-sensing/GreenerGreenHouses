@@ -140,10 +140,9 @@ int main()
     Sensor_TriggerMeasurement();
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
-    uint32_t Packet = 0x0;
+    //uint32_t Packet = 0x0;
     uint8_t Msg[4] = {0};
-    int i = 1;
-    char TXBuff[32] = {0};
+
     while (1)
     {
 
@@ -155,12 +154,7 @@ int main()
         //transmit message "Test" with packet number after it every second
 
       //sprintf(TXBuff, "Temp: %x  || Humidity: %x", Temperature,Humidity);
-        createPacket(&Packet,Temperature,Humidity,DEVICE_ID);
-
-        Msg[0] = (Packet & 0xff000000) >> 24;
-        Msg[1] = (Packet & 0x00ff0000) >> 16;
-        Msg[2] = (Packet & 0x0000ff00) >> 8;
-        Msg[3] = (Packet & 0x000000ff);
+        createPacket(Msg,Temperature,Humidity,DEVICE_ID);
 
        //cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
 

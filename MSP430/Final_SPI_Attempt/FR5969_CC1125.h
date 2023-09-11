@@ -26,5 +26,5 @@ void PollRx(uint8_t MODE);
 
 //takes address of packet to send, temperature value, humidity value, and device ID
 // and fills Pkt with correct information to be sent over CC1125 module
-void createPacket(uint32_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID);
+void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID);
 #endif /* FR5969_CC1125_H_ */
