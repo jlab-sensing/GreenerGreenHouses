@@ -1,8 +1,10 @@
 ### MSP430FR5969 communication via SPI to BOOSTXCL CC1125 LoRa module
 This repository includes work and several libraries for general communication between the [MSP430FR5969](https://www.ti.com/tool/MSP-EXP430FR5969?DCMP=mcugen&HQS=ep-mcu-msp-mcugen-mspblog-pf1-en) and the [BOOSTXCL CC1125 LoRa module](https://www.ti.com/tool/BOOSTXL-CC1125) using SPI for general register communication and UART for transferring data through serial.
 
+Two main files are included in this project. "main_tester.c" is the current work in progress main file which polls the temperature and humidity sensor for raw data, creates a 4 byte packet including the pre-configured device ID, temperature, and humidity data, and pulses it into the FIFO buffer of the CC1125 module for RF transmission.
+
 ### Requirements/Installation
-This project was written in Texas Instruments Code Composer Studio (CCS) v12.4.0 for the MSP430FR5969, code functionality is not guaranteed on different &mu;C models or IDE versions.
+This project was written in Texas Instruments Code Composer Studio (CCS) v12.4.0 for the MSP430FR5969 and BOOSTXL CC1125 RF Booster Pack, code functionality is not guaranteed on different &mu;C models, IDE versions, or RF transceivers.
 * Download [CCS v12.4.0](https://www.ti.com/tool/CCSTUDIO?utm_source=google&utm_medium=cpc&utm_campaign=epd-der-null-58700007779115352_code_composer_rsa-cpc-evm-google-wwe_int&utm_content=code_composer&ds_k=code+composer&gclid=CjwKCAjwivemBhBhEiwAJxNWNwJCSwoVVroAFzP406678cN4WomQixjpsSxBFZ7YZQcAh7ai1R1CjhoCafcQAvD_BwE&gclsrc=aw.ds) from Texas Instruments.
 * Clone the GreenerGreenHouses repository
 * Open CCS and select workspace of choice
@@ -14,3 +16,8 @@ This project was written in Texas Instruments Code Composer Studio (CCS) v12.4.0
 
 * Navigate back to the flash drop down and press "Select Program to Load". From there navigate to [Browse Project >> Final_SPI_Attempt >> Debug >> Final_SPI_Attempt.out]
 * If this is unavailable, make sure the project has been built first
+
+### Testing for functionality
+Without the proper receiving hardware, it is impossible to test or use this code base. The project was built around the CC 1125 RF module by Texas Instruments, compatibility with other RF transceivers is not guaranteed. In the grander scope of the project, RF packets transmitted from the MSP430 are picked up by an accompanying RF receiver hosted by a BeagleBoneBlack. Firmware for the BBB, receiver, and packet deconstructor can be found in the BeagleBoneBlack directory. However it is possible to simply test for correct packet transmission, and you can use a program such as TI's RF studio, which has pre-configured settings that do not require any code. 
+* Create a TI account and download [RF Studio](https://www.ti.com/tool/SMARTRFTM-STUDIO#downloads)
+* Open RF Studio
