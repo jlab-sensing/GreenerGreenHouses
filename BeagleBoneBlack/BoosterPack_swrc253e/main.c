@@ -13,15 +13,18 @@
 #include "cc112x_easy_link_reg_config.h"
 
 // #define uint8_t u_int8_t
-// #define SPI_BUFFER_SIZE 4
+#define RX_BUFFER_SIZE 16
 
 // #define LIST_ALL_REGISTERS
 // #define PACKET_PARSER
 #define VARIABLE_LENGTH_PACKET
 // #define FIXED_PACKET_LENGTH 6
 
-#define TEST_TX_MODE
-// #define TEST_RX_MODE
+// #define TEST_TX_MODE
+#define TEST_RX_MODE
+// #define RX_MODE_SINGLE_RX_FIFO_READ
+// #define RX_MODE_SINGLE_RX_FIFO_READ_POINTERS
+#define RX_MODE_MARCSTATE_LOOP
 
 #define SPI_DEV_BUS0_CS0 "/dev/spidev0.0"
 
@@ -85,14 +88,28 @@ int main(int argc, char *argv[]){
 #endif
     
     // uint16 address = 0x00;
-    uint8 rxBuffer[SPI_BUFFER_SIZE] = {0};
+    uint8 rxBuffer[RX_BUFFER_SIZE] = {0};
     // for (int i = 0; i < sizeof(rxData); i++) rxData[i] = 0;
     uint8_t rxBytes;
     uint8 marcState;
     
-    printf("Set RX mode\n");
+#ifdef TEST_TX_MODE
+    printf("TX mode\n");
+    // trxSpiCmdStrobe(CC112X_STX);
+#elif defined TEST_RX_MODE
+#ifdef RX_MODE_SINGLE_RX_FIFO_READ
+    printf("RX mode SINGLE\n");
+#elif defined RX_MODE_SINGLE_RX_FIFO_READ_POINTERS
+    printf("RX mode FORCED\n");
+#elif defined RX_MODE_MARCSTATE_LOOP
+    printf("Marcstate loop\n");
+    int iteration = 0;
+#else
+    printf("RX mode\n");
+#endif
     trxSpiCmdStrobe(CC112X_SRX);
-    
+#endif
+
     while(1){
         /*
         // SPI_transfer(spiFileDesc, txBuffer, rxBuffer, SPI_BUFFER_SIZE);
@@ -132,16 +149,86 @@ int main(int argc, char *argv[]){
         printf("TX: %s\n", txBuffer);
         sleep(1);
 #elif defined TEST_RX_MODE
+
+
+#ifdef RX_MODE_MARCSTATE_LOOP
+        uint8 lastMarcState;
+        status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
+        if (marcState == lastMarcState){
+            continue;
+        }
+        
+        printf("[%d] marcstate = 0x%02X, status = 0x%02X\n", iteration++, marcState, status);
+        status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
+        printf("\trxBytes = %d (0x%02X)\n", rxBytes, status);
+        if((marcState & 0x1F) == RX_FIFO_ERROR) {
+            // Flush RX FIFO
+            printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
+            trxSpiCmdStrobe(CC112X_SFRX);
+        }else if ((marcState & 0x6D) == 0x6D) { // RX
+            printf("\tRX\n");
+        }else if ((marcState & 0x6E) == 0x6E) { // RX_END
+            printf("\tRX_END\n");
+        }
+        
+        if (rxBytes != 0){
+            status = cc112xSpiReadRxFifo(rxBuffer, RX_BUFFER_SIZE);
+            printf("FIFO (0x%02X) {hex} : ", status);
+            for (int i = 0; i < RX_BUFFER_SIZE; i++){
+                printf("%02X ", rxBuffer[i]);
+            }
+            printf("\n");
+        }
+        
+        lastMarcState = marcState;
+        trxSpiCmdStrobe(CC112X_SRX);
+        continue;
+#endif
+        
+        
         status = cc112xGetRxStatus();
-        switch (status){
-            case 0x10: // idle
-                continue;
+        uint8_t status_CHIP_RDYn = (status & 0x80) >> 7;
+        uint8_t status_STATE = (status & 0x70) >> 4;
+        uint8_t status_reserved = status & 0x0F;
+        
+        if (status_CHIP_RDYn){ // chip not ready
+            printf("not ready\n");
+            continue;
+        }
+        
+        if (status_reserved){
+            printf("reserved: 0x%02X\n", status_reserved);
+        }
+        
+        switch (status_STATE){
+            case 0x0: // IDLE
+                // printf("status state IDLE\n");
                 break;
-            case 0x6F: // RX_FIFO_ERR and full bytes
+            case 0x1: // RX
+                // printf("status state RX\n");
+                break;
+            case 0x2: // TX
+                printf("status state TX\n");
+                break;
+            case 0x3: // FSTXON
+                printf("status state FSTXON\n");
+                break;
+            case 0x4: // CALIBRATE
+                printf("status state CALIBRATE\n");
+                break;
+            case 0x5: // SETTLING
+                printf("status state SETTLING\n");
+                break;
+            case 0x6: // RX_FIFO_ERROR
+                printf("status state RX_FIFO_ERROR, flushing\n");
                 trxSpiCmdStrobe(CC112X_SFRX);
                 break;
+            case 0x7: // TX_FIFO_ERROR
+                printf("status state TX_FIFO_ERROR, flushing\n");
+                trxSpiCmdStrobe(CC112X_SFTX);
+                break;
             default:
-                printf("Unknown case 0x%02X\n", status);
+                printf("Unknown state 0x%01X\n", status_STATE);
                 break;
         }
         
@@ -159,13 +246,29 @@ int main(int argc, char *argv[]){
             // Mask out MARCSTATE bits and check if we have a RX FIFO error
             if((marcState & 0x1F) == RX_FIFO_ERROR) {
                 // Flush RX FIFO
+                printf("MARCSTATE RX_FIFO_ERROR, flushing\n");
                 trxSpiCmdStrobe(CC112X_SFRX);
             } else {
-                printf("%d\n", rxBytes);
-                status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
-                // status = cc112xSpiReadRxFifo(rxBuffer, SPI_BUFFER_SIZE);
-                printf("FIFO (0x%02X) {hex} : ", status);
+                printf("marcstate = 0x%02X, rxBytes = %d\n", marcState, rxBytes);
+#ifdef RX_MODE_SINGLE_RX_FIFO_READ
+                // status = cc112xSpiReadReg(rxBuffer, rxBytes);
                 for (int i = 0; i < rxBytes; i++){
+                    status = trx8BitRegAccess(0x00,CC112X_SINGLE_RXFIFO, rxBuffer, 1);
+                    printf("\t[%02d]\t0x%02X\t(0x%02X)\n", i, rxBuffer[i], status);
+                }
+#elif defined RX_MODE_SINGLE_RX_FIFO_READ_POINTERS
+                uint8_t rxfifo_last = 0;
+                uint8_t rxfifo_first = 0;
+                status = cc112xSpiReadReg(CC112X_RXLAST, &rxfifo_last, 1);
+                status = cc112xSpiReadReg(CC112X_RXFIRST, &rxfifo_first, 1);
+                printf("RX FIFO: %d %d\n", rxfifo_first, rxfifo_last);
+                // trxSpiCmdStrobe(CC112X_SFRX); // temp
+#else
+                // status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
+                status = cc112xSpiReadRxFifo(rxBuffer, RX_BUFFER_SIZE);
+#endif
+                printf("FIFO (0x%02X) {hex} : ", status);
+                for (int i = 0; i < RX_BUFFER_SIZE; i++){
                     printf("%02X ", rxBuffer[i]);
                 }
                 printf("\n");
@@ -174,7 +277,7 @@ int main(int argc, char *argv[]){
 #endif
             }
             trxSpiCmdStrobe(CC112X_SRX);
-            usleep(10);
+            usleep(100);
         }
 #endif
     }
