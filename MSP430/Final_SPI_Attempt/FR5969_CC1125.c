@@ -376,33 +376,11 @@ void ConfigRegisters(uint8_t MODE)
 
 }
 
-void SendTx(){
-    //Mock DevID: 1 -> 0001
-    //Mock Temp: 72 -> 0100 1000
-    //Mock Humidity: 66 -> 0100 0010
 
 
-    uint8_t CmdByte = MSG_LENGTH;
-    TxBuffer[0] = DEV_ID_1;
-    TxBuffer[1] = 0b11111111;
-    TxBuffer[2] = 0b11111100;
-    TxBuffer[3] = 0b00000000;
+void createPacket(uint32_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
+    *Pkt  = hum;
+    *Pkt |= ((uint32_t)temp << 14);
+    *Pkt |= ((uint32_t)deviceID << 28);
 
-    //configure packet length register
-    cc112xSpiWriteReg(CC112X_PKT_LEN,&CmdByte, 1);
-  //  cc112xSpiWriteTxFifo(TxBuffer, len)
-
-    // Fill up the TX FIFO
-
-
-    trxSpiCmdStrobe(CC112X_STX);
-
-}
-
-uint32_t createPacket(uint16_t temp, uint16_t hum, uint8_t deviceID) {
-    uint32_t packet;
-    packet = hum;
-    packet |= ((uint32_t)temp << 14);
-    packet |= ((uint32_t)deviceID << 28);
-    return packet;
 }

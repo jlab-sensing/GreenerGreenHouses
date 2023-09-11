@@ -132,7 +132,7 @@ enum modes {
     TX_test
 };
 
-const int test_select = TX_test;
+const int test_select = RX_test;
 
 int main(void)
 {
@@ -179,12 +179,15 @@ int main(void)
 
 
         case RX_test:
+            putstring("Made it to RX TEST\n");
             trxSpiCmdStrobe(CC112X_SRX);
 	        //dummy variable for debug break-point
 	        int j=0;
 	        //infinite while loop program trap
 	        while(1){
+
 	            if(cc112xGetRxStatus() == 0x9){
+	                putstring("Made it to RX ACTUAL\n");
 	                //get number of bytes in CC1125 Rx Fifo
 	                cc112xSpiReadReg(CC112X_NUM_RXBYTES,&RxLength,1);
 

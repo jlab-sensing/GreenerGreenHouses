@@ -100,18 +100,6 @@ I2C_Mode I2C_Controller_WriteReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t *re
 }
 
 
-/*
- * Copies data from one array to another, used to dump the Rx buffer contents
- * after a readreg operation
- */
-//void CopyRxArray(uint8_t *source, uint8_t *dest, uint8_t count)
-//{
-//    uint8_t copyIndex = 0;
-//    for (copyIndex = 0; copyIndex < count; copyIndex++)
-//    {
-//        dest[copyIndex] = source[copyIndex];
-//    }
-//}
 
 /*
  * Copies data from one array to another, used to dump the Rx buffer contents
@@ -133,13 +121,6 @@ void initGPIO()
     P1DIR |= BIT0;                            // For LED
     P1SEL1 |= BIT6 | BIT7;   // I2C pins
 
-//    P1SEL1 &= ~BIT3;
-//    P1SEL0 |= BIT3;
-//    P1SEL1 &= ~BIT2;
-//    P1SEL0 |= BIT2;
-//    P3OUT &= ~BIT0;
-//    P3DIR |= BIT0;
-//    P3SEL1 |= BIT5 | BIT6;
     // Disable the GPIO power-on default high-impedance mode to activate
     // previously configured port settings
     UCB0CTLW0 |= UCSWRST;

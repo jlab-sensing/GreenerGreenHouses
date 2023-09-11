@@ -23,8 +23,8 @@
 #define FS_VCO2_INDEX 0
 #define FS_VCO4_INDEX 1
 #define FS_CHP_INDEX 2
-char Message[MSG_SIZE] = { 0 };
-uint8_t Temperature, Humidity;
+static uint8_t Temperature, Humidity;
+
 
 static void manualCalibration(void)
 {
@@ -134,14 +134,16 @@ int main()
     Sensor_SetMeasurementRate(ONE_SECOND);
     Sensor_SetTempResolution(FOURTEEN_BIT);
     Sensor_SetHumidityResolution(FOURTEEN_BIT);
-    Sensor_TriggerMeasurement();
+
 
     //first measurement needs to be thrown away as HDC2021 stabilizes
+    Sensor_TriggerMeasurement();
     Temperature = Sensor_ReadTemp();
     Humidity = Sensor_ReadHumidity();
-
-    putstring("Beginning sensor integration with LoRa\r\n");
-    char TXBuff[32] = { 0 };
+    uint32_t Packet = 0x0;
+    uint8_t Msg[4] = {0};
+    int i = 1;
+    char TXBuff[32] = {0};
     while (1)
     {
 
@@ -149,27 +151,29 @@ int main()
         Sensor_TriggerMeasurement();
         Temperature = Sensor_ReadTemp();
         Humidity = Sensor_ReadHumidity();
-        //   sprintf(Message,"Temperature: %x C    Humidity: %x %  \r\n",Temperature,Humidity);
-//
-////
-////
-        int packet_count = 0;
+
         //transmit message "Test" with packet number after it every second
-        int i = 0;
 
-        sprintf(TXBuff, "Temp: %x  || Humidity: %x \n", Temperature,
-                Humidity);
+      //sprintf(TXBuff, "Temp: %x  || Humidity: %x", Temperature,Humidity);
+        createPacket(&Packet,Temperature,Humidity,DEVICE_ID);
 
-        cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+        Msg[0] = (Packet & 0xff000000) >> 24;
+        Msg[1] = (Packet & 0x00ff0000) >> 16;
+        Msg[2] = (Packet & 0x0000ff00) >> 8;
+        Msg[3] = (Packet & 0x000000ff);
+
+       //cc112xSpiWriteTxFifo(TXBuff, sizeof(TXBuff));
+
+        cc112xSpiWriteTxFifo(Msg, sizeof(Msg));
         trxSpiCmdStrobe(CC112X_STX);
-        memset(TXBuff, 0, 32);
-      //  packet_count++;
+//        sprintf(TxBuff0,"Packet Num: %d || Packet Data:",i)
+//        sprintf(TxBuff1,"")
 
-        //  putstring(Message);
-        //  memset(Message,0,MSG_SIZE);
-//
+              //memset(TXBuff, 0, 32);
+
+
         __delay_cycles(1000000);
     }
-    return 0;
+
 }
 
