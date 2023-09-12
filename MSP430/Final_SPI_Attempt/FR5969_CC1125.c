@@ -139,6 +139,7 @@ void ConfigRegisters(uint8_t MODE)
             {
                 putstring("OK\n");
 
+
             }
             else
             {

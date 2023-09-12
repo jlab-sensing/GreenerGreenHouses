@@ -9,6 +9,7 @@
 #define SMARTRF1125_H_
 
 #include "hal_spi_rf_trxeb.h"
+#include "cc112x_spi.h"
 
 //RX mode preferred register settings
 static const registerSetting_t ETSI_CAT1_869_S1_Rx[] = {

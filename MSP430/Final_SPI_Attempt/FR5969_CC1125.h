@@ -16,17 +16,23 @@
 #define DEVICE_ID 0x0A //IOT Tag device
 /*
  * Configure Registers: configures and sets registers found in CC1125 to correct modes given input
- * Param: MODE, the mode with which you want to control the CC1125, RX, TX, or continuous PACKET mode
+ * Param: MODE, the mode with which you want to control the CC1125, RX, TX, or PACKET mode
 */
 void ConfigRegisters(uint8_t MODE);
 
+/*
+ * Calibrates CC1125 to ensure correct Tx/Rx, provided by TI
+ */
 void manualCalibration(void);
 
-void PollRx(uint8_t MODE);
+
 
 //takes address of packet to send, temperature value, humidity value, and device ID
 // and fills Pkt with correct information to be sent over CC1125 module
 void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID);
 
+//initializes ACLK to roll-over every 1s and leave low-power mode for sensor read/CC1125 Tx
 void InitTxTimer(void);
+
+
 #endif /* FR5969_CC1125_H_ */

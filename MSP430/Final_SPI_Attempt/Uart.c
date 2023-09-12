@@ -18,7 +18,7 @@ void putcha(char c){
 
 void putstring(char *s){
     int i= 0;
-    int length = ((strlen(s)) - 1);
+    unsigned int length = ((strlen(s)) - 1);
 
     for(i = length; i >= 0; i--)
     {
