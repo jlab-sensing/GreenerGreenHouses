@@ -11,14 +11,17 @@
 #include <modbus/modbus.h>
 #include "cc112x_spi.h"
 #include "cc112x_easy_link_reg_config.h"
+#include <time.h>
 
 // #define LIST_ALL_REGISTERS
-#define TEST_PACKET_PARSER
+// #define TEST_PACKET_PARSER
 #define PARSE_PACKET_CAST_32
-// #define SKIP_LORA
-// #define SKIP_MODBUS
+#define SKIP_LORA
+#define SKIP_MODBUS
+#define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
 
 #define MAX_PACKET_LENGTH 16
+#define MAX_FILENAME_LENGTH 50
 
 #define SPI_DEV_BUS0_CS0 "/dev/spidev0.0"
 
@@ -56,7 +59,7 @@ typedef enum {
 } packetType_t;
 
 // Global
-static FILE* fp = NULL;
+static FILE* fpData = NULL;
 static modbus_t *mb = NULL;
 static modbus_mapping_t *map;
 
@@ -142,6 +145,9 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
 
 int main(int argc, char *argv[]){
 #ifdef TEST_PACKET_PARSER
+    printf("%ld\n", time(NULL));
+    return 0;
+
     printf("argc = %d\n", argc);
     for (int i = 0; i < argc; i++){
         printf("%s\n", argv[i]);
@@ -178,18 +184,31 @@ int main(int argc, char *argv[]){
     signal(SIGINT, intHandler);
     
     spi_init();
+    
 #ifndef SKIP_LORA
     radio_init();
 #endif
-    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_IREGS, MAP_SIZE_REGS);
 
-    fp = fopen("data", "w");
-    if (fp == NULL){
-        printf("null\n");
+#ifndef SKIP_MODBUS
+    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_IREGS, MAP_SIZE_REGS);
+#endif
+
+    char fpDataFileName[MAX_FILENAME_LENGTH];
+    if (sprintf(fpDataFileName, "%ld_data.csv", time(NULL)) < 0){
+        printf("Error generating fpDataFileName.\n");
+        return -1;
     }
+    fpData = fopen(fpDataFileName, "a");
+    if (fpData == NULL){
+        printf("fopen() failed to open %s\n", fpDataFileName);
+    }
+    printf("write column names to CSV\n");
+    fprintf(fpData, "time_unix, id, temperature_raw, temperature_celsius, humidity_raw, humidity_percent\n");
     
+#ifndef SKIP_LORA
     printf("Strobing SRX and entering main loop.\n");
     trxSpiCmdStrobe(CC112X_SRX);
+#endif
     
     while(1){
 #ifndef SKIP_LORA
@@ -222,19 +241,21 @@ int main(int argc, char *argv[]){
             }
             printf("\n");
             
-            switch (packetParser(rxBuffer, rxBytes - 2, &parsedPacket)){
+            switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
                 case RH_T_14_BIT:
                 case RH_T_11_BIT:
                 case RH_T_9_BIT:
+                    printf("writing\n");
+                    
+                    fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
+                    
+                    // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
                     break;
                 case UNKNOWN:
                     break;
                 default:
                     break;
             }
-            
-            printf("writing\n");
-            fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fp);
         }
         lastMarcState = marcState;
         trxSpiCmdStrobe(CC112X_SRX);
@@ -272,12 +293,12 @@ int main(int argc, char *argv[]){
     printf("Closing %s.\n", SPI_DEV_BUS0_CS0);
     trxRfSpiInterfaceClose();
     printf("Closing data.\n");
-    fclose(fp);
+    fclose(fpData);
     return 0;
 }
 
 void intHandler(int sig) {
-    if (fp != NULL) fclose(fp);
+    if (fpData != NULL) fclose(fpData);
     trxRfSpiInterfaceClose();
     
     modbus_mapping_free(map);
