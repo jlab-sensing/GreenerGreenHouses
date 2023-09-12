@@ -475,8 +475,8 @@ void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
     uint32_t temporary;
 
     temporary  = hum;
-    temporary |= ((uint32_t)temp << 14);
-    temporary |= ((uint32_t)deviceID << 28);
+    temporary |= (((uint32_t)temp  << 14) & 0x0FFFC000);
+    temporary |= (((uint32_t)deviceID << 28) & 0xF0000000);
 
      Pkt[0] = (temporary & 0xff000000) >> 24;
      Pkt[1] = (temporary & 0x00ff0000) >> 16;
@@ -487,8 +487,16 @@ void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
 
 
 void InitTxTimer(void){
+    CSCTL0 |= CSKEY;
+     CSCTL2 |= SELA__VLOCLK;
+      CSCTL3 |= DIVA_0;
+      CSCTL4 &= ~LFXTOFF;
     TA0CCTL0 |= CCIE;
     TA0CCR0 = 32678;
+   // CSCTL2 = SELA__VLOCLK;
     TA0CTL |= TASSEL__ACLK | MC__CONTINUOUS;
+
+
+
     __bis_SR_register(LPM0_bits | GIE);
 }

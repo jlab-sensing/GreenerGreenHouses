@@ -21,6 +21,17 @@
 #include "Uart.h"
 
 
+void EnterLPM3(void){
+     CSCTL4 |= SMCLKOFF;
+     CSCTL6 &= ~SMCLKREQEN;
+}
+
+void ExitLPM3(void){
+      CSCTL4 &= ~SMCLKOFF;
+      CSCTL6 |= SMCLKREQEN;
+}
+
+
 int main()
 {
     WDTCTL = WDTPW | WDTHOLD; //Disable Watchdog Timer
@@ -59,7 +70,10 @@ int main()
 
     //Timer initialization for timed wakeup and low-power sleep
     InitTxTimer();
+
+
     //only entered when out of low power mode
+    char out[32] = {0};
     while (1)
     {
         //trigger and store measurements
@@ -67,6 +81,9 @@ int main()
         Temperature = Sensor_ReadRawTemp();
         Humidity = Sensor_ReadRawHumidity();
 
+        sprintf(out,"%x   || %x\n",Temperature,Humidity);
+        putstring(out);
+        memset(out,0,32);
         //create and send packet array based on temp,humidity, and
         //constant device ID set in FR5969_CC1125.h (0x0A)
         createPacket(Msgg, Temperature, Humidity, DEVICE_ID);
@@ -76,7 +93,13 @@ int main()
         trxSpiCmdStrobe(CC112X_STX);
 
         //Re-enter LPM3
-        LPM3;
+//
+
+        EnterLPM3();
+       LPM3;
+
+    //   __bis_SR_register(LPM3_bits | GIE);
+
     }
 
 }
@@ -93,7 +116,11 @@ __interrupt void Timer_A(void)
 {
 
     //  Set Active Mode
-    LPM3_EXIT;
+//   CSCTL4 |= SMCLKOFF;
+  //  CSCTL6 &= ~SMCLKREQEN;
+    ExitLPM3();
+  LPM3_EXIT;
+  //  __bic_SR_register_on_exit(LPM3_bits | GIE);
     //effectively clearing IF, resets to 1s rollover
     TA0CCR0 += 32678;                             // Add Offset to TACCR0
 }
