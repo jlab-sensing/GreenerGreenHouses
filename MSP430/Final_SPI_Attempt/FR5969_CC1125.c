@@ -1,6 +1,8 @@
 /*
  * FR5969_CC1125.c
  *
+ * Specific library containing the implementations of function to setup the CC1125 module, and packet creator/unpacker
+ *
  *  Created on: Sep 1, 2023
  *      Author: matth
  */
@@ -471,18 +473,31 @@ void manualCalibration(void)
     }
 }
 
-void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID) {
+void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID) {
     uint32_t temporary;
 
     temporary  = hum;
     temporary |= (((uint32_t)temp  << 14) & 0x0FFFC000);
     temporary |= (((uint32_t)deviceID << 28) & 0xF0000000);
 
-     Pkt[0] = (temporary & 0xff000000) >> 24;
-     Pkt[1] = (temporary & 0x00ff0000) >> 16;
-     Pkt[2] = (temporary & 0x0000ff00) >> 8;
-     Pkt[3] = (temporary & 0x000000ff);
+     packet[0] = (temporary & 0xff000000) >> 24;
+     packet[1] = (temporary & 0x00ff0000) >> 16;
+     packet[2] = (temporary & 0x0000ff00) >> 8;
+     packet[3] = (temporary & 0x000000ff);
 
+}
+
+void destroyPacket(uint8_t* packet, uint16_t* temp, uint16_t* hum, uint8_t* deviceID) {
+	uint32_t completePacket;
+	uint32_t completePacket;
+    	completePacket = packet[3];
+    	completePacket |= (uint32_t)packet[2] << 8;
+    	completePacket |= (uint32_t)packet[1] << 16;
+    	completePacket |= (uint32_t)packet[0] << 24;
+    	*deviceID = (completePacket & 0xF0000000) >> 28;
+    	*temp = (completePacket & 0x0FFFC000) >> 12;
+    	*hum = (completePacket & 0x00003FFF);
+    	return completePacket;
 }
 
 
