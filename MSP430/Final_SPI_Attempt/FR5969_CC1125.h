@@ -1,6 +1,8 @@
 /*
  * FR5969_CC1125.h
  *
+ * Specific library for setup of the CC1125 RF module by Texas Instruments, including custom packet creator and unpacker
+ *
  *  Created on: Sep 1, 2023
  *      Author: matth
  */
@@ -10,28 +12,65 @@
 
 #include <stdint.h>
 
-#define RX_MODE 0 //continuous Rx
-#define TX_MODE 1 //continuous Tx
-#define PACKET_MODE 2 //packet mode, same for Rx and Tx
-#define DEVICE_ID 0x0A //IOT Tag device
-/*
- * Configure Registers: configures and sets registers found in CC1125 to correct modes given input
- * Param: MODE, the mode with which you want to control the CC1125, RX, TX, or PACKET mode
-*/
-void ConfigRegisters(uint8_t MODE);
+#define RX_MODE 0           //continuous Rx
+#define TX_MODE 1           //continuous Tx
+#define PACKET_MODE 2       //packet mode, same for Rx and Tx
+#define DEVICE_ID 0x0A      //IOT Tag device
+
 
 /*
- * Calibrates CC1125 to ensure correct Tx/Rx, provided by TI
+ * @function ConfigRegisters
+ *
+ * Configures and sets registers found in CC1125 to correct modes given input, register configuration
+ * determined using Texas Instrument's RF Studio set to preferred settings
+ *
+ * @param MODE:         The mode with which you want to control the CC1125
+ *                      - RX: Continuous RX mode
+ *                      - TX: Continuous TX mode
+ *                      - PACKET: predefined packet size in RX and TX mode
+ *
+ */
+void ConfigRegisters(uint8_t MODE);
+
+
+/*
+ * @function manualCalibration
+ *
+ * Calibrates the CC1125 FR module to ensure correct Tx/Rx setup, function provided by Texas Instruments
  */
 void manualCalibration(void);
 
 
+/*
+ * @function createPacket
+ *
+ * Constructs a specific data packet containing temperature and humidity
+ * data from HDC2021 sensor, and deviceID for FR transmission to BBB
+ * 
+ * @param Pkt:          pointer to uint8_t packet array
+ * @param temp:	        14 bit raw temperature value
+ * @param hum:          14 bit raw humidity value
+ * @param deviceID      4 bit deviceID, custom to micro-C
+ */
+void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID);
 
-//takes address of packet to send, temperature value, humidity value, and device ID
-// and fills Pkt with correct information to be sent over CC1125 module
-void createPacket(uint8_t *Pkt, uint16_t temp, uint16_t hum, uint8_t deviceID);
+/*
+ * @function destroyPacket
+ *
+ * Unpacks custom packet, dividing data into deviceID and raw temperature and humidity data
+ *
+ * @param packet:       pointer to uint8_t packet array
+ * @param temp:         pointer to uint16_t to store temperature
+ * @param hum:          pointer to uint16_t to store humidity
+ * @param deviceID      pointer to uint8_t to store device ID
+ */
+void destroyPacket(uint8_t* packet, uint16_t* temp, uint16_t* hum, uint8_t* deviceID);
 
-//initializes ACLK to roll-over every 1s and leave low-power mode for sensor read/CC1125 Tx
+/*
+ * @function InitTXTimer
+ *
+ * Initializes ACLK to roll-over every 1s and leave low-power mode for sensor read/CC1125 Tx
+ */
 void InitTxTimer(void);
 
 
