@@ -487,19 +487,6 @@ void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID
 
 }
 
-void destroyPacket(uint8_t* packet, uint16_t* temp, uint16_t* hum, uint8_t* deviceID) {
-	uint32_t completePacket;
-	uint32_t completePacket;
-    	completePacket = packet[3];
-    	completePacket |= (uint32_t)packet[2] << 8;
-    	completePacket |= (uint32_t)packet[1] << 16;
-    	completePacket |= (uint32_t)packet[0] << 24;
-    	*deviceID = (completePacket & 0xF0000000) >> 28;
-    	*temp = (completePacket & 0x0FFFC000) >> 12;
-    	*hum = (completePacket & 0x00003FFF);
-    	return completePacket;
-}
-
 
 void InitTxTimer(void){
     CSCTL0 |= CSKEY;

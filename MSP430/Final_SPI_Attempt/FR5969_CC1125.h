@@ -55,18 +55,6 @@ void manualCalibration(void);
 void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID);
 
 /*
- * @function destroyPacket
- *
- * Unpacks custom packet, dividing data into deviceID and raw temperature and humidity data
- *
- * @param packet:       pointer to uint8_t packet array
- * @param temp:         pointer to uint16_t to store temperature
- * @param hum:          pointer to uint16_t to store humidity
- * @param deviceID      pointer to uint8_t to store device ID
- */
-void destroyPacket(uint8_t* packet, uint16_t* temp, uint16_t* hum, uint8_t* deviceID);
-
-/*
  * @function InitTXTimer
  *
  * Initializes ACLK to roll-over every 1s and leave low-power mode for sensor read/CC1125 Tx
