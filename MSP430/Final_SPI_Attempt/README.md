@@ -20,4 +20,8 @@ This project was written in Texas Instruments Code Composer Studio (CCS) v12.4.0
 ### Testing for functionality
 Without the proper receiving hardware, it is impossible to test or use this code base. The project was built around the CC 1125 RF module by Texas Instruments, compatibility with other RF transceivers is not guaranteed. In the grander scope of the project, RF packets transmitted from the MSP430 are picked up by an accompanying RF receiver hosted by a BeagleBoneBlack. Firmware for the BBB, receiver, and packet deconstructor can be found in the BeagleBoneBlack directory. However it is possible to simply test for correct packet transmission, and you can use a program such as TI's RF studio, which has pre-configured settings that do not require any code. 
 * Create a TI account and download [RF Studio](https://www.ti.com/tool/SMARTRFTM-STUDIO#downloads)
-* Open RF Studio
+* Open RF Studio, plug in RF Module into any available USB port, and select device
+* Change mode to RX Packets, go to advanced settings, and change packet length to 4 bytes
+* Remove packet number setting, and configure CRC setting
+* Connect the MSP430 to the CC1125 RF Module following the diagram below
+* In main.c, above main(), change to TX_Test, build and flash to MSP430
