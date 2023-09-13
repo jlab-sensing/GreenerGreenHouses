@@ -14,6 +14,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "cs.h"
 #include <stdio.h>
 
 I2C_Mode ControllerMode = IDLE_MODE;                        //Used to track the state of the software state machine
@@ -168,6 +169,7 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) USCI_B0_ISR (void)
     case USCI_I2C_UCRXIFG1:  break;                         // Vector 18: RXIFG1
     case USCI_I2C_UCTXIFG1:  break;                         // Vector 20: TXIFG1
     case USCI_I2C_UCRXIFG0:                                 // Vector 22: RXIFG0
+        CS_enableClockRequest(CS_SMCLK);
         rx_val = UCB0RXBUF;
         if (RXByteCtr)
         {
@@ -184,9 +186,11 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) USCI_B0_ISR (void)
           UCB0IE &= ~UCRXIE;
           ControllerMode = IDLE_MODE;
           __bic_SR_register_on_exit(CPUOFF);                // Exit LPM0
+          CS_disableClockRequest(CS_SMCLK);
         }
         break;
     case USCI_I2C_UCTXIFG0:                                 // Vector 24: TXIFG0
+        CS_enableClockRequest(CS_SMCLK);
         switch (ControllerMode)
         {
           case TX_REG_ADDRESS_MODE:
@@ -224,6 +228,7 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) USCI_B0_ISR (void)
                   ControllerMode = IDLE_MODE;
                   UCB0IE &= ~UCTXIE;                        // disable TX interrupt
                   __bic_SR_register_on_exit(CPUOFF);        // Exit LPM0
+                  CS_disableClockRequest(CS_SMCLK);
               }
               break;
 

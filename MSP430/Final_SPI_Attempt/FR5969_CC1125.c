@@ -13,6 +13,7 @@
 #include "smartRF1125.h"
 #include <stdio.h>
 #include "Uart.h"
+#include <cs.h>
 #include <gpio.h>
 #include <hw_memmap.h>
 #include <cs.h>
@@ -489,16 +490,10 @@ void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID
 
 
 void InitTxTimer(void){
-    CSCTL0 |= CSKEY;
-     CSCTL2 |= SELA__VLOCLK;
-      CSCTL3 |= DIVA_0;
-      CSCTL4 &= ~LFXTOFF;
     TA0CCTL0 |= CCIE;
     TA0CCR0 = 32678;
-   // CSCTL2 = SELA__VLOCLK;
     TA0CTL |= TASSEL__ACLK | MC__CONTINUOUS;
 
-
-
     __bis_SR_register(LPM0_bits | GIE);
+
 }
