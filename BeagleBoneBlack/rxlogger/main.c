@@ -12,13 +12,18 @@
 #include "cc112x_spi.h"
 #include "cc112x_easy_link_reg_config.h"
 #include <time.h>
+#include <errno.h>
 
 // #define LIST_ALL_REGISTERS
 // #define TEST_PACKET_PARSER
 #define PARSE_PACKET_CAST_32
-#define SKIP_LORA
-#define SKIP_MODBUS
+// #define SKIP_LORA
+// #define SKIP_MODBUS
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
+#define MODBUS_NONBLOCKING
+#ifdef MODBUS_NONBLOCKING
+#include <sys/socket.h>
+#endif
 
 #define MAX_PACKET_LENGTH 16
 #define MAX_FILENAME_LENGTH 50
@@ -123,6 +128,22 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
     
     printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
     
+#ifdef MODBUS_NONBLOCKING
+    // Timeout info
+    uint32_t sec;
+    uint32_t usec;
+    int timeoutStatus;
+    printf("timeouts\n");
+    timeoutStatus = modbus_get_response_timeout(mb, &sec, &usec);
+    printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_set_indication_timeout(mb, sec, usec);
+    printf("\tindication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_get_byte_timeout(mb, &sec, &usec);
+    printf("\tbyte (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    // Set socket as nonblocking
+    // getsockopt();
+#endif
+    
     printf("Mapping\n");
     // map = modbus_mapping_new_start_address();
     map = modbus_mapping_new(bits, ibits, iregs, regs);
@@ -221,50 +242,50 @@ int main(int argc, char *argv[]){
         uint8 lastMarcState;
         packetStruct_t parsedPacket;
 
+        // printf("marcstate\n");
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
         if (marcState == lastMarcState){
-            continue;
-        }
-        
-        if((marcState & MARC_STATE_MASK) == RX_FIFO_ERROR) {
-            printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
-            trxSpiCmdStrobe(CC112X_SFRX);
-        }
-        
-        status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
-        if (rxBytes != 0){
-            printf("rxBytes = %d (0x%02X)\n", rxBytes, status);
-            status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
-            printf("FIFO (0x%02X) {hex} : ", status);
-            for (int i = 0; i < rxBytes; i++){
-                printf("%02X ", rxBuffer[i]);
+            if((marcState & MARC_STATE_MASK) == RX_FIFO_ERROR) {
+                printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
+                trxSpiCmdStrobe(CC112X_SFRX);
             }
-            printf("\n");
             
-            switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
-                case RH_T_14_BIT:
-                case RH_T_11_BIT:
-                case RH_T_9_BIT:
-                    printf("writing\n");
-                    
-                    fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
-                    
-                    // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
-                    break;
-                case UNKNOWN:
-                    break;
-                default:
-                    break;
+            status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
+            if (rxBytes != 0){
+                printf("rxBytes = %d (0x%02X)\n", rxBytes, status);
+                status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
+                printf("FIFO (0x%02X) {hex} : ", status);
+                for (int i = 0; i < rxBytes; i++){
+                    printf("%02X ", rxBuffer[i]);
+                }
+                printf("\n");
+                
+                switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
+                    case RH_T_14_BIT:
+                    case RH_T_11_BIT:
+                    case RH_T_9_BIT:
+                        printf("writing\n");
+                        
+                        fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
+                        
+                        // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
+                        break;
+                    case UNKNOWN:
+                        break;
+                    default:
+                        break;
+                }
             }
+            lastMarcState = marcState;
+            trxSpiCmdStrobe(CC112X_SRX);
         }
-        lastMarcState = marcState;
-        trxSpiCmdStrobe(CC112X_SRX);
 #endif
 #ifndef SKIP_MODBUS
         // Modbus
         
         int requestLength, responseLength;
         uint8_t req[MODBUS_MAX_ADU_LENGTH];
+        int errnoSaved = 0;
         
         print_modbus_mapping();
         printf("waiting on modbus_receive\n");
@@ -274,11 +295,19 @@ int main(int argc, char *argv[]){
                 printf("Ignore request (other slave address)\n");
                 break;
             case -1:
-                printf("Error receiving\n");
+                errnoSaved = errno;
+                switch (errnoSaved){
+                    case ETIMEDOUT:
+                        printf("ETIMEDOUT (%d)\n", errnoSaved);
+                        break;
+                    default:
+                        printf("Unknown error, check 'errno %d'\n", errnoSaved);
+                        break;
+                }
                 break;
             default:
                 printf("Handling request (length %d)\n", requestLength);
-                sleep(1);
+                // sleep(1);
                 responseLength = modbus_reply(mb, req, requestLength, map) ;
                 if (responseLength == -1){
                     printf("Could not reply\n");
