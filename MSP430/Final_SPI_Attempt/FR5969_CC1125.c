@@ -476,8 +476,8 @@ void manualCalibration(void)
 void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID) {
     uint32_t temporary;
 
-    temporary  = hum;
-    temporary |= (((uint32_t)temp  << 14) & 0x0FFFC000);
+    temporary  = (uint32_t)hum >> 2;
+    temporary |= (((uint32_t)temp  << 12) & 0x0FFFC000);
     temporary |= (((uint32_t)deviceID << 28) & 0xF0000000);
 
      packet[0] = (temporary & 0xff000000) >> 24;
