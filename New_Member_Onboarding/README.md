@@ -16,15 +16,21 @@ These sub-systems and their related resources will be discussed further below. A
 
 
 ## Current Greenhouse Control System
-The current system equipped in UCSC's [Coastal Biology Greenhouses](https://greenhouse.ucsc.edu/research/facility-cbg.html) is driven by [Argus Controls](https://arguscontrols.com/), and a detailed overview of this baseline system can be found [here](https://drive.google.com/drive/folders/1_lNfw5vJW_Q_KWBBiqxn9BiAg7NH7jfJ?usp=sharing). Provided below is a basic diagram of the current functionality, where all actuators and sensors are tied to the Argus Titan IO module and controlled in the greenhouse director's office.
+The current system equipped in UCSC's [Coastal Biology Greenhouses](https://greenhouse.ucsc.edu/research/facility-cbg.html) is driven by [Argus Controls](https://arguscontrols.com/), and a detailed overview of this baseline system can be found [here](https://drive.google.com/drive/folders/1_lNfw5vJW_Q_KWBBiqxn9BiAg7NH7jfJ?usp=sharing). Provided below is a basic diagram of the current functionality, where all actuators and sensors are tied to the Argus Titan IO module and controlled from the greenhouse director's office.
 
 <p align="center">
-mg width="600" height="200" src="
+<img width="480" height="500" src="https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/9187ddc8-56a3-427e-ab8b-aa702891e5ed">
 </p>
+
+
 
 ## Traditional IOT System
 
+A system diagram of our traditional low-power IOT device is provided below in order for new members to gain an understanding of every link involved in this traditional system. Here, the brains of the system is TI's MSP430FR5969 launchpad which is polling relative humidity and temperature sensors and transmitting this information over LoRa. Receiving this information is a Beagle Bone Black that acts as a sensor manager and communicates with the Argus control software in order to send data and receive commands.
+
 ![image](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/9b7c92c4-6507-470a-a9c7-7d83ccedcf46)
+
+
 
 ### GGH RH/T Sensor
 
