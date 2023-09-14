@@ -18,6 +18,10 @@ These sub-systems and their related resources will be discussed further below. A
 ## Current Greenhouse Control System
 The current system equipped in UCSC's [Coastal Biology Greenhouses](https://greenhouse.ucsc.edu/research/facility-cbg.html) is driven by [Argus Controls](https://arguscontrols.com/), and a detailed overview of this baseline system can be found [here](https://drive.google.com/drive/folders/1_lNfw5vJW_Q_KWBBiqxn9BiAg7NH7jfJ?usp=sharing). Provided below is a basic diagram of the current functionality, where all actuators and sensors are tied to the Argus Titan IO module and controlled in the greenhouse director's office.
 
+<p align="center">
+mg width="600" height="200" src="
+</p>
+
 ## Traditional IOT System
 
 ![image](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/9b7c92c4-6507-470a-a9c7-7d83ccedcf46)
@@ -38,7 +42,7 @@ The microcontroller being utilized by the GGH team is the [MSP430FR5969](https:/
 
 
 
-https://github.com/jlab-sensing/GreenerGreenHouses/tree/main/MSP430/HDC2021_via_MSP430_I2C
+[here](https://github.com/jlab-sensing/GreenerGreenHouses/tree/main/MSP430)
 
 ### CC1125 Boosterpack
 
