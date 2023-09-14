@@ -23,5 +23,16 @@ Without the proper receiving hardware, it is impossible to test or use this code
 * Open RF Studio, plug in RF Module into any available USB port, and select device
 * Change mode to RX Packets, go to advanced settings, and change packet length to 4 bytes
 * Remove packet number setting, and configure CRC setting
-* Connect the MSP430 to the CC1125 RF Module following the diagram below
-* In main.c, above main(), change to TX_Test, build and flash to MSP430
+* Connect the MSP430 to the CC1125 RF Module:
+    * 5V -> 5V
+    * Gnd -> Gnd
+    * P2.6 MISO -> 14 MISO
+    * P2.5 MOSI -> 12 MOSI
+    * P2.4 SCLK -> 13 SCK
+    * P1.6 CS -> 3 CS_N
+* In main.c, above main(), change to TX_Test, in SmartRF1125.h, change PACKET_LEN to 6, build and flash to MSP430
+* If RF studio is currently receiving, then 10 packets will appear, each saying "Test" with the packet number after
+
+
+### Sensor Data Packet Structure
+The system design uses a custom packet structure to transmit sensor data from the HDC2021 to the BeagleBone Black. The packet is 4 bytes long, and is composed of a 4bit device ID, 14 bit temperature data, and 14 bit humidity data. The device ID is used as an identification piece for the BBB, so that the source (which MSP430) is determined and recorded. Bit masking is used in this case to minimize packet size, thuse minimizing transmission time, reducing bit errors and lowering overall power consumption.
