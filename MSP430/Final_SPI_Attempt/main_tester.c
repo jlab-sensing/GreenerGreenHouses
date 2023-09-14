@@ -5,7 +5,7 @@
  *      Author: matth
  *
  */
-
+//
 //required libraries for example to work
 #include <msp430.h>
 #include <stdint.h>
@@ -20,15 +20,16 @@
 #include "cc112x_spi.h"
 #include "Uart.h"
 
-
+//
 void EnterLPM3(void){
      CSCTL4 |= SMCLKOFF;
-     CSCTL6 &= ~SMCLKREQEN;
+     CSCTL6 |= SMCLKREQEN;
+     __bis_SR_register(LPM3_bits | GIE);
 }
 
 void ExitLPM3(void){
       CSCTL4 &= ~SMCLKOFF;
-      CSCTL6 |= SMCLKREQEN;
+      CSCTL6 &= ~ SMCLKREQEN;
 }
 
 
@@ -47,7 +48,7 @@ int main()
     initClockTo16MHz();
     initGPIO();
     //uart initialization, used for debugging
-    InitUart();
+  //  InitUart(); DONT USE IF U WANT LPM3
     //for some reason we have to init uart before i2c because they share euscia
     initI2C(HDC2021_ADDRESS);
 
@@ -73,7 +74,7 @@ int main()
 
 
     //only entered when out of low power mode
-    char out[32] = {0};
+
     while (1)
     {
         //trigger and store measurements
@@ -81,9 +82,6 @@ int main()
         Temperature = Sensor_ReadRawTemp();
         Humidity = Sensor_ReadRawHumidity();
 
-        sprintf(out,"%x   || %x\n",Temperature,Humidity);
-        putstring(out);
-        memset(out,0,32);
         //create and send packet array based on temp,humidity, and
         //constant device ID set in FR5969_CC1125.h (0x0A)
         createPacket(Msgg, Temperature, Humidity, DEVICE_ID);
@@ -92,17 +90,14 @@ int main()
 
         trxSpiCmdStrobe(CC112X_STX);
 
-        //Re-enter LPM3
-//
+     CS_turnOffSMCLK();
+    __bis_SR_register(LPM3_bits | GIE);
 
-        EnterLPM3();
-       LPM3;
-
-    //   __bis_SR_register(LPM3_bits | GIE);
 
     }
 
 }
+
 
 // Timer A0 interrupt service routine
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
@@ -114,14 +109,11 @@ __interrupt void Timer_A(void)
        #error Compiler not supported!
        #endif
 {
-
-    //  Set Active Mode
-//   CSCTL4 |= SMCLKOFF;
-  //  CSCTL6 &= ~SMCLKREQEN;
-    ExitLPM3();
-  LPM3_EXIT;
-  //  __bic_SR_register_on_exit(LPM3_bits | GIE);
+    CS_turnOnSMCLK();
+    __bic_SR_register_on_exit(LPM3_bits);
     //effectively clearing IF, resets to 1s rollover
     TA0CCR0 += 32678;                             // Add Offset to TACCR0
 }
+
+
 

@@ -12,13 +12,18 @@
 #include "cc112x_spi.h"
 #include "cc112x_easy_link_reg_config.h"
 #include <time.h>
+#include <errno.h>
 
 // #define LIST_ALL_REGISTERS
 // #define TEST_PACKET_PARSER
 #define PARSE_PACKET_CAST_32
 #define SKIP_LORA
-#define SKIP_MODBUS
+// #define SKIP_MODBUS
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
+#define MODBUS_NONBLOCKING
+#ifdef MODBUS_NONBLOCKING
+#include <sys/socket.h>
+#endif
 
 #define MAX_PACKET_LENGTH 16
 #define MAX_FILENAME_LENGTH 50
@@ -32,24 +37,16 @@
 
 #define MODBUS_SLAVE_ID 0xAB
 
-#define MAP_SIZE_BITS 4
-#define MAP_SIZE_IBITS 8
-#define MAP_SIZE_IREGS 16
-#define MAP_SIZE_REGS 16
+#define MAP_SIZE_BITS 0
+#define MAP_SIZE_IBITS 0
+#define MAP_SIZE_REGS 1
+#define MAP_SIZE_IREGS 1
 
 #define RTU_PORT        "/dev/ttyUSB0"
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
 #define RTU_DATA_BITS   8
 #define RTU_STOP_BITS   1
-
-typedef struct {
-    int deviceID;
-    uint16_t temperature_raw;
-    float temperature_scaled;
-    uint16_t humidity_raw;
-    float humidity_scaled;
-} packetStruct_t;
 
 typedef enum {
     RH_T_14_BIT,
@@ -58,10 +55,24 @@ typedef enum {
     UNKNOWN
 } packetType_t;
 
+/* Struct that holds the fields that a packet may have.
+   Depending on the packet type, only certain fields may be relevant.
+*/
+typedef struct {
+    packetType_t type;
+    int deviceID;
+    uint16_t temperature_raw;
+    float temperature_scaled;
+    uint16_t humidity_raw;
+    float humidity_scaled;
+    uint16_t rssi;
+    uint16_t crc16;
+} packetStruct_t;
+
 // Global
 static FILE* fpData = NULL;
 static modbus_t *mb = NULL;
-static modbus_mapping_t *map;
+static modbus_mapping_t *map = NULL;
 
 static void manualCalibration(void);
 static void registerConfig(const registerSetting_t *reg, int numRegisters);
@@ -108,7 +119,7 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
 {
     printf("Setting up modbus struct and config.\n");
     mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
-    printf("mb = 0x%02X\n", (unsigned int) mb);
+    printf("mb = 0x%02X\n", (uint32_t) mb);
     printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
     if (modbus_set_slave(mb, MODBUS_SLAVE_ID) < 0)
     {
@@ -117,15 +128,32 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
     
     printf("Opening connection.\n");
     if (modbus_connect(mb) != 0){
-        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (unsigned int) mb);
+        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (uint32_t) mb);
         return -1;
     }
     
     printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
     
+#ifdef MODBUS_NONBLOCKING
+    // Timeout info
+    uint32_t sec;
+    uint32_t usec;
+    int timeoutStatus;
+    printf("timeouts\n");
+    timeoutStatus = modbus_get_response_timeout(mb, &sec, &usec);
+    printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_set_indication_timeout(mb, sec, usec);
+    printf("\tindication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_get_byte_timeout(mb, &sec, &usec);
+    printf("\tbyte (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    // Set socket as nonblocking
+    // getsockopt();
+#endif
+    
     printf("Mapping\n");
     // map = modbus_mapping_new_start_address();
-    map = modbus_mapping_new(bits, ibits, iregs, regs);
+    map = modbus_mapping_new(bits, ibits, regs, iregs);
+    print_modbus_mapping();
     /* 
         map->tab_bits[0]
         map->tab_input_bits[0]
@@ -137,7 +165,7 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
         printf("modbus_mapping_new failed to allocate.\n");
         return -1;
     }else{
-        printf("map located at 0x%X\n", (unsigned int) map);
+        printf("map located at 0x%X\n", (uint32_t) map);
         printf("sizeof(map) = %d\n", sizeof(map));
     }
     return 0;
@@ -190,7 +218,7 @@ int main(int argc, char *argv[]){
 #endif
 
 #ifndef SKIP_MODBUS
-    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_IREGS, MAP_SIZE_REGS);
+    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS);
 #endif
 
     char fpDataFileName[MAX_FILENAME_LENGTH];
@@ -209,6 +237,9 @@ int main(int argc, char *argv[]){
     printf("Strobing SRX and entering main loop.\n");
     trxSpiCmdStrobe(CC112X_SRX);
 #endif
+
+    uint8 marcState = 0;
+    uint8 lastMarcState = 0;
     
     while(1){
 #ifndef SKIP_LORA
@@ -217,69 +248,81 @@ int main(int argc, char *argv[]){
         rfStatus_t status;
         uint8 rxBuffer[MAX_PACKET_LENGTH] = {0};
         uint8_t rxBytes;
-        uint8 marcState;
-        uint8 lastMarcState;
         packetStruct_t parsedPacket;
 
+        printf("marcstate\n");
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
-        if (marcState == lastMarcState){
-            continue;
-        }
-        
-        if((marcState & MARC_STATE_MASK) == RX_FIFO_ERROR) {
-            printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
-            trxSpiCmdStrobe(CC112X_SFRX);
-        }
-        
-        status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
-        if (rxBytes != 0){
-            printf("rxBytes = %d (0x%02X)\n", rxBytes, status);
-            status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
-            printf("FIFO (0x%02X) {hex} : ", status);
-            for (int i = 0; i < rxBytes; i++){
-                printf("%02X ", rxBuffer[i]);
+        if (marcState != lastMarcState){
+            // printf("\tPACKET INCOMING\n");
+            // return 0;
+            if((marcState & MARC_STATE_MASK) == RX_FIFO_ERROR) {
+                printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
+                trxSpiCmdStrobe(CC112X_SFRX);
             }
-            printf("\n");
             
-            switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
-                case RH_T_14_BIT:
-                case RH_T_11_BIT:
-                case RH_T_9_BIT:
-                    printf("writing\n");
-                    
-                    fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
-                    
-                    // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
-                    break;
-                case UNKNOWN:
-                    break;
-                default:
-                    break;
+            status = cc112xSpiReadReg(CC112X_NUM_RXBYTES, &rxBytes, 1);
+            if (rxBytes != 0){
+                printf("rxBytes = %d (0x%02X)\n", rxBytes, status);
+                status = cc112xSpiReadRxFifo(rxBuffer, rxBytes);
+                printf("FIFO (0x%02X) {hex} : ", status);
+                for (int i = 0; i < rxBytes; i++){
+                    printf("%02X ", rxBuffer[i]);
+                }
+                printf("\n");
+                
+                switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
+                    case RH_T_14_BIT:
+                    case RH_T_11_BIT:
+                    case RH_T_9_BIT:
+                        printf("writing\n");
+                        
+                        fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
+                        
+                        printf("modifying modbus registers\n");
+                        uint32_t mappedAddress = ((uint32_t) parsedPacket.deviceID) << 1;
+                        map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
+                        map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
+                        
+                        // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
+                        break;
+                    case UNKNOWN:
+                        break;
+                    default:
+                        break;
+                }
             }
+            lastMarcState = 0;
+            trxSpiCmdStrobe(CC112X_SRX);
         }
-        lastMarcState = marcState;
-        trxSpiCmdStrobe(CC112X_SRX);
 #endif
 #ifndef SKIP_MODBUS
         // Modbus
         
         int requestLength, responseLength;
         uint8_t req[MODBUS_MAX_ADU_LENGTH];
+        int errnoSaved = 0;
         
         print_modbus_mapping();
-        printf("waiting on modbus_receive\n");
+        printf("modbus_receive\n");
         requestLength = modbus_receive(mb, req);
         switch(requestLength){
             case 0:
                 printf("Ignore request (other slave address)\n");
                 break;
             case -1:
-                printf("Error receiving\n");
+                errnoSaved = errno;
+                switch (errnoSaved){
+                    case ETIMEDOUT:
+                        printf("ETIMEDOUT (%d)\n", errnoSaved);
+                        break;
+                    default:
+                        printf("Unknown error, check 'errno %d'\n", errnoSaved);
+                        break;
+                }
                 break;
             default:
                 printf("Handling request (length %d)\n", requestLength);
-                sleep(1);
-                responseLength = modbus_reply(mb, req, requestLength, map) ;
+                responseLength = modbus_reply(mb, req, requestLength, map);
                 if (responseLength == -1){
                     printf("Could not reply\n");
                 }else{
@@ -297,22 +340,28 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+/*******************************************************************************
+*   @fn         intHandler
+*
+*   @brief      Interrupt handler for catching SIGINT (CTRL + C).
+*
+*   @param      int sig
+*
+*   @return     none
+*/
 void intHandler(int sig) {
     if (fpData != NULL) fclose(fpData);
     trxRfSpiInterfaceClose();
     
-    modbus_mapping_free(map);
+    if (map != NULL) modbus_mapping_free(map);
+    if (mb != NULL){
+        modbus_close(mb);
+        printf("Flushed %d bytes.\n", modbus_flush(mb));
+        printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
+        modbus_free(mb);
+    }
     
-    modbus_close(mb);
-    printf("Flushing non-transmitted data.\n");
-    int bytes_flushed;
-    bytes_flushed = modbus_flush(mb);
-    printf("Flushed %d bytes.\n", bytes_flushed);
     
-    printf("Freeing mb = 0x%02X\n", (unsigned int) mb);
-    modbus_free(mb);
-    
-    printf("Program end.\n");
     exit(0);
 }
 
@@ -520,46 +569,48 @@ static packetType_t packetParser(uint8 *packet, uint8 length, packetStruct_t *re
     // To do: Return struct which breaks out the received raw packet into its constituent segments
     // Consider: What about multi-packet messages? Out of scope?
     
-    if (length <= 6){ // Identify packet type based on length
+    if ((length == 4) || (length == 6)){ // Identify packet type based on length
+        returnPacket->type = RH_T_14_BIT;
 #ifdef PARSE_PACKET_CAST_32
         uint32_t bigPacket = (packet[0] << 24) | (packet[1] << 16) | (packet[2] << 8) | (packet[3]);
-        // printf("%X\n", bigPacket);
+        printf("%X\n", bigPacket);
         
         uint8_t  id             = (bigPacket & 0xF0000000) >> 28; // align LSB
         uint16_t temperature    = (bigPacket & 0x0FFFC000) >> 12; // align MSB
         uint16_t humidity       = (bigPacket & 0x00003FFF) <<  2; // align MSB
         
-        // printf("%01X %04X %04X\n", id, temperature, humidity);
+        printf("%01X %04X %04X\n", id, temperature, humidity);
         
         returnPacket->deviceID = id;
         returnPacket->temperature_raw = temperature;
-        returnPacket->temperature_scaled = (((float)temperature * 165) / 65536) - 40;
+        returnPacket->temperature_scaled = (((float)temperature * 165.0f) / 65536.0f) - 40.0f;
         returnPacket->humidity_raw = humidity;
-        returnPacket->humidity_scaled = ((float)humidity / 65536) * 100;
+        returnPacket->humidity_scaled = ((float)humidity / 65536.0f) * 100.0f;
         
-        // printf("temp calcs %X %d %f\n", temperature, temperature, (float)temperature);
-        // printf("\t%f\n", returnPacket->temperature_scaled);
-        // returnPacket->temperature_scaled *= 165.0f;
-        // printf("\t%f\n", returnPacket->temperature_scaled);
-        // returnPacket->temperature_scaled /= 65536.0f;
-        // printf("\t%f\n", returnPacket->temperature_scaled);
-        // returnPacket->temperature_scaled -= 40.0f;
-        // printf("\t%f\n", returnPacket->temperature_scaled);
+        printf("temp calcs %X %d %f\n", temperature, temperature, (float)temperature);
+        returnPacket->temperature_scaled = temperature;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled *= 165.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled /= 65536.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled -= 40.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
         
-        // printf("humidity calcs %X %d %f\n", humidity, humidity, (float)humidity);
-        // returnPacket->humidity_scaled = humidity;
-        // printf("\t%f\n", returnPacket->humidity_scaled);
-        // returnPacket->humidity_scaled /= 65536.0f;
-        // printf("\t%f\n", returnPacket->humidity_scaled);
-        // returnPacket->humidity_scaled *= 100.0f;
-        // printf("\t%f\n", returnPacket->humidity_scaled);
+        printf("humidity calcs %X %d %f\n", humidity, humidity, (float)humidity);
+        returnPacket->humidity_scaled = humidity;
+        printf("\t%f\n", returnPacket->humidity_scaled);
+        returnPacket->humidity_scaled /= 65536.0f;
+        printf("\t%f\n", returnPacket->humidity_scaled);
+        returnPacket->humidity_scaled *= 100.0f;
+        printf("\t%f\n", returnPacket->humidity_scaled);
         
 #else
-        uint8   id =            (packet[0] >> 4) & 0x0F;
-        uint16  temperature =   ((packet[0] << 10) & 0x3C00) | \
-                                ((packet[1] << 2) &  0x03FC) | \
-                                ((packet[2] >> 6) &  0x0003);
-        uint16  humidity =      ((packet[2] << 8) & 0x3F00) | \
+        uint8   id            = (packet[0] >> 4) & 0x0F;
+        uint16  temperature   = ((packet[0] << 10) & 0x3C00) | \
+                                ((packet[1] <<  2) & 0x03FC) | \
+                                ((packet[2] >>  6) & 0x0003);
+        uint16  humidity      = ((packet[2] << 8) & 0x3F00) | \
                                 (packet[3] & 0x00FF);
         // uint16  crc =           (packet[4] << 8) | (packet[5]);
         
@@ -589,12 +640,11 @@ static packetType_t packetParser(uint8 *packet, uint8 length, packetStruct_t *re
         printf("\tTemp:\t0x%04X (%d) [%f ; %A]\n", temperature, temperature, returnPacket->temperature_scaled, returnPacket->temperature_scaled);
         printf("\tHumi:\t0x%04X (%d) [%f ; %A]\n", humidity, humidity, returnPacket->humidity_scaled, returnPacket->humidity_scaled);
 #endif
-        
-        return RH_T_14_BIT;
     }else{
         printf("Unrecognized packet format\n");
-        return UNKNOWN;
+        returnPacket->type = UNKNOWN;
     }
+    return returnPacket->type;
 }
 
 modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit)
@@ -603,7 +653,7 @@ modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit,
     // printf("\t(before) mb = 0x%02X\n", mb);
     printf("\tInstantiating Modbus RTU on %s at %d baud (%d%c%d).\n", device, baud, data_bit, parity, stop_bit);
     mb = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
-    printf("\t(after) mb = 0x%02X\n", (unsigned int) mb);
+    printf("\t(after) mb = 0x%02X\n", (uint32_t) mb);
     
 #ifdef MODBUS_DEBUG_ENABLE
     printf("\tMODBUS_DEBUG_ENABLE\n");
@@ -655,34 +705,35 @@ void print_modbus_mapping(void)
 {
     // printf("Dumping data (hex):\n");
     // printf("info: %d, reg %d, reg0 %d\n", sizeof(mbmap), sizeof(mbmap->tab_registers), sizeof(mbmap->tab_registers[0]));
-    printf("addr\tbit\tibit\tireg\treg\n");
+    printf("addr\tbit\tibit\treg\tireg\n");
     printf("------------------------------------\n");
-    for (int i = 0; (i < MAP_SIZE_BITS) || (i < MAP_SIZE_IBITS) || (i < MAP_SIZE_IREGS) || (i < MAP_SIZE_REGS); i++){
+    for (int i = 0; (i < MAP_SIZE_BITS) || (i < MAP_SIZE_IBITS) || (i < MAP_SIZE_REGS) || (i < MAP_SIZE_IREGS); i++){
         printf("%04X|\t", i);
         if (i < MAP_SIZE_BITS){
             printf("%04X\t", map->tab_bits[i]);
         }else{
             printf("\t");
         }
-        usleep(1000);
+        // usleep(1000);
         if (i < MAP_SIZE_IBITS){
             printf("%04X\t", map->tab_input_bits[i]);
         }else{
             printf("\t");
         }
-        usleep(1000);
+        // usleep(1000);
+        if (i < MAP_SIZE_REGS){
+            printf("%04X\t", map->tab_registers[i]);
+        }else{
+            printf("\t");
+        }
+        // usleep(1000);
         if (i < MAP_SIZE_IREGS){
             // printf("ireg %d\n", i);
             printf("%04X\t", map->tab_input_registers[i]);
         }else{
             printf("\t");
         }
-        usleep(1000);
-        if (i < MAP_SIZE_REGS){
-            printf("%04X\n", map->tab_registers[i]);
-        }else{
-            printf("\t\n");
-        }
-        usleep(1000);
+        // usleep(1000);
+        printf("\n");
     }
 }
