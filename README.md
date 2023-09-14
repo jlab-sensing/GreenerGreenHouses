@@ -26,8 +26,8 @@ This repository contains concurrent work for the Greener Greenhouses research pr
 
   ## To Do
 
-  - [ ] Create specific README file for each directory
+  - [x] Create specific README file for each directory
   - [ ] file cleanup - remove defunct or unnecessary files
   - [ ] Update root README when new directories are created
-  - [ ] Standardize naming conventions for each directory
+  - [x] Standardize naming conventions for each directory
   - [x] License Project under MIT
