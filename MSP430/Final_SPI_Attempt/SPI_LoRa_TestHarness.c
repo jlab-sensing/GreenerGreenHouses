@@ -1,3 +1,11 @@
+/*
+ * SPI_LoRa_TestHarness.c
+ *
+ *  Created on: Sep 1, 2023
+ *      Author: Matt Kaltman, Tim Kraemer
+ *
+ */
+
 
 //Essential includes
 #include <msp430.h> 
@@ -164,6 +172,7 @@ int main(void)
 
     switch(test_select) {
         case TX_test:
+            putstring("Transmit Test Harness Start");
             //transmit message "Test" with packet number after it every second
 	        for(i = 0; i < 10; i++) {
 	            sprintf(TxBuff, "%s %d\n", message, packet_count);
@@ -179,7 +188,7 @@ int main(void)
 
 
         case RX_test:
-            putstring("Made it to RX TEST\n");
+            putstring("Receive Test Harness Start\n");
             trxSpiCmdStrobe(CC112X_SRX);
 	        //dummy variable for debug break-point
 	        int j=0;
