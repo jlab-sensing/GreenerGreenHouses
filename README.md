@@ -18,7 +18,7 @@ This repository contains concurrent work for the Greener Greenhouses research pr
     
 - **LoRa_BoosterPack_Registers**
 
-    Currently only contains register names and settings for ETSI CAT1 869MHz. 1.2Kbps, 2-GFSK, 25Khz channel spacing, ETSI EN 300 220 CAT1 setting with the [CC1125 LoRa module Boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125). Register names and values exported from [SmartRFStudio v7.0](https://www.ti.com/tool/SMARTRFTM-STUDIO) for packet Tx/Rx.
+    Contains register names and settings for ETSI CAT1 869MHz. 1.2Kbps, 2-GFSK, 25Khz channel spacing, ETSI EN 300 220 CAT1 setting with the [CC1125 LoRa module Boosterpack](https://www.ti.com/tool/BOOSTXL-CC1125). Register names and values exported from [SmartRFStudio v7.0](https://www.ti.com/tool/SMARTRFTM-STUDIO) for packet Tx/Rx.
 
 - **BeagleBoneBlack**
 
