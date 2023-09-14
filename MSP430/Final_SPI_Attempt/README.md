@@ -32,6 +32,11 @@ Without the proper receiving hardware, it is impossible to test or use this code
     * P1.6 CS -> 3 CS_N
 * In main.c, above main(), change to TX_Test, in SmartRF1125.h, change PACKET_LEN to 6, build and flash to MSP430
 * If RF studio is currently receiving, then 10 packets will appear, each saying "Test" with the packet number after
+* If incoming data displays "CRC Error" at the end, then there is an issue with your settings in RF Studio, or the packet length does not match.
+
+A similar method can be used to run main.c, which collects sensor data, packages it, and ships it via RF, using RF studio. Simply change the packet length to 4 in both SmartRF1125.h and in RF Studio, to view incoming packets. To instead receive packets using the BBB CC1125 combo, please refer to the designated receiver/unpacker firmware in the BeagleBoneBlack directory. Below is the complete wiring diagram on how to connect the HDC2021 sensing board and CC1125 Module to the MSP430.
+
+  
 
 
 ### Sensor Data Packet Structure
