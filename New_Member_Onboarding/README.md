@@ -46,4 +46,5 @@ The microcontroller being utilized by the GGH team is the [MSP430FR5969](https:/
 
 ### CC1125 Boosterpack
 
-
+#### Overview
+The RF transciever that we are using is the [BOOSTXL CC1125 RF Boosterpack](https://www.ti.com/lit/an/swra520/swra520.pdf?ts=1694669569713) by Texas Instruments. Like the MSP430FR5969, general datasheets can be found in the datasheets folder of the GGH Google Drive. Software examples can be found in the MSP430/Final_SPI_Attempt directory of the GGH repository, specifically SmartRF1125.h for pin configurations, FR5969_CC1125.c/.h for interfacing functions with the MSP430, and SPI_LoRa_TestHarness.c for general tests on RX, TX modes.  
