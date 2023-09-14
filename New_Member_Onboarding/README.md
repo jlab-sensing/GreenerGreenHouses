@@ -12,7 +12,7 @@ In order to implement and quantify the benefits of a LiFi enabled IOT system, th
 
 These sub-systems and their related resources will be discussed further below. A detailed overview of the planned LiFi system that will be integrated into the current greenhouse control system is provided here.
 
-![image|500x271](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/08766264-8e22-4e1d-bff3-384b1e383e17 )
+![image|600x371](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/08766264-8e22-4e1d-bff3-384b1e383e17 )
 
 
 ## Current Greenhouse Control System
