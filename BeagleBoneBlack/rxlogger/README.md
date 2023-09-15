@@ -11,7 +11,7 @@ The BBB (running rxlogger) receives periodic (1/second) 4-byte data packets from
 - cc112x_spi.h -- C header file for CC1125 register-level SPI access.
 - hal_spi_rf_trxeb.c -- C source file for CC1125 byte-level SPI access.
 - hal_spi_rf_trxeb.h -- C header file for CC1125 byte-level SPI access.
-- main.c -- 
+- main.c -- C source file that implements the program described in the introduction. Most customizations are done by modifying the defines at the top of this file.
 - out -- Executable file that runs the program described in `main.c`.
 - README.md -- This file.
 - SPI.c -- C source file for the SPI library. Direct SPI peripheral manipulation.
@@ -30,7 +30,7 @@ TODO: Test if the debian packages `libmodbus5` or `libmodbus-dev` are compatible
 
 You must have the following hardware:
 - [BeagleBone Black](https://www.beagleboard.org/boards/beaglebone-black) revision C (other revisions may also work)
-- USB to RS485 cable (FTDI: [USB-RS485-WE-1800-BT](https://ftdichip.com/products/usb-rs485-we-1800-bt/))
+- USB to RS485 cable (FTDI: [USB-RS485-WE-1800-BT](https://ftdichip.com/products/usb-rs485-we-1800-bt/))
 - CC1125 BoosterPack (Texas Instruments: [BOOSTXL-CC1125](https://www.ti.com/tool/BOOSTXL-CC1125))
     - You can also use the standalone CC1125 chip, but you will need to set up a breakout board / PCB and antenna yourself. The TI design files may be a good starting point https://www.ti.com/lit/zip/swrc322.
 
