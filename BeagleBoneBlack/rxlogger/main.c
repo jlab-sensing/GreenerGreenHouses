@@ -39,8 +39,8 @@
 
 #define MAP_SIZE_BITS 0
 #define MAP_SIZE_IBITS 0
-#define MAP_SIZE_REGS 1
-#define MAP_SIZE_IREGS 1
+#define MAP_SIZE_REGS 32
+#define MAP_SIZE_IREGS 0
 
 #define RTU_PORT        "/dev/ttyUSB0"
 #define RTU_BAUD        19200
@@ -83,7 +83,7 @@ void print_modbus_mapping(void);
 
 int spi_init(void);
 int radio_init(void);
-int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsigned int regs);
+int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs);
 
 int spi_init(void)
 {
@@ -115,7 +115,7 @@ int radio_init(void)
     return 0;
 }
 
-int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsigned int regs)
+int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs)
 {
     printf("Setting up modbus struct and config.\n");
     mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
@@ -153,7 +153,7 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
     printf("Mapping\n");
     // map = modbus_mapping_new_start_address();
     map = modbus_mapping_new(bits, ibits, regs, iregs);
-    print_modbus_mapping();
+    
     /* 
         map->tab_bits[0]
         map->tab_input_bits[0]
@@ -164,10 +164,16 @@ int modbus_init(unsigned int bits, unsigned int ibits, unsigned int iregs, unsig
     if (map == NULL){
         printf("modbus_mapping_new failed to allocate.\n");
         return -1;
-    }else{
-        printf("map located at 0x%X\n", (uint32_t) map);
-        printf("sizeof(map) = %d\n", sizeof(map));
     }
+    
+    printf("map located at 0x%X\n", (uint32_t) map);
+    printf("sizeof(map) = %d\n", sizeof(map));
+    print_modbus_mapping();
+    printf("Overwriting...\n");
+    for (int i = 0; i < MAP_SIZE_REGS; i++){
+        
+    }
+    
     return 0;
 }
 
@@ -215,10 +221,14 @@ int main(int argc, char *argv[]){
     
 #ifndef SKIP_LORA
     radio_init();
+#else
+    printf("SKIP_LORA\n");
 #endif
 
 #ifndef SKIP_MODBUS
     modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS);
+#else
+    printf("SKIP_MODBUS\n");
 #endif
 
     char fpDataFileName[MAX_FILENAME_LENGTH];
@@ -229,6 +239,7 @@ int main(int argc, char *argv[]){
     fpData = fopen(fpDataFileName, "a");
     if (fpData == NULL){
         printf("fopen() failed to open %s\n", fpDataFileName);
+        return -1;
     }
     printf("write column names to CSV\n");
     fprintf(fpData, "time_unix, id, temperature_raw, temperature_celsius, humidity_raw, humidity_percent\n");
@@ -250,7 +261,7 @@ int main(int argc, char *argv[]){
         uint8_t rxBytes;
         packetStruct_t parsedPacket;
 
-        printf("marcstate\n");
+        // printf("marcstate\n");
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
         if (marcState != lastMarcState){
             // printf("\tPACKET INCOMING\n");
@@ -332,11 +343,16 @@ int main(int argc, char *argv[]){
         }
 #endif
     }
-        
-    printf("Closing %s.\n", SPI_DEV_BUS0_CS0);
+    
+    if (fpData != NULL) fclose(fpData);
     trxRfSpiInterfaceClose();
-    printf("Closing data.\n");
-    fclose(fpData);
+    if (map != NULL) modbus_mapping_free(map);
+    if (mb != NULL){
+        modbus_close(mb);
+        // printf("Flushed %d bytes.\n", modbus_flush(mb));
+        // printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
+        modbus_free(mb);
+    }
     return 0;
 }
 
@@ -350,19 +366,18 @@ int main(int argc, char *argv[]){
 *   @return     none
 */
 void intHandler(int sig) {
+    // printf("SIG %d\n", sig);
     if (fpData != NULL) fclose(fpData);
     trxRfSpiInterfaceClose();
-    
     if (map != NULL) modbus_mapping_free(map);
     if (mb != NULL){
         modbus_close(mb);
-        printf("Flushed %d bytes.\n", modbus_flush(mb));
-        printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
+        // printf("Flushed %d bytes.\n", modbus_flush(mb));
+        // printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
         modbus_free(mb);
     }
     
-    
-    exit(0);
+    exit(sig);
 }
 
 /*******************************************************************************
@@ -708,7 +723,7 @@ void print_modbus_mapping(void)
     printf("addr\tbit\tibit\treg\tireg\n");
     printf("------------------------------------\n");
     for (int i = 0; (i < MAP_SIZE_BITS) || (i < MAP_SIZE_IBITS) || (i < MAP_SIZE_REGS) || (i < MAP_SIZE_IREGS); i++){
-        printf("%04X|\t", i);
+        printf("%04X ||\t", i);
         if (i < MAP_SIZE_BITS){
             printf("%04X\t", map->tab_bits[i]);
         }else{
