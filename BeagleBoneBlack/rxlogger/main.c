@@ -17,7 +17,7 @@
 // #define LIST_ALL_REGISTERS
 // #define TEST_PACKET_PARSER
 #define PARSE_PACKET_CAST_32
-#define SKIP_LORA
+// #define SKIP_LORA
 // #define SKIP_MODBUS
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
 #define MODBUS_NONBLOCKING
