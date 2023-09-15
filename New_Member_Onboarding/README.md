@@ -37,7 +37,11 @@ A system diagram of our traditional low-power IOT device is provided below in or
 ### MSP430FR5969 Launchpad
 
 #### Overview
-The microcontroller being utilized by the GGH team is the [MSP430FR5969](https://www.ti.com/product/MSP430FR5969?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=MSP430FR5969&ds_k=%7b_dssearchterm%7d&DCM=yes&gclid=CjwKCAjw3oqoBhAjEiwA_UaLtj0zWJxyBJCrLkihQoXO8O6QFz54VD2A-_e_Rqq8SBqXRJOLkkrMNRoC8pIQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. General data sheets, reference manuals, and software/hardware examples are included in the GGH Google Drive under MSP430FR5969. Once you have obtained access to the J-Lab Google Drive, you can navigate to this info [here](https://drive.google.com/drive/folders/1jpBABjsWT8H2YCBZDEAygGu2eUNpcp-V?usp=sharing).
+The microcontroller being utilized by the GGH team is the [MSP430FR5969](https://www.ti.com/product/MSP430FR5969?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=MSP430FR5969&ds_k=%7b_dssearchterm%7d&DCM=yes&gclid=CjwKCAjw3oqoBhAjEiwA_UaLtj0zWJxyBJCrLkihQoXO8O6QFz54VD2A-_e_Rqq8SBqXRJOLkkrMNRoC8pIQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. General data sheets, reference manuals, and software/hardware examples are included in the GGH Google Drive under MSP430FR5969. Once you have obtained access to the J-Lab Google Drive, you can navigate to this info.
+
+[Google Drive Resources](https://drive.google.com/drive/folders/1jpBABjsWT8H2YCBZDEAygGu2eUNpcp-V?usp=sharing).
+[Github Resources](https://github.com/jlab-sensing/GreenerGreenHouses/tree/main/MSP430)
+
 
 #### Current Wiring Diagram
 
@@ -47,8 +51,6 @@ The microcontroller being utilized by the GGH team is the [MSP430FR5969](https:/
 
 
 
-
-[here](https://github.com/jlab-sensing/GreenerGreenHouses/tree/main/MSP430)
 
 ### CC1125 Boosterpack
 
