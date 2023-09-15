@@ -47,8 +47,9 @@ extern "C" {
  * INCLUDES
  */
 // #include <msp430.h>
-#include "hal_types.h"
-#include "hal_defs.h"
+// #include "hal_types.h"
+// #include "hal_defs.h"
+#include <stdint.h>
 
 /******************************************************************************
  * CONSTANTS
@@ -94,7 +95,7 @@ extern "C" {
 #define TRXEM_SPI_TX(x)                st( UCB0IFG &= ~UCRXIFG; UCB0TXBUF= (x); )
 #define TRXEM_SPI_WAIT_DONE()          st( while(!(UCB0IFG & UCRXIFG)); )
 #define TRXEM_SPI_RX()                 UCB0RXBUF
-#define TRXEM_SPI_WAIT_MISO_LOW(x)     st( uint8 count = 200; \
+#define TRXEM_SPI_WAIT_MISO_LOW(x)     st( uint8_t count = 200; \
                                            while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN) \
                                            { \
                                               __delay_cycles(5000); \
@@ -113,11 +114,11 @@ extern "C" {
 
 typedef struct
 {
-  uint16  addr;
-  uint8   data;
+  uint16_t  addr;
+  uint8_t   data;
 }registerSetting_t;
 
-typedef uint8 rfStatus_t;
+typedef uint8_t rfStatus_t;
 
 /******************************************************************************
  * PROTOTYPES
@@ -125,11 +126,11 @@ typedef uint8 rfStatus_t;
 
 int trxRfSpiInterfaceInit(char* spiDevice, int mode, int freqHz);
 int trxRfSpiInterfaceClose(void);
-rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint16 len);
-rfStatus_t trxSpiCmdStrobe(uint8 cmd);
+rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData, uint16_t len);
+rfStatus_t trxSpiCmdStrobe(uint8_t cmd);
 
 /* CC112X specific prototype function */
-rfStatus_t trx16BitRegAccess(uint8 accessType, uint8 extAddr, uint8 regAddr, uint8 *pData, uint8 len);
+rfStatus_t trx16BitRegAccess(uint8_t accessType, uint8_t extAddr, uint8_t regAddr, uint8_t *pData, uint8_t len);
 
 #ifdef  __cplusplus
 }

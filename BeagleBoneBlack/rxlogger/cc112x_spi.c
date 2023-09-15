@@ -38,7 +38,8 @@
 /******************************************************************************
  * INCLUDES
  */
-#include "hal_types.h"
+// #include "hal_types.h"
+#include <stdint.h>
 #include "cc112x_spi.h"
 
 /******************************************************************************
@@ -62,11 +63,11 @@
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiReadReg(uint16 addr, uint8 *pData, uint8 len)
+rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
 {
-  uint8 tempExt  = (uint8)(addr>>8);
-  uint8 tempAddr = (uint8)(addr & 0x00FF);
-  uint8 rc;
+  uint8_t tempExt  = (uint8_t)(addr>>8);
+  uint8_t tempAddr = (uint8_t)(addr & 0x00FF);
+  uint8_t rc;
   
   /* Checking if this is a FIFO access -> returns chip not ready  */
   if((CC112X_SINGLE_TXFIFO<=tempAddr)&&(tempExt==0)) return STATUS_CHIP_RDYn_BM;
@@ -108,11 +109,11 @@ rfStatus_t cc112xSpiReadReg(uint16 addr, uint8 *pData, uint8 len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiWriteReg(uint16 addr, uint8 *pData, uint8 len)
+rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
 {
-  uint8 tempExt  = (uint8)(addr>>8);
-  uint8 tempAddr = (uint8)(addr & 0x00FF);
-  uint8 rc;
+  uint8_t tempExt  = (uint8_t)(addr>>8);
+  uint8_t tempAddr = (uint8_t)(addr & 0x00FF);
+  uint8_t rc;
   
   /* Checking if this is a FIFO access - returns chip not ready */
   if((CC112X_SINGLE_TXFIFO<=tempAddr)&&(tempExt==0)) return STATUS_CHIP_RDYn_BM;
@@ -151,9 +152,9 @@ rfStatus_t cc112xSpiWriteReg(uint16 addr, uint8 *pData, uint8 len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiWriteTxFifo(uint8 *pData, uint8 len)
+rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pData, uint8_t len)
 {
-  uint8 rc;
+  uint8_t rc;
   rc = trx8BitRegAccess(0x00,CC112X_BURST_TXFIFO, pData, len);
   return (rc);
 }
@@ -172,9 +173,9 @@ rfStatus_t cc112xSpiWriteTxFifo(uint8 *pData, uint8 len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiReadRxFifo(uint8 * pData, uint8 len)
+rfStatus_t cc112xSpiReadRxFifo(uint8_t * pData, uint8_t len)
 {
-  uint8 rc;
+  uint8_t rc;
   rc = trx8BitRegAccess(0x00,CC112X_BURST_RXFIFO, pData, len);
   return (rc);
 }

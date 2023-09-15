@@ -40,12 +40,13 @@
 /******************************************************************************
  * INCLUDES
  */
-#include "hal_types.h"
-#include "hal_defs.h"
+// #include "hal_types.h"
+// #include "hal_defs.h"
+#include <stdint.h>
 #include "hal_spi_rf_trxeb.h"
 
 #include "SPI.h"
-#include <linux/spi/spidev.h>
+// #include <linux/spi/spidev.h>
 #include <stdio.h>
 
 static int spiFileDesc; // from main.c
@@ -56,7 +57,7 @@ static uint8_t rxBuffer[SPI_BUFFER_SIZE];
 /******************************************************************************
  * LOCAL FUNCTIONS
  */
-// static void trxReadWriteBurstSingle(uint8 addr,uint8 *pData,uint16 len) ;
+// static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len) ;
 
 /******************************************************************************
  * FUNCTIONS
@@ -83,7 +84,6 @@ int trxRfSpiInterfaceInit(char* spiDevice, int mode, int freqHz)
     if (freqHz < 0){
         printf("trxRfSpiInterfaceInit(): freqHz must be greater than 0.\n");
     }
-    
     spiFileDesc = SPI_initPort(spiDevice, mode, freqHz);
     if (spiFileDesc < 0) {
 		printf("Error: Can't open device %s", spiDevice);
@@ -124,7 +124,7 @@ int trxRfSpiInterfaceClose(void)
  *
  * @return      chip status
  */
-rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint16 len)
+rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData, uint16_t len)
 {
     // Prepare txBuffer for transmission
     txBuffer[0] = accessType | addrByte;
@@ -172,7 +172,7 @@ rfStatus_t trx8BitRegAccess(uint8 accessType, uint8 addrByte, uint8 *pData, uint
  *
  * @return      rfStatus_t
  */
-rfStatus_t trx16BitRegAccess(uint8 accessType, uint8 extAddr, uint8 regAddr, uint8 *pData, uint8 len)
+rfStatus_t trx16BitRegAccess(uint8_t accessType, uint8_t extAddr, uint8_t regAddr, uint8_t *pData, uint8_t len)
 {
     // Prepare txBuffer for transmission
     txBuffer[0] = accessType | extAddr;
@@ -215,7 +215,7 @@ rfStatus_t trx16BitRegAccess(uint8 accessType, uint8 extAddr, uint8 regAddr, uin
  *
  * @return      status byte
  */
-rfStatus_t trxSpiCmdStrobe(uint8 cmd)
+rfStatus_t trxSpiCmdStrobe(uint8_t cmd)
 {
     // Prepare txBuffer for transmission
     txBuffer[0] = cmd;
@@ -244,7 +244,7 @@ rfStatus_t trxSpiCmdStrobe(uint8 cmd)
  *              TRXEM_SPI_BEGIN();
  *              while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);
  *              ...[Depending on type of register access]
- *              trxReadWriteBurstSingle(uint8 addr,uint8 *pData,uint16 len);
+ *              trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len);
  *              TRXEM_SPI_END();
  *
  * input parameters
@@ -255,9 +255,9 @@ rfStatus_t trxSpiCmdStrobe(uint8 cmd)
  *
  * @return      void
  */
-// static void trxReadWriteBurstSingle(uint8 addr,uint8 *pData,uint16 len)
+// static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
 // {
-	// uint16 i;
+	// uint16_t i;
 	// /* Communicate len number of bytes: if RX - the procedure sends 0x00 to push bytes from slave*/
   // if(addr&RADIO_READ_ACCESS)
   // {

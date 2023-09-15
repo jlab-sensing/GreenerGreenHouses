@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <signal.h>
-#include <linux/spi/spidev.h>
+// #include <linux/spi/spidev.h>
 // #include <linux/types.h>
 // #include <sys/ioctl.h>
 // #include <fcntl.h>
@@ -20,15 +20,28 @@
 // #define SKIP_LORA
 // #define SKIP_MODBUS
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
-#define MODBUS_NONBLOCKING
-#ifdef MODBUS_NONBLOCKING
-#include <sys/socket.h>
-#endif
+// #define MODBUS_NONBLOCKING
+// #ifdef MODBUS_NONBLOCKING
+// #include <sys/socket.h>
+// #endif
 
 #define MAX_PACKET_LENGTH 16
 #define MAX_FILENAME_LENGTH 50
 
+#ifndef SPI_BBBREVC_H // from "SPI.h"
 #define SPI_DEV_BUS0_CS0 "/dev/spidev0.0"
+#define SPI_DEV_BUS1_CS0 "/dev/spidev1.0"
+#define SPI_DEV_BUS1_CS1 "/dev/spidev1.1"
+#endif
+
+#ifndef SPIDEV_H // from <linux/spi/spidev.h>
+#define SPI_CPHA                0x01
+#define SPI_CPOL                0x02
+#define SPI_MODE_0              (0|0)
+#define SPI_MODE_1              (0|SPI_CPHA)
+#define SPI_MODE_2              (SPI_CPOL|0)
+#define SPI_MODE_3              (SPI_CPOL|SPI_CPHA)
+#endif
 
 #define MARCSTATE_NOT_USED_MASK 0x80
 #define MARC_2PIN_STATE_MASK 0x60
@@ -76,7 +89,7 @@ static modbus_mapping_t *map = NULL;
 
 static void manualCalibration(void);
 static void registerConfig(const registerSetting_t *reg, int numRegisters);
-static packetType_t packetParser(uint8 *packet, uint8 length, packetStruct_t *returnPacket);
+static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket);
 void intHandler(int sig);
 modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit);
 void print_modbus_mapping(void);
@@ -192,7 +205,7 @@ int main(int argc, char *argv[]){
     }
     
     // All arguments (after the name of the program) are interpreted as the data packet
-    uint8 testBuffer[MAX_PACKET_LENGTH] = {0};
+    uint8_t testBuffer[MAX_PACKET_LENGTH] = {0};
     for (int i = 1; i < argc; i++){
         testBuffer[i - 1] = strtoul(argv[i], NULL, 16);
         printf("testBuffer[%d] = 0x%02X\n", i - 1, testBuffer[i - 1]);
@@ -249,15 +262,15 @@ int main(int argc, char *argv[]){
     trxSpiCmdStrobe(CC112X_SRX);
 #endif
 
-    uint8 marcState = 0;
-    uint8 lastMarcState = 0;
+    uint8_t marcState = 0;
+    uint8_t lastMarcState = 0;
     
     while(1){
 #ifndef SKIP_LORA
         // LoRa
         
         rfStatus_t status;
-        uint8 rxBuffer[MAX_PACKET_LENGTH] = {0};
+        uint8_t rxBuffer[MAX_PACKET_LENGTH] = {0};
         uint8_t rxBytes;
         packetStruct_t parsedPacket;
 
@@ -392,8 +405,8 @@ void intHandler(int sig) {
 */
 static void registerConfig(const registerSetting_t *reg, int numRegisters) {
 
-    uint8 writeByte;
-    uint8 readByte;
+    uint8_t writeByte;
+    uint8_t readByte;
     rfStatus_t status;
     
     printf("sizeof(reg) = %d\n", sizeof(reg));
@@ -401,7 +414,7 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     
     printf("Registers to write\n");
     printf("#\taddr\tvalue\n");
-    for(uint16 i = 0; i < numRegisters; i++) {
+    for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t0x%02X\t0x%02X\n", i, reg[i].addr, reg[i].data);
     }
     printf("Done listing registers to write\n");
@@ -417,7 +430,7 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     // Read registers from radio
     printf("Reading registers that will be written to\n");
     printf("#\taddr\texpect\tvalue\tcompare\n");
-    for(uint16 i = 0; i < numRegisters; i++) {
+    for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t0x%02X\t0x%02X", i, reg[i].addr, reg[i].data);
         status = cc112xSpiReadReg(reg[i].addr, &readByte, 1);
         
@@ -433,7 +446,7 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     // Write registers to radio
     printf("Writing registers based on reg\n");
     printf("#\taddr\t    write\n");
-    for(uint16 i = 0; i < numRegisters; i++) {
+    for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t", i);
         writeByte = reg[i].data;
         printf("0x%02X\t<-- 0x%02X\n", reg[i].addr, writeByte);
@@ -444,7 +457,7 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     // Read registers from radio
     printf("Reading registers that were written to\n");
     printf("#\taddr\texpect\tvalue\tcompare\n");
-    for(uint16 i = 0; i < numRegisters; i++) {
+    for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t0x%02X\t0x%02X", i, reg[i].addr, reg[i].data);
         status = cc112xSpiReadReg(reg[i].addr, &readByte, 1);
         
@@ -476,11 +489,11 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
 #define FS_CHP_INDEX 2
 static void manualCalibration(void) {
 
-    uint8 original_fs_cal2;
-    uint8 calResults_for_vcdac_start_high[3];
-    uint8 calResults_for_vcdac_start_mid[3];
-    uint8 marcstate;
-    uint8 writeByte;
+    uint8_t original_fs_cal2;
+    uint8_t calResults_for_vcdac_start_high[3];
+    uint8_t calResults_for_vcdac_start_mid[3];
+    uint8_t marcstate;
+    uint8_t writeByte;
 
     // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
     writeByte = 0x00;
@@ -556,7 +569,7 @@ static void manualCalibration(void) {
 // Do not include RSSI (2 bytes)
 // returnPacket will be populated based on the packet type
 // packetType describes which fields in returnPacket are relevant
-static packetType_t packetParser(uint8 *packet, uint8 length, packetStruct_t *returnPacket)
+static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket)
 {
     /*  Packet Structure for temp/humidity
         | Device ID (4 bits) | Temperature (14 bits) | Humidity (14 bits) | CRC16 (16 bits) |
@@ -621,13 +634,13 @@ static packetType_t packetParser(uint8 *packet, uint8 length, packetStruct_t *re
         printf("\t%f\n", returnPacket->humidity_scaled);
         
 #else
-        uint8   id            = (packet[0] >> 4) & 0x0F;
-        uint16  temperature   = ((packet[0] << 10) & 0x3C00) | \
+        uint8_t   id            = (packet[0] >> 4) & 0x0F;
+        uint16_t  temperature   = ((packet[0] << 10) & 0x3C00) | \
                                 ((packet[1] <<  2) & 0x03FC) | \
                                 ((packet[2] >>  6) & 0x0003);
-        uint16  humidity      = ((packet[2] << 8) & 0x3F00) | \
+        uint16_t  humidity      = ((packet[2] << 8) & 0x3F00) | \
                                 (packet[3] & 0x00FF);
-        // uint16  crc =           (packet[4] << 8) | (packet[5]);
+        // uint16_t  crc =           (packet[4] << 8) | (packet[5]);
         
         printf("raw: %02X %02X %02X %02X\n", packet[0], packet[1], packet[2], packet[3]);
         
@@ -729,26 +742,21 @@ void print_modbus_mapping(void)
         }else{
             printf("\t");
         }
-        // usleep(1000);
         if (i < MAP_SIZE_IBITS){
             printf("%04X\t", map->tab_input_bits[i]);
         }else{
             printf("\t");
         }
-        // usleep(1000);
         if (i < MAP_SIZE_REGS){
             printf("%04X\t", map->tab_registers[i]);
         }else{
             printf("\t");
         }
-        // usleep(1000);
         if (i < MAP_SIZE_IREGS){
-            // printf("ireg %d\n", i);
             printf("%04X\t", map->tab_input_registers[i]);
         }else{
             printf("\t");
         }
-        // usleep(1000);
         printf("\n");
     }
 }

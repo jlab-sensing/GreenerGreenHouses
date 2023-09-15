@@ -1,5 +1,5 @@
-#ifndef SPI_SAMPLE_H
-#define SPI_SAMPLE_H
+#ifndef SPI_BBBREVC_H
+#define SPI_BBBREVC_H
 
 /**
  * SPI Module
