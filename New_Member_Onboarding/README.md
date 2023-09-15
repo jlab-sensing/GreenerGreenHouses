@@ -31,8 +31,13 @@ A system diagram of our traditional low-power IOT device is provided below in or
 
 ![image](https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/9b7c92c4-6507-470a-a9c7-7d83ccedcf46)
 
+As of 9/15/23, the traditional IOT system has been almost completed. Items left on the agenda include:
 
-
+* Receiving ISODN boards from Argus and testing our integration
+* Potentially establishing a downlink from the BBB LoRa transceiver to the MSP430 LoRa transceiver
+* Quantifying power draw of fully fleshed system (LoRa + Sensors + MCU + Circulation Fan)
+* Current estimates using CCS EnergyTrace gives an average current draw of <1mA and expected 4 months battery life on 5v 2200mAh battery. *This estimate does not include LoRa or fan power draw*
+  
 ### HDC2021 Low Power Temperature and Humidity Sensor
 
 #### Overview
