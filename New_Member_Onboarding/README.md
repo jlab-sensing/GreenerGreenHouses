@@ -22,6 +22,7 @@ The current system equipped in UCSC's [Coastal Biology Greenhouses](https://gree
 <img width="480" height="500" src="https://github.com/jlab-sensing/GreenerGreenHouses/assets/133836006/9187ddc8-56a3-427e-ab8b-aa702891e5ed">
 </p>
 
+The communication protocol utilized by the Argus system is [ModBus](https://www.ni.com/en/shop/seamlessly-connect-to-third-party-devices-and-supervisory-system/the-modbus-protocol-in-depth.html#:~:text=Modbus%20is%20a%20request%2Dresponse,responsible%20for%20initiating%20every%20interaction.) over RS-485. The greenhouse director controls the Titan Control Access Point (TCAP) which communicates with each Titan IO module found in every greenhouse. From here the Titan IO module polls and commands the systems depending on various set points.
 
 
 ## Traditional IOT System
@@ -57,11 +58,12 @@ The microcontroller being utilized by the GGH team is the [MSP430FR5969](https:/
 
 
 
-
-
-
 ### CC1125 Boosterpack
 
 #### Overview
 The RF transciever that we are using is the [BOOSTXL CC1125 RF Boosterpack](https://www.ti.com/lit/an/swra520/swra520.pdf?ts=1694669569713) by Texas Instruments. Like the MSP430FR5969, general datasheets can be found in the datasheets folder of the GGH Google Drive. Software examples can be found in the MSP430/Final_SPI_Attempt directory of the GGH repository, specifically SmartRF1125.h for pin configurations, FR5969_CC1125.c/.h for interfacing functions with the MSP430, and SPI_LoRa_TestHarness.c for general tests on RX, TX modes.
+
+
+### Cryptic Warnings
+4875656C206E6F6C6920626962657265
 
