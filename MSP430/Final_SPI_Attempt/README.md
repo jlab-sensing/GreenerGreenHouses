@@ -36,8 +36,13 @@ Without the proper receiving hardware, it is impossible to test or use this code
 
 A similar method can be used to run main.c, which collects sensor data, packages it, and ships it via RF, using RF studio. Simply change the packet length to 4 in both SmartRF1125.h and in RF Studio, to view incoming packets. To instead receive packets using the BBB CC1125 combo, please refer to the designated receiver/unpacker firmware in the BeagleBoneBlack directory. Below is the complete wiring diagram on how to connect the HDC2021 sensing board and CC1125 Module to the MSP430.
 
-  
+### MSP430 Wiring Diagram
+![image](https://github.com/jlab-sensing/GreenerGreenHouses/blob/main/MSP430/Final_SPI_Attempt/images/MSP430%20Wiring%20Diagram.png)
 
+The wiring between the MSP430FR5969, CC1125 Boosterpack, and HDC2021 sensor board is pretty simple. Above is the wiring diagram for the system.
 
 ### Sensor Data Packet Structure
 The system design uses a custom packet structure to transmit sensor data from the HDC2021 to the BeagleBone Black. The packet is 4 bytes long, and is composed of a 4bit device ID, 14 bit temperature data, and 14 bit humidity data. The device ID is used as an identification piece for the BBB, so that the source (which MSP430) is determined and recorded. Bit masking is used in this case to minimize packet size, thuse minimizing transmission time, reducing bit errors and lowering overall power consumption.
+
+### Future Work
+As of now (September 15, 2023), the project is at a stable state, where data is collected from the sensor once a second by the MSP430, packaged and sent over the the BBB via LoRa. Additional updates that are possible include a packet-parser on the MSP side, for the potential messages sent by the BBB to change HDC2021 settings, LoRa register configurations, etc. A 5V fan is also planned to be integrated with the sensor board, to maximize airflow around it to achieve the most accurate results. This requires a stable 5V supply, which the MSP430 can theoretically supply, however calculations should be done to verify that the fan will not affect other peripherals from current draw.
