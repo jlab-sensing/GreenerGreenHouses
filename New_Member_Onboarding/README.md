@@ -41,17 +41,17 @@ As of 9/15/23, the traditional IOT system has been almost completed. Items left 
 ### HDC2021 Low Power Temperature and Humidity Sensor
 
 #### Overview
-The sensor being utilized is the [HDC2021](https://www.ti.com/product/HDC2021?utm_source=google&utm_medium=cpc&utm_campaign=asc-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=HDC2021&ds_k=HDC2021&DCM=yes&gclid=CjwKCAjwgZCoBhBnEiwAz35RwvU4Wd7GRpxLc1GMoPWq5LL1WcZLu_22jp9FVzmTnQ_MIr4ZmhkBRhoCpMQQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. Specific datasheets and reference manuals for the HDC2021 sensor can be found in the GGH Google Drive under datasheets/HDC2021_Datasheet.pdf.
+The sensor being utilized is the [HDC2021](https://www.ti.com/product/HDC2021?utm_source=google&utm_medium=cpc&utm_campaign=asc-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=HDC2021&ds_k=HDC2021&DCM=yes&gclid=CjwKCAjwgZCoBhBnEiwAz35RwvU4Wd7GRpxLc1GMoPWq5LL1WcZLu_22jp9FVzmTnQ_MIr4ZmhkBRhoCpMQQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. Specific datasheets and reference manuals for the HDC2021 sensor can be found in the GGH Google Drive under datasheets/HDC2021_Datasheet.pdf. Once you have obtained access to the J-Lab Google Drive, you can navigate to this info.
 
 [Google Drive Resources](https://drive.google.com/drive/u/1/folders/1WiIJaBZCpexLYDWwRqki33WVtFGoa_uU?ths=true)
 
 #### Specifics
-The HDC2021 is a low power, high accuracy sensor, with a relative humidity and temperature  accuracy of ±2% and ±0.2° respectively.The sensor includes I2C interface compatability, and up to 14bits of resolution
+The HDC2021 is a low power, high accuracy sensor, with a relative humidity and temperature  accuracy of ±2% and ±0.2° respectively.The sensor includes I2C interface compatability, and up to 14bits of resolution.
 
 ### MSP430FR5969 Launchpad
 
 #### Overview
-The microcontroller being utilized by the GGH team is the [MSP430FR5969](https://www.ti.com/product/MSP430FR5969?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=MSP430FR5969&ds_k=%7b_dssearchterm%7d&DCM=yes&gclid=CjwKCAjw3oqoBhAjEiwA_UaLtj0zWJxyBJCrLkihQoXO8O6QFz54VD2A-_e_Rqq8SBqXRJOLkkrMNRoC8pIQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. General data sheets, reference manuals, and software/hardware examples are included in the GGH Google Drive under MSP430FR5969. Once you have obtained access to the J-Lab Google Drive, you can navigate to this info.
+The microcontroller being utilized by the GGH team is the [MSP430FR5969](https://www.ti.com/product/MSP430FR5969?utm_source=google&utm_medium=cpc&utm_campaign=epd-null-null-GPN_EN-cpc-pf-google-wwe&utm_content=MSP430FR5969&ds_k=%7b_dssearchterm%7d&DCM=yes&gclid=CjwKCAjw3oqoBhAjEiwA_UaLtj0zWJxyBJCrLkihQoXO8O6QFz54VD2A-_e_Rqq8SBqXRJOLkkrMNRoC8pIQAvD_BwE&gclsrc=aw.ds) designed by Texas Instruments. General data sheets, reference manuals, and software/hardware examples are included in the GGH Google Drive under MSP430FR5969.
 
 [Google Drive Resources](https://drive.google.com/drive/folders/1jpBABjsWT8H2YCBZDEAygGu2eUNpcp-V?usp=sharing).
 [Github Resources](https://github.com/jlab-sensing/GreenerGreenHouses/tree/main/MSP430)
@@ -67,6 +67,8 @@ The microcontroller being utilized by the GGH team is the [MSP430FR5969](https:/
 
 #### Overview
 The RF transciever that we are using is the [BOOSTXL CC1125 RF Boosterpack](https://www.ti.com/lit/an/swra520/swra520.pdf?ts=1694669569713) by Texas Instruments. Like the MSP430FR5969, general datasheets can be found in the datasheets folder of the GGH Google Drive. Software examples can be found in the MSP430/Final_SPI_Attempt directory of the GGH repository, specifically SmartRF1125.h for pin configurations, FR5969_CC1125.c/.h for interfacing functions with the MSP430, and SPI_LoRa_TestHarness.c for general tests on RX, TX modes.
+
+[Google Drive Resources](https://drive.google.com/drive/u/1/folders/1TxQbYlidhxr_7VlbkkD5wApc7UvspHFm?ths=true)
 
 
 ### Cryptic Warnings
