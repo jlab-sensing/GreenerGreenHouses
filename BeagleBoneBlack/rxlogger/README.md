@@ -1,8 +1,10 @@
 # rxlogger
 
-This directory contains test files and configuration scripts for the BeagleBone Black (abbreviated as BBB). These files are compatible with BeagleBone Black rev C (AM3358 processor). The rxlogger program will be run on the Sensor Manager, which is the gateway between the traditional IoT tags and the greenhouse controls system.
+This directory contains test files and configuration scripts for the BeagleBone Black rev C (abbreviated as BBB). The rxlogger program will be run on the Sensor Manager, which is the gateway between the traditional IoT tags and the greenhouse controls system.
 
-The BBB (running rxlogger) receives periodic (1/second) 4-byte data packets from the MSP430FR5969 IoT tag which contains device ID, temperature, and humidity. The BBB parses the packet to recover the temperature and humidity (about once per 500 ms based on the modbus_receive() timeout), and updates its Modbus registers for the tag. The BBB also logs a time-stamped CSV of successfully parsed packets. 
+![SystemDiagram](SystemDiagram.png)
+
+The BBB (running rxlogger) receives periodic (1/second) 4-byte data packets from the MSP430FR5969 IoT tag which contains device ID, temperature, and humidity. The BBB parses the packet to recover the temperature and humidity and updates its Modbus registers for the tag. The BBB also logs a time-stamped CSV of successfully parsed packets.
 
 ## Files
 - unused\ -- Folder containing unused files
@@ -16,6 +18,8 @@ The BBB (running rxlogger) receives periodic (1/second) 4-byte data packets from
 - README.md -- This file.
 - SPI.c -- C source file for the SPI library. Direct SPI peripheral manipulation.
 - SPI.h -- C header file for the SPI library. Direct SPI peripheral manipulation.
+- SystemDiagram.png -- System diagram.
+- Wiring.png -- Wiring diagram.
 
 ## SPI Access Hierarchy
 main --> cc112x_spi.c/h --> hal_spi_rf_trxeb.c/h --> SPI.c/h --> spidev.h
