@@ -49,7 +49,7 @@
 // #include <linux/spi/spidev.h>
 #include <stdio.h>
 
-static int spiFileDesc; // from main.c
+static int spiFileDesc = -1; // from main.c
 
 static uint8_t txBuffer[SPI_BUFFER_SIZE];
 static uint8_t rxBuffer[SPI_BUFFER_SIZE];

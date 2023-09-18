@@ -44,11 +44,11 @@ You must have the following hardware:
 ## Instructions
 Compilation is done with the following command:
 ```
-gcc *.c *.h -o out -lmodbus
+gcc *.c *.h -o rxlogger -lmodbus
 ```
 And execute. Not sure if sudo is required.
 ```
-sudo ./out
+sudo ./rxlogger
 ```
 
 ## Customization and Tuning

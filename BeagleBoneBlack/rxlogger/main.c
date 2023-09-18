@@ -1,3 +1,18 @@
+/*
+Filename: rxlogger.c
+Last updated: 2023-09-18 11:30 AM
+Author: Jack Lin <jlin143@ucsc.edu>
+
+Brief:
+rxlogger (running on a BeagleBone Black) polls the CC1125 sub 1 GHz radio for 
+4-byte data packets sent from an IoT tag (MSP430) containing temperature and 
+relative humidity. The temperature and relative humidity is used to update 
+the BeagleBone Black's modbus registers with the latest data for the device ID, 
+and is also logged to a CSV file. rxlogger provides the temperature and 
+relative humidity data to a modbus master (Argus Controls) through a USB-RS485 
+FTDI cable.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +40,7 @@
 // #include <sys/socket.h>
 // #endif
 
-#define MAX_PACKET_LENGTH 16
+#define MAX_PACKET_LENGTH 128
 #define MAX_FILENAME_LENGTH 50
 
 #ifndef SPI_BBBREVC_H // from "SPI.h"
@@ -33,6 +48,7 @@
 #define SPI_DEV_BUS1_CS0 "/dev/spidev1.0"
 #define SPI_DEV_BUS1_CS1 "/dev/spidev1.1"
 #endif
+#define SPI_DEVICE SPI_DEV_BUS0_CS0
 
 #ifndef SPIDEV_H // from <linux/spi/spidev.h>
 #define SPI_CPHA                0x01
@@ -43,18 +59,26 @@
 #define SPI_MODE_3              (SPI_CPOL|SPI_CPHA)
 #endif
 
+// Bitmasks for the CC1125 marcstate register
 #define MARCSTATE_NOT_USED_MASK 0x80
 #define MARC_2PIN_STATE_MASK 0x60
 #define MARC_STATE_MASK 0x1F
 #define RX_FIFO_ERROR 0x11
 
+// Modbus (slave/server) ID of the device running this program.
+// This program responds to requests to the ID listed here.
 #define MODBUS_SLAVE_ID 0xAB
 
+// Highest tag device ID supported by this program
+#define MAX_TAG_DEVICE_ID 0xF
+
+// Modbus map size (# of rows)
 #define MAP_SIZE_BITS 0
 #define MAP_SIZE_IBITS 0
-#define MAP_SIZE_REGS 32
+#define MAP_SIZE_REGS (MAX_TAG_DEVICE_ID << 1)
 #define MAP_SIZE_IREGS 0
 
+// Modbus RTU settings
 #define RTU_PORT        "/dev/ttyUSB0"
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
@@ -62,15 +86,15 @@
 #define RTU_STOP_BITS   1
 
 typedef enum {
+    UNKNOWN,
     RH_T_14_BIT,
     RH_T_11_BIT,
-    RH_T_9_BIT,
-    UNKNOWN
+    RH_T_9_BIT
 } packetType_t;
 
-/* Struct that holds the fields that a packet may have.
-   Depending on the packet type, only certain fields may be relevant.
-*/
+// Struct that holds the fields that a packet may have.
+// Depending on the packet type and CC1125 configuration, only certain fields 
+// may be relevant (i.e. rssi enable/disable, crc16 retained/discarded).
 typedef struct {
     packetType_t type;
     int deviceID;
@@ -82,113 +106,27 @@ typedef struct {
     uint16_t crc16;
 } packetStruct_t;
 
-// Global
-static FILE* fpData = NULL;
+// Global Variables
+// These pointers are global so that they can be accessed by intHandler.
+// In particular, fpData needs(?) to close safely to write.
+static FILE *fpData = NULL;
 static modbus_t *mb = NULL;
 static modbus_mapping_t *map = NULL;
 
+// Function Prototypes
+static void intHandler(int sig);
+
+static int spi_init(int baudrate);
+
+static int radio_init(void);
 static void manualCalibration(void);
-static void registerConfig(const registerSetting_t *reg, int numRegisters);
+static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters);
+
+static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs);
+static modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit);
+static void print_modbus_mapping(void);
+
 static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket);
-void intHandler(int sig);
-modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit);
-void print_modbus_mapping(void);
-
-int spi_init(void);
-int radio_init(void);
-int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs);
-
-int spi_init(void)
-{
-    printf("Opening %s in O_RDWR (r+).\n", SPI_DEV_BUS0_CS0);
-    trxRfSpiInterfaceInit(SPI_DEV_BUS0_CS0, SPI_MODE_0, 1000000);
-
-    // if (SPI_readSettings(spiFileDesc) < 0){
-        // printf("Error: Could not read SPI mode settings.\n");
-        // exit(1);
-    // }
-    return 0;
-}
-
-int radio_init(void)
-{
-    registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
-    manualCalibration();
-    
-#ifdef LIST_ALL_REGISTERS
-    // Read ALL registers from radio
-    printf("Reading ALL registers\n");
-    printf("addr\tvalue\tstatus\n");
-    for(int i = 0; i < (sizeof(allSettings)/sizeof(registerSetting_t)); i++) {
-        status = cc112xSpiReadReg(allSettings[i].addr, &readByte, 1);
-        printf("0x%04X\t0x%02X\t0x%02X\n", allSettings[i].addr, readByte, status);
-    }
-    printf("Done reading ALL registers\n\n\n");
-#endif
-    return 0;
-}
-
-int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs)
-{
-    printf("Setting up modbus struct and config.\n");
-    mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
-    printf("mb = 0x%02X\n", (uint32_t) mb);
-    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
-    if (modbus_set_slave(mb, MODBUS_SLAVE_ID) < 0)
-    {
-        printf("modbus_set_slave failed to set the slave number.\n");
-    }
-    
-    printf("Opening connection.\n");
-    if (modbus_connect(mb) != 0){
-        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (uint32_t) mb);
-        return -1;
-    }
-    
-    printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
-    
-#ifdef MODBUS_NONBLOCKING
-    // Timeout info
-    uint32_t sec;
-    uint32_t usec;
-    int timeoutStatus;
-    printf("timeouts\n");
-    timeoutStatus = modbus_get_response_timeout(mb, &sec, &usec);
-    printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    timeoutStatus = modbus_set_indication_timeout(mb, sec, usec);
-    printf("\tindication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    timeoutStatus = modbus_get_byte_timeout(mb, &sec, &usec);
-    printf("\tbyte (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    // Set socket as nonblocking
-    // getsockopt();
-#endif
-    
-    printf("Mapping\n");
-    // map = modbus_mapping_new_start_address();
-    map = modbus_mapping_new(bits, ibits, regs, iregs);
-    
-    /* 
-        map->tab_bits[0]
-        map->tab_input_bits[0]
-        map->tab_input_registers[0]
-        map->tab_registers[0]
-    */
-    
-    if (map == NULL){
-        printf("modbus_mapping_new failed to allocate.\n");
-        return -1;
-    }
-    
-    printf("map located at 0x%X\n", (uint32_t) map);
-    printf("sizeof(map) = %d\n", sizeof(map));
-    print_modbus_mapping();
-    printf("Overwriting...\n");
-    for (int i = 0; i < MAP_SIZE_REGS; i++){
-        
-    }
-    
-    return 0;
-}
 
 int main(int argc, char *argv[]){
 #ifdef TEST_PACKET_PARSER
@@ -230,16 +168,26 @@ int main(int argc, char *argv[]){
     
     signal(SIGINT, intHandler);
     
-    spi_init();
+    int initReturn = -1;
+    initReturn = spi_init(1000000);
+    if (initReturn == -1){
+        printf("spi_init() error (spi fd = %d)\n", initReturn);
+    }
     
 #ifndef SKIP_LORA
-    radio_init();
+    initReturn = radio_init();
+    if (initReturn == -1){
+        printf("radio_init() error\n");
+    }
 #else
     printf("SKIP_LORA\n");
 #endif
 
 #ifndef SKIP_MODBUS
-    modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS);
+    initReturn = modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS);
+    if (initReturn == -1){
+        printf("modbus_init() error\n");
+    }
 #else
     printf("SKIP_MODBUS\n");
 #endif
@@ -276,9 +224,11 @@ int main(int argc, char *argv[]){
 
         // printf("marcstate\n");
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
+        
+        // A change in marcstate indicates a CC1125 state machine transition
+        // Note: What if the marcstate is not polled at the right times?
+        // Consider using CC1125-generated interrupts
         if (marcState != lastMarcState){
-            // printf("\tPACKET INCOMING\n");
-            // return 0;
             if((marcState & MARC_STATE_MASK) == RX_FIFO_ERROR) {
                 printf("\tMARCSTATE RX_FIFO_ERROR, flushing\n");
                 trxSpiCmdStrobe(CC112X_SFRX);
@@ -369,6 +319,104 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+// returns file descriptor for the SPI interface on success, else -1
+// Note: trxRfSpiInterfaceInit may not return -1 due to SPI.c/h exiting on error
+static int spi_init(int baudrate)
+{
+    // printf("Opening %s in O_RDWR (r+).\n", SPI_DEVICE);
+    // if (SPI_readSettings(spiFileDesc) < 0){
+        // printf("Error: Could not read SPI mode settings.\n");
+        // exit(1);
+    // }
+    return trxRfSpiInterfaceInit(SPI_DEVICE, SPI_MODE_0, baudrate);
+}
+
+// Returns 0 on success, else -1
+static int radio_init(void)
+{
+    uint16_t registerErrorAddr = registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+    
+    if (registerErrorAddr != 0xFFFF){
+        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
+    }
+    manualCalibration();
+    
+#ifdef LIST_ALL_REGISTERS
+    // Read ALL registers from radio
+    printf("Reading ALL registers\n");
+    printf("addr\tvalue\tstatus\n");
+    for(int i = 0; i < (sizeof(allSettings)/sizeof(registerSetting_t)); i++) {
+        status = cc112xSpiReadReg(allSettings[i].addr, &readByte, 1);
+        printf("0x%04X\t0x%02X\t0x%02X\n", allSettings[i].addr, readByte, status);
+    }
+    printf("Done reading ALL registers\n\n\n");
+#endif
+    return (registerErrorAddr == 0xFFFF)?(0):(-1);
+}
+
+// returns 0 on success, else -1
+static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs)
+{
+    printf("Setting up modbus struct and config.\n");
+    mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
+    printf("mb = 0x%02X\n", (uint32_t) mb);
+    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
+    if (modbus_set_slave(mb, MODBUS_SLAVE_ID) < 0)
+    {
+        printf("modbus_set_slave failed to set the slave number.\n");
+    }
+    
+    printf("Opening connection.\n");
+    if (modbus_connect(mb) != 0){
+        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (uint32_t) mb);
+        return -1;
+    }
+    
+    printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
+    
+#ifdef MODBUS_NONBLOCKING
+    // Timeout info
+    uint32_t sec;
+    uint32_t usec;
+    int timeoutStatus;
+    printf("timeouts\n");
+    timeoutStatus = modbus_get_response_timeout(mb, &sec, &usec);
+    printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_set_indication_timeout(mb, sec, usec);
+    printf("\tindication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_get_byte_timeout(mb, &sec, &usec);
+    printf("\tbyte (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    // Set socket as nonblocking
+    // getsockopt();
+#endif
+    
+    printf("Mapping\n");
+    // map = modbus_mapping_new_start_address();
+    map = modbus_mapping_new(bits, ibits, regs, iregs);
+    
+    /* 
+        map->tab_bits[0]
+        map->tab_input_bits[0]
+        map->tab_input_registers[0]
+        map->tab_registers[0]
+    */
+    
+    if (map == NULL){
+        printf("modbus_mapping_new failed to allocate.\n");
+        return -1;
+    }
+    
+    printf("map located at 0x%X\n", (uint32_t) map);
+    printf("sizeof(map) = %d\n", sizeof(map));
+    print_modbus_mapping();
+    printf("Overwriting...\n");
+    for (int i = 0; i < MAP_SIZE_REGS; i++){
+        
+    }
+    
+    return 0;
+}
+
 /*******************************************************************************
 *   @fn         intHandler
 *
@@ -378,7 +426,7 @@ int main(int argc, char *argv[]){
 *
 *   @return     none
 */
-void intHandler(int sig) {
+static void intHandler(int sig) {
     // printf("SIG %d\n", sig);
     if (fpData != NULL) fclose(fpData);
     trxRfSpiInterfaceClose();
@@ -401,23 +449,26 @@ void intHandler(int sig) {
 *
 *   @param      none
 *
-*   @return     none
+*   @return     uint16_t errorFlag -- 0xFFFF on success
+*                                     else first written register with error
 */
-static void registerConfig(const registerSetting_t *reg, int numRegisters) {
+static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
 
     uint8_t writeByte;
     uint8_t readByte;
     rfStatus_t status;
     
-    printf("sizeof(reg) = %d\n", sizeof(reg));
-    printf("sizeof(&reg) = %d\n", sizeof(&reg));
+    uint16_t errorFlag = 0xFFFF;
     
-    printf("Registers to write\n");
-    printf("#\taddr\tvalue\n");
-    for(uint16_t i = 0; i < numRegisters; i++) {
-        printf("%d\t0x%02X\t0x%02X\n", i, reg[i].addr, reg[i].data);
-    }
-    printf("Done listing registers to write\n");
+    // printf("sizeof(reg) = %d\n", sizeof(reg));
+    // printf("sizeof(&reg) = %d\n", sizeof(&reg));
+    
+    // printf("Registers to write\n");
+    // printf("#\taddr\tvalue\n");
+    // for(uint16_t i = 0; i < numRegisters; i++) {
+        // printf("%d\t0x%02X\t0x%02X\n", i, reg[i].addr, reg[i].data);
+    // }
+    // printf("Done listing registers to write\n");
 
     // Reset radio
     printf("Resetting radio\n");
@@ -433,13 +484,10 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t0x%02X\t0x%02X", i, reg[i].addr, reg[i].data);
         status = cc112xSpiReadReg(reg[i].addr, &readByte, 1);
-        
         if (readByte == reg[i].data){
-            printf(" == 0x%02X\t", readByte);
-            printf("OK\n");
+            printf(" == 0x%02X\tOK\n", readByte);
         }else{
-            printf(" != 0x%02X\t", readByte);
-            printf("UNEXPECTED REGISTER VALUE\n");
+            printf(" != 0x%02X\tUNEXPECTED REGISTER VALUE\n", readByte);
         }
     }
 
@@ -460,18 +508,16 @@ static void registerConfig(const registerSetting_t *reg, int numRegisters) {
     for(uint16_t i = 0; i < numRegisters; i++) {
         printf("%d\t0x%02X\t0x%02X", i, reg[i].addr, reg[i].data);
         status = cc112xSpiReadReg(reg[i].addr, &readByte, 1);
-        
         if (readByte == reg[i].data){
-            printf(" == 0x%02X\t", readByte);
-            printf("OK\n");
+            printf(" == 0x%02X\tOK\n", readByte);
         }else{
-            printf(" != 0x%02X\t", readByte);
-            printf("UNEXPECTED REGISTER VALUE\n");
+            printf(" != 0x%02X\tUNEXPECTED REGISTER VALUE\n", readByte);
+            if (errorFlag == 0xFFFF) errorFlag = reg[i].addr;
         }
     }
     
     printf("Done configuring registers.\n");
-    return;
+    return errorFlag;
 }
 
 /*******************************************************************************
@@ -566,9 +612,8 @@ static void manualCalibration(void) {
     }
 }
 
-// Do not include RSSI (2 bytes)
-// returnPacket will be populated based on the packet type
-// packetType describes which fields in returnPacket are relevant
+// returnPacket will be populated based on the packet type.
+// packetType describes which fields in returnPacket are relevant.
 static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket)
 {
     /*  Packet Structure for temp/humidity
@@ -675,7 +720,7 @@ static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t
     return returnPacket->type;
 }
 
-modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit)
+static modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit)
 {
     modbus_t *mb;
     // printf("\t(before) mb = 0x%02X\n", mb);
@@ -729,7 +774,7 @@ modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit,
     return mb;
 }
 
-void print_modbus_mapping(void)
+static void print_modbus_mapping(void)
 {
     // printf("Dumping data (hex):\n");
     // printf("info: %d, reg %d, reg0 %d\n", sizeof(mbmap), sizeof(mbmap->tab_registers), sizeof(mbmap->tab_registers[0]));
