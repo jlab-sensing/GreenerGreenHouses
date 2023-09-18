@@ -28,9 +28,13 @@ main --> cc112x_spi.c/h --> hal_spi_rf_trxeb.c/h --> SPI.c/h --> spidev.h
 3. `hal_spi_rf_trxeb.h` makes the direct-access SPI call (`ioctl`) through `SPI.h`.
 
 ## Prerequisites
-You must have libmodbus installed, ideally built from source from https://github.com/stephane/libmodbus. You may need to either restart the BeagleBone Black, refresh/reload libraries with `ldconfig`, or modify the path if the library is not on the path and fails to include. The SPI pins must be configured as SPI using the `config-pin-spi0-on.sh` script.
+You must have libmodbus installed, ideally built from source from https://github.com/stephane/libmodbus.
+1. In your `~` directory: `git clone https://github.com/stephane/libmodbus`
+2. `cd libmodbus`
+3. `./autogen.sh && ./configure && sudo make install && sudo ldconfig`
+The SPI pins must be configured as SPI using the `config-pin-spi0-on.sh` script in order to access the SPI peripheral correctly.
 
-TODO: Test if the debian packages `libmodbus5` or `libmodbus-dev` are compatible with rxlogger. Check for issues with `modbus_get_indication_timeout()`.
+Note: The Debian prebuilt packages `libmodbus5` and `libmodbus-dev` did not work for me. Just build from source.
 
 You must have the following hardware:
 - [BeagleBone Black](https://www.beagleboard.org/boards/beaglebone-black) revision C (other revisions may also work)
@@ -46,10 +50,11 @@ Compilation is done with the following command:
 ```
 gcc *.c *.h -o rxlogger -lmodbus
 ```
-And execute. Not sure if sudo is required.
+And execute:
 ```
-sudo ./rxlogger
+./rxlogger
 ```
+Halt execution with CTRL+C.
 
 ## Customization and Tuning
 Use Texas Instruments' [SmartRF Studio 7](https://www.ti.com/tool/download/SMARTRF-STUDIO-7) and the CC1125 BoosterPack to determine the optimal register settings for your desired frequency and modulation. Then, replace the `cc112x_easy_link_reg_config.h` file with the newly exported registers from SmartRF Studio 7 (export as value line or performance line preset).
