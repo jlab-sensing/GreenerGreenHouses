@@ -32,9 +32,10 @@ You must have libmodbus installed, ideally built from source from https://github
 1. In your `~` directory: `git clone https://github.com/stephane/libmodbus`
 2. `cd libmodbus`
 3. `./autogen.sh && ./configure && sudo make install && sudo ldconfig`
-The SPI pins must be configured as SPI using the `config-pin-spi0-on.sh` script in order to access the SPI peripheral correctly.
 
 Note: The Debian prebuilt packages `libmodbus5` and `libmodbus-dev` did not work for me. Just build from source.
+
+The SPI pins must be configured as SPI using the `config-pin-spi0-on.sh` script in order to access the SPI peripheral correctly.
 
 You must have the following hardware:
 - [BeagleBone Black](https://www.beagleboard.org/boards/beaglebone-black) revision C (other revisions may also work)
