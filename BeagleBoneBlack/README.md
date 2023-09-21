@@ -27,7 +27,7 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 4. Connect an ethernet cable to the BBB for internet.
     - If ethernet is unavailable, see the WiFi section. You can set up a mobile hotspot from your computer or phone. Alternatively, you may be able to bridge a BBB-to-host ethernet with your host device's wifi.
 5. `sudo apt-get update`
-6. `sudo apt-get upgrade` (This may take a while.)
+6. `sudo apt-get upgrade` (This may take a while, > 30 min.)
 
 ## Code
 1. `git clone https://github.com/jlab-sensing/GreenerGreenHouses.git` or `git clone git@github.com:jlab-sensing/GreenerGreenHouses.git`
@@ -36,12 +36,19 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 Run scripts in the confg-pin folder from the git repo.
 Alternatively, invoke the commands manually with the `config-pin` command. These commands and scripts do not need to be run with `sudo`. Pin configurations do not persist after power-off.
 
-## Libmodbus
-The easiest way to use the modbus code is with a USB-RS485 cable such as FTDI's (USB-RS485-WE-1800-BT)[https://ftdichip.com/products/usb-rs485-we-1800-bt/].
+## libmodbus
+The easiest way to use the modbus code is with a USB-RS485 cable such as FTDI's (USB-RS485-WE-1800-BT)[https://ftdichip.com/products/usb-rs485-we-1800-bt/]. The FTDI cable is plug and play, no separate driver installation needed.
 
-The FTDI cable is plug and play, no separate driver installation needed.
+In order to communicate with the Modbus protocol over the RS485 PHY layer, you must have libmodbus installed, ideally built from source from https://github.com/stephane/libmodbus.
+1. In your `~/` directory: `git clone https://github.com/stephane/libmodbus`
+2. `cd libmodbus`
+3. `./autogen.sh && ./configure && sudo make install && sudo ldconfig` (This may take a while, < 15 min.)
 
-Use `lsusb` and `dmesg` to check which `/dev/ttyUSBx` should be used.
+To use the libmodbus library, you must add `#include <modbus/modbus.h>`. See the (libmodbus reference)[https://libmodbus.org/reference/] or the source files in `~/libmodbus/src/` for details.
+
+Use `lsusb` and `dmesg` to check which `/dev/ttyUSBx` should be provided to `modbus_new_rtu()`.
+
+Note: The Debian prebuilt packages `libmodbus5` and `libmodbus-dev` did not work for me. Just build from source.
 
 ## WiFi
 ### Simple WPA2 Networks
