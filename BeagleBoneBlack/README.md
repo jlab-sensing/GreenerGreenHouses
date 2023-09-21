@@ -2,6 +2,8 @@
 
 This directory contains subdirectories for scripts and programs for the BeagleBone Black (BBB) revision C with the AM3358 processor.
 
+All projects and guides assume that the BBB is on Debian Buster IoT Image 2020-04-06, with Linux 4.19.94-ti-r42 kernel. There are certain ramifications on the accuracy of the WiFi section of this guide if you (update to newer versions such as Debian 11 Bullseye or 12 Bookworm)[https://www.beagleboard.org/distros], specifically that `connman` is no longer in use and is replaced by `systemd-networkd`, see the (Debian 11.x Bullseye Monthly Snapshot)[https://forum.beagleboard.org/t/debian-11-x-bullseye-monthly-snapshot-2023-09-02/31280] for more information. If you decide to upgrade, you should use the IoT image, unless you need the desktop provided in the Xfce image.
+
 ## Folders
 - BoosterPack_swrc253e\ -- (Deprecated) Program for interfacing the BBB with the CC1125. For a more up-to-date program, see `rxlogger\` which also includes Modbus integration.
 - LaunchPad_trx_demo_swra493\ -- (Abandoned) Non-working compatibility conversion of the Texas Instruments SWRA493 test code for use with the CC1125.
@@ -11,17 +13,15 @@ This directory contains subdirectories for scripts and programs for the BeagleBo
 - rxlogger\ -- Program for the "Sensor Manager" in the traditional IoT system. Receives periodic data packets from the IoT tag (MSP430), saves the data to a CSV, and also updates the BBB's modbus registers in order to provide the greenhouse control system (Argus) with the latest temperature and relative humidity readings.
 
 # BeagleBone Black Setup
-The following instructions should be done on the BeagleBone Black (abbreviated as BBB), and assume that you are executing commands on the BBB through SSH.
-
-## Files
-- files
+The following instructions should be done on the BeagleBone Black (abbreviated as BBB), and assume that you are executing commands on the BBB through SSH. It is easiest to connect through the onboard mini USB port.
 
 ## First-Time BBB
 1. Plug in the USB cable between your computer and the BBB. You should plug in the mini USB to the bottom side of the BBB near the ethernet port.
-	- If you want to use the WiFi dongle, you should connect the barrel plug (5 V, >= 1 A) to the BBB in order to supply enough current. USB 2.0 power (5V, 500 mA) may not be sufficient.
-2. SSH in with one of the following (both are equivalent):
+	- If you want to use the WiFi dongle, you should connect the barrel plug (5 V, >= 1 A) to the BBB in order to supply enough current. USB 2.0 power (5V, 500 mA) may not be sufficient for both the BBB and wifi peripherals.
+2. SSH in with one of the following:
 	- `ssh debian@beaglebone.local`
 	- `ssh debian@192.168.7.2`
+    - (Alternative addresses)[https://docs.beagleboard.org/latest/intro/support/getting-started.html#browse-to-your-beagle]
 3. The default password for the `debian` user is `temppwd`
     - Use `passwd` to update the password if you intend to make the BBB network-accessible.
 4. Connect an ethernet cable to the BBB for internet.
