@@ -18,31 +18,30 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 
 ## First-Time BBB
 1. Plug in the USB cable between your computer and the BBB. You should plug in the mini USB to the bottom side of the BBB near the ethernet port.
-	a. If you want to use the WiFi dongle, you should connect the barrel plug (5 V, >= 1 A) to the BBB in order to supply enough current. USB power (
+	- If you want to use the WiFi dongle, you should connect the barrel plug (5 V, >= 1 A) to the BBB in order to supply enough current. USB 2.0 power (5V, 500 mA) may not be sufficient.
 2. SSH in with one of the following (both are equivalent):
-	a. `ssh debian@beaglebone.local`
-	b. `ssh debian@192.168.7.2`
+	- `ssh debian@beaglebone.local`
+	- `ssh debian@192.168.7.2`
 3. The default password for the `debian` user is `temppwd`
-4. 
-
+    - Use `passwd` to update the password if you intend to make the BBB network-accessible.
+4. Connect an ethernet cable to the BBB for internet.
+    - If ethernet is unavailable, see the WiFi section. You can set up a mobile hotspot from your computer or phone. Alternatively, you may be able to bridge a BBB-to-host ethernet with your host device's wifi.
+5. `sudo apt-get update`
+6. `sudo apt-get upgrade` (This may take a while.)
 
 ## Code
-git clone
-
+1. `git clone https://github.com/jlab-sensing/GreenerGreenHouses.git` or `git clone git@github.com:jlab-sensing/GreenerGreenHouses.git`
 
 ## SPI and I2C
 Run scripts in the confg-pin folder from the git repo.
-Alternatively, invoke the commands manually with the config-pin command.
-```
-config-pin p9.17 spi_cs
-```
-
+Alternatively, invoke the commands manually with the `config-pin` command. These commands and scripts do not need to be run with `sudo`. Pin configurations do not persist after power-off.
 
 ## Libmodbus
-Needs RS485 cable
-Plug and play, no separate driver installation needed
-Use lsusb and dmesg to check which ttyUSBx should be used in RTU_PORT.
+The easiest way to use the modbus code is with a USB-RS485 cable such as FTDI's (USB-RS485-WE-1800-BT)[https://ftdichip.com/products/usb-rs485-we-1800-bt/].
 
+The FTDI cable is plug and play, no separate driver installation needed.
+
+Use `lsusb` and `dmesg` to check which `/dev/ttyUSBx` should be used.
 
 ## WiFi
 ### Simple WPA2 Networks
@@ -61,7 +60,7 @@ Use lsusb and dmesg to check which ttyUSBx should be used in RTU_PORT.
 The BBB ships with Debian and uses `connmanctl` to manage network connections. `connmanctl` appears to seize `wpa_supplicant`, so the method to connect to eduroam is slightly different from what you would do on a Raspberry Pi. Instead of setting up `/etc/wpa_supplicant/wpa_supplicant.conf`, you will instead set up a `connmanctl` manual configuration file (`/var/lib/connman/eduroam.config`).
 1. Download the UCSC certificate authority file from the ITS website: https://its.ucsc.edu/wireless/docs/ca.crt
 	- The certificate appears to already be in one of `connmanctl`'s [accepted CA file formats (PEM/DER)](https://manpages.debian.org/buster/connman/connman-service.config.5.en.html), so there is no need to convert the file.
-2. Copy the certificate ("ca.crt") to `/usr/share/ca-certificates/local`. You can rename it to something memorable if you want.
+2. Copy the certificate ("ca.crt") to `/usr/share/ca-certificates/local/`. You can rename it to something memorable if you want.
 3. `sudo dpkg-reconfigure ca-certificates` and use the spacebar to select the newly added certificate. Press Enter to confirm and apply the changes.
 4. `sudo nano /var/lib/connman/eduroam.config` and enter the following:
 	- Not sure, but the Passphrase may need to be enclosed in double quotes if it contains spaces.
@@ -89,6 +88,7 @@ Telnet is used to control the LF11 Light Fixture. Note that the LF11 only provid
 2. Connect the BBB to the ChiYu BF-430 converter with an ethernet/RJ45 cable.
 3. Turn on the power switch on the XtremeLUX DC11 digital controller and plug in the power adapter for the ChiYu BF-430. You should observe the power indicator LEDs on the BF-430 and the DC11 turn on.
     - You do not need to plug in the power for the LEDs themselves if you only want to test the connectivity.
+    - The DC11 is powered by the BF-430 over RS485, so you can ignore the barrel jack on the side of the DC11.
 4. Use `ifconfig` and `ping 192.168.1.123` to verify if the BBB can see the digital controller.
     - The BBB must be on the same subnet as the DC11.
     - In the `connmanctl` shell, use `config ethernet_<tab> --ipv4 manual 192.168.1.115 255.255.0.0` to set the eth0 interface IP to the same subnet as the DC11. This may interfere with the wlan0 interface, possibly due to DNS gateway issues.
@@ -96,7 +96,7 @@ Telnet is used to control the LF11 Light Fixture. Note that the LF11 only provid
 5. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
 6. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
 7. To set the LED brightness, use the following commands:
-    1. `mode m` to change to manual mode (default auto for use with the companion application).
+    1. `mode m` to change to manual mode (the default is auto for use with the companion application).
     2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
     3. `ls all` to apply the light output to all light bars.
 
