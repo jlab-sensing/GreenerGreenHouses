@@ -76,3 +76,43 @@ Identity=<YOUR UCSC EMAIL ENDING IN @ucsc.edu HERE>
 Passphrase=<YOUR GOLD PASSWORD HERE>
 ```
 5. Follow the instructions in Simple WPA2 Networks and connect to eduroam.
+
+TODO:
+- https://cloud.securew2.com/public/40809/eduroam/
+    - *.cer (non-specific OS)
+    - Linux python script
+
+## LF11 Control via Telnet
+Telnet is used to control the LF11 Light Fixture. Note that the LF11 only provides illumination to the plants, and does not control the LBRB9 Light Bar for LiFi communication.
+
+1. `sudo apt-get install telnet`
+2. Connect the BBB to the ChiYu BF-430 converter with an ethernet/RJ45 cable.
+3. Turn on the power switch on the XtremeLUX DC11 digital controller and plug in the power adapter for the ChiYu BF-430. You should observe the power indicator LEDs on the BF-430 and the DC11 turn on.
+    - You do not need to plug in the power for the LEDs themselves if you only want to test the connectivity.
+4. Use `ifconfig` and `ping 192.168.1.123` to verify if the BBB can see the digital controller.
+    - The BBB must be on the same subnet as the DC11.
+    - In the `connmanctl` shell, use `config ethernet_<tab> --ipv4 manual 192.168.1.115 255.255.0.0` to set the eth0 interface IP to the same subnet as the DC11. This may interfere with the wlan0 interface, possibly due to DNS gateway issues.
+    - To revert, use `config ethernet_<tab> --ipv4 dhcp`. If this doesn't fix the wlan0 interface issue, then you can just unplug the ethernet cable to regain full function.
+5. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
+6. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
+7. To set the LED brightness, use the following commands:
+    1. `mode m` to change to manual mode (default auto for use with the companion application).
+    2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
+    3. `ls all` to apply the light output to all light bars.
+
+## LBRB9 LiFi/VLC Control
+### Main Processor
+To control the LBRB9 light bar for LiFi/VLC communication, you can control the digital pins and output a voltage between 0 and 5 V to the LBRB9's control pins. The control pins are red (for red) and white (for blue). Make sure that the BBB shares ground (black wire).
+
+TODO:
+- Configure pin as normal push-pull, or as open drain?
+- What is the max current sink/source per digital pin?
+- Consider 5 V level shifter
+
+### Programmable Realtime Unit (PRU)
+
+TODO:
+- PRU hookup and modification of OpenVLC
+- pinout and `config-pin` script for the digital pins
+- Analog output? Ramifications and comparison of switching speed?
+    - Where is the bottleneck? Likely the "frequency response" (switching speed) of the LEDs on the LBRB9 (~10 kHz).
