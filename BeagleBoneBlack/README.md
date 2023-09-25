@@ -2,7 +2,7 @@
 
 This directory contains subdirectories for scripts and programs for the BeagleBone Black (BBB) revision C with the AM3358 processor.
 
-All projects and guides assume that the BBB is on Debian Buster IoT Image 2020-04-06, with Linux 4.19.94-ti-r42 kernel. There are certain ramifications on the accuracy of the WiFi section of this guide if you (update to newer versions such as Debian 11 Bullseye or 12 Bookworm)[https://www.beagleboard.org/distros], specifically that `connman` is no longer in use and is replaced by `systemd-networkd`, see the (Debian 11.x Bullseye Monthly Snapshot)[https://forum.beagleboard.org/t/debian-11-x-bullseye-monthly-snapshot-2023-09-02/31280] for more information. If you decide to upgrade, you should use the IoT image, unless you need the desktop provided in the Xfce image.
+All projects and guides assume that the BBB is on Debian Buster IoT Image 2020-04-06, with Linux 4.19.94-ti-r42 kernel. There are certain ramifications on the accuracy of the WiFi section of this guide if you [update to newer versions such as Debian 11 Bullseye or 12 Bookworm](https://www.beagleboard.org/distros), specifically that `connman` is no longer in use and is replaced by `systemd-networkd`, see the [Debian 11.x Bullseye Monthly Snapshot](https://forum.beagleboard.org/t/debian-11-x-bullseye-monthly-snapshot-2023-09-02/31280) for more information. If you decide to upgrade, you should use the IoT image, unless you need the desktop provided in the Xfce image.
 
 ## Folders
 - BoosterPack_swrc253e\ -- (Deprecated) Program for interfacing the BBB with the CC1125. For a more up-to-date program, see `rxlogger\` which also includes Modbus integration.
@@ -20,8 +20,10 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 	- If you want to use the WiFi dongle, you should connect the barrel plug (5 V, >= 1 A) to the BBB in order to supply enough current. USB 2.0 power (5V, 500 mA) may not be sufficient for both the BBB and wifi peripherals.
 2. SSH in with one of the following:
 	- `ssh debian@beaglebone.local`
-	- `ssh debian@192.168.7.2`
-    - (Alternative addresses)[https://docs.beagleboard.org/latest/intro/support/getting-started.html#browse-to-your-beagle]
+	- `ssh debian@192.168.7.2` (Windows)
+    - `ssh debian@192.168.6.2` (macOS & Linux)
+        - [macOS 11.5 USB FIX](https://forum.beagleboard.org/t/beaglebone-black-on-macosx-12-1/31366/6): On the BBB (via direct ethernet), run `cd /opt/scripts/ && git pull`, then `sudo reboot`.
+    - [Alternative addresses](https://docs.beagleboard.org/latest/intro/support/getting-started.html#browse-to-your-beagle)
 3. The default password for the `debian` user is `temppwd`
     - Use `passwd` to update the password if you intend to make the BBB network-accessible.
 4. Connect an ethernet cable to the BBB for internet.
@@ -30,10 +32,12 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 6. `sudo apt-get upgrade` (This may take a while, > 30 min.)
 
 ## Code
-1. `git clone https://github.com/jlab-sensing/GreenerGreenHouses.git` or `git clone git@github.com:jlab-sensing/GreenerGreenHouses.git`
+1. Copy the codebase with: `git clone https://github.com/jlab-sensing/GreenerGreenHouses.git` or `git clone git@github.com:jlab-sensing/GreenerGreenHouses.git`
+2. In general, compile with: `gcc *.c *.h -o <executable_name>`
+3. Then run with: `./<executable_name>`
 
 ## SPI and I2C
-Run scripts in the confg-pin folder from the git repo.
+Run scripts in the `confg-pin\` folder from the git repo to configure the pins for SPI and I2C.
 Alternatively, invoke the commands manually with the `config-pin` command. These commands and scripts do not need to be run with `sudo`. Pin configurations do not persist after power-off.
 
 ## libmodbus
