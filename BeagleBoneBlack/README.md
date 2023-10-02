@@ -41,14 +41,14 @@ Run scripts in the `confg-pin\` folder from the git repo to configure the pins f
 Alternatively, invoke the commands manually with the `config-pin` command. These commands and scripts do not need to be run with `sudo`. Pin configurations do not persist after power-off.
 
 ## libmodbus
-The easiest way to use the modbus code is with a USB-RS485 cable such as FTDI's (USB-RS485-WE-1800-BT)[https://ftdichip.com/products/usb-rs485-we-1800-bt/]. The FTDI cable is plug and play, no separate driver installation needed.
+The easiest way to use the modbus code is with a USB-RS485 cable such as FTDI's [USB-RS485-WE-1800-BT](https://ftdichip.com/products/usb-rs485-we-1800-bt/). The FTDI cable is plug and play, no separate driver installation needed.
 
 In order to communicate with the Modbus protocol over the RS485 PHY layer, you must have libmodbus installed, ideally built from source from https://github.com/stephane/libmodbus.
 1. In your `~/` directory: `git clone https://github.com/stephane/libmodbus`
 2. `cd libmodbus`
 3. `./autogen.sh && ./configure && sudo make install && sudo ldconfig` (This may take a while, < 15 min.)
 
-To use the libmodbus library, you must add `#include <modbus/modbus.h>`. See the (libmodbus reference)[https://libmodbus.org/reference/] or the source files in `~/libmodbus/src/` for details.
+To use the libmodbus library, you must add `#include <modbus/modbus.h>`. See the [libmodbus reference](https://libmodbus.org/reference/) or the source files in `~/libmodbus/src/` for details.
 
 Use `lsusb` and `dmesg` to check which `/dev/ttyUSBx` should be provided to `modbus_new_rtu()`.
 
@@ -96,30 +96,12 @@ TODO:
 ## LF11 Control via Telnet
 Telnet is used to control the LF11 Light Fixture. Note that the LF11 only provides illumination to the plants, and does not control the LBRB9 Light Bar for LiFi communication.
 
-### Ethernet Managed By Connman
-The steps below describe how to connect to the LF11 (DC11) using Debian 10's default Connection Manager. This method has a downside of regularly modifying the routing table (`route`) and disrupting the wifi wlan0 internet connection. However, this method maintains the out-of-the-box behavior of the ethernet port in case you want to use the ethernet port for an internet connection or DHCP.
-
-1. `sudo apt-get install telnet`
-2. Connect the BBB to the ChiYu BF-430 converter with an ethernet/RJ45 cable.
-3. Turn on the power switch on the XtremeLUX DC11 digital controller and plug in the power adapter for the ChiYu BF-430. You should observe the power indicator LEDs on the BF-430 and the DC11 turn on.
-    - You do not need to plug in the power for the LEDs themselves if you only want to test the connectivity.
-    - The DC11 is powered by the BF-430 over RS485, so you can ignore the barrel jack on the side of the DC11.
-4. Use `ifconfig` and `ping 192.168.1.123` to check if the BBB's eth0 ipv4 address is on the same subnet as the BF-430 and if it can reach it.
-    - The BBB must be on the same subnet as the BF-430.
-    - In the `connmanctl` shell, use `config ethernet_<tab> --ipv4 manual 192.168.1.115 255.255.0.0` to set the eth0 interface IP to the same subnet as the BF-430. This may interfere with the wlan0 interface due to overwriting the default gateway. Normally, you want all non-local requests to be routed through wlan0 (which is your internet connection) through `comm-vss-g-v480` (`169.233.255.254`), but the connman daemon will repeatedly overwrite the default gateway with the eth0 interface through `0.0.0.0`.
-    - To revert, use `config ethernet_<tab> --ipv4 dhcp`. If this doesn't fix the wlan0 interface issue, then you can just unplug the ethernet cable to regain full function. Doing that will flush the `route` table of any routes associated with the (now disconnected) eth0 interface.
-    - Alternatively, you can use the command `sudo route add default gw comm-vss-g-v480 dev wlan0` to manually route non-local connections through the wlan0 interface. Similarly, you can manually route 192.168.1.123 through eth0 using `sudo route add 192.168.1.123 gw 0.0.0.0 dev eth0`. However, this will not stop the connman daemon from modifying the default gateway.
-5. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
-6. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
-7. To set the LED brightness, use the following commands:
-    1. `mode m` to change to manual mode (the default is auto for use with the companion application).
-    2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
-    3. `ls all` to apply the light output to all light bars.
-
-### Ethernet Blacklisted From Connman
+### (Recommended) Ethernet Blacklisted From Connman
 The steps below describe how to connecto to the LF11 (DC11) using manual configuration on the ethernet interface. This method has a downside of requiring additional setup and (untested:) may not work properly if you want to use the ethernet port for an internet connection. The upside is that this will not interfere with the wifi wlan0 internet connection.
 
 Further investigation in `/etc/dhcp/dhclient.conf` could help resolve static/dhcp issues (i.e. preferred dhcp ip or fallback static ip after no dhcp server response).
+
+Use this method if you need a simultaneous wifi connection. (Recommended for remote management.)
 
 1. Add `eth0` to the NetworkInterfaceBlacklist for connman in `/etc/connman/main.conf`.
 ```
@@ -175,6 +157,28 @@ iface eth0:1 inet static
     2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
     3. `ls all` to apply the light output to all light bars.
 
+### Ethernet Managed By Connman
+The steps below describe how to connect to the LF11 (DC11) using Debian 10's default Connection Manager. This method has a downside of regularly modifying the routing table (`route`) and disrupting the wifi wlan0 internet connection. However, this method maintains the out-of-the-box behavior of the ethernet port in case you want to use the ethernet port for an internet connection or DHCP.
+
+Use this method if you do not care about having a wifi connection.
+
+1. `sudo apt-get install telnet`
+2. Connect the BBB to the ChiYu BF-430 converter with an ethernet/RJ45 cable.
+3. Turn on the power switch on the XtremeLUX DC11 digital controller and plug in the power adapter for the ChiYu BF-430. You should observe the power indicator LEDs on the BF-430 and the DC11 turn on.
+    - You do not need to plug in the power for the LEDs themselves if you only want to test the connectivity.
+    - The DC11 is powered by the BF-430 over RS485, so you can ignore the barrel jack on the side of the DC11.
+4. Use `ifconfig` and `ping 192.168.1.123` to check if the BBB's eth0 ipv4 address is on the same subnet as the BF-430 and if it can reach it.
+    - The BBB must be on the same subnet as the BF-430.
+    - In the `connmanctl` shell, use `config ethernet_<tab> --ipv4 manual 192.168.1.115 255.255.0.0` to set the eth0 interface IP to the same subnet as the BF-430. This may interfere with the wlan0 interface due to overwriting the default gateway. Normally, you want all non-local requests to be routed through wlan0 (which is your internet connection) through `comm-vss-g-v480` (`169.233.255.254`), but the connman daemon will repeatedly overwrite the default gateway with the eth0 interface through `0.0.0.0`.
+    - To revert, use `config ethernet_<tab> --ipv4 dhcp`. If this doesn't fix the wlan0 interface issue, then you can just unplug the ethernet cable to regain full function. Doing that will flush the `route` table of any routes associated with the (now disconnected) eth0 interface.
+    - Alternatively, you can use the command `sudo route add default gw comm-vss-g-v480 dev wlan0` to manually route non-local connections through the wlan0 interface. Similarly, you can manually route 192.168.1.123 through eth0 using `sudo route add 192.168.1.123 gw 0.0.0.0 dev eth0`. However, this will not stop the connman daemon from modifying the default gateway.
+5. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
+6. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
+7. To set the LED brightness, use the following commands:
+    1. `mode m` to change to manual mode (the default is auto for use with the companion application).
+    2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
+    3. `ls all` to apply the light output to all light bars.
+
 ### Managing the BF-430
 If you want to change the IP and port settings for the BF-430, you can access its web (HTTP port 80) configuration portal.
 
@@ -187,6 +191,7 @@ Alternatively, you can manage the BF-430 through the command line (telnet port 2
 
 1. `telnet 192.168.1.123` and login with the credentials `admin` and `nodeoN12`.
 2. Configure the BF-430 according to the command line. Use the `help` command to view options, and `help <command>` to view usage instructions.
+3. You must us `NVsave` to apply your changes to non-volatile memory and have your options persist through power-down.
 
 ## LBRB9 LiFi/VLC Control
 ### Main Processor
