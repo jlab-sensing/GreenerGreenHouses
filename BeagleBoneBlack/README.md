@@ -194,6 +194,7 @@ Alternatively, you can manage the BF-430 through the command line (telnet port 2
 3. You must us `NVsave` to apply your changes to non-volatile memory and have your options persist through power-down.
 
 ## LBRB9 LiFi/VLC Control
+
 ### Main Processor
 To control the LBRB9 light bar for LiFi/VLC communication, you can control the digital pins and output a voltage between 0 and 5 V to the LBRB9's control pins. The control pins are red (for red) and white (for blue). Make sure that the BBB shares ground (black wire).
 
@@ -203,6 +204,56 @@ TODO:
 - Consider 5 V level shifter
 
 ### Programmable Realtime Unit (PRU)
+The two Programmable Realtime Units (PRU) on the BBB act as coprocessors, and can execute programs independently of the main CPU (while still on the 200 MHz clock). This is great for devoting low-latency pin access, since you can have one of the PRUs execute a single program and not have to worry about having CPU time be divided. With a 200 MHz clock, this means that you can get as low as 5 ns pin access times.
+
+This section covers how to program the PRU.
+
+Based on the guide written by Glenn K. Lockwood: https://www.glennklockwood.com/embedded/beaglebone-pru.html
+
+1. PRU code must include a resource table. Use the code below, or copy and include `/usr/lib/ti/pru-software-support-package/examples/am335x/PRU_gpioToggle/resource_table_empty.h` which is the equivalent.
+    - Resource tables are for configuring buffers and interrupts.
+    - You can include additional PRU-specific libraries which are located in `/usr/lib/ti/pru-software-support-package/include/`. This path is in the makefile build path.
+```
+#include <rsc_types.h>
+
+...
+
+/* required by PRU */
+#pragma DATA_SECTION(pru_remoteproc_ResourceTable, ".resource_table")
+#pragma RETAIN(pru_remoteproc_ResourceTable)
+struct my_resource_table {
+    struct resource_table base;
+    uint32_t offset[1];
+} pru_remoteproc_ResourceTable = { 1, 0, 0, 0, 0 };
+```
+2. Perform bit operations on `volatile register uint32_t __R30;` to cause P9 pins gpio to change.
+    - You must `config-pin` for `pruout` or `pruin` before executing.
+3. Compile and link with `clpru` and `lnkpru`. The makefile below will do it for you if you simply call `make`.
+```
+PRU_SWPKG = /usr/lib/ti/pru-software-support-package
+
+CC = clpru
+LD = lnkpru
+CFLAGS = --include_path=$(PRU_SWPKG)/include \
+         --include_path=$(PRU_SWPKG)/include/am335x
+LDFLAGS = $(PRU_SWPKG)/labs/lab_2/AM335x_PRU.cmd
+
+all: am335x-pru0-fw
+
+hello-pru0.o: hello-pru0.c
+    $(CC) $(CFLAGS) $^ --output_file $@
+
+am335x-pru0-fw: hello-pru0.o
+    $(LD) $(LDFLAGS) $^ -o $@
+```
+4. `echo stop > /sys/class/remoteproc/remoteproc1/state` to halt the PRU. `remoteproc1` is for PRU0, `remoteproc2` is for PRU1.
+    - You can check the state by reading the `state` file: `cat /sys/class/remoteproc/remoteproc1/state`.
+5. Move the firmware to the `/lib/firmware/` folder. (ex. `cp am335x-pru0-fw /lib/firmware/am335x-pru0-fw`)
+6. Set the `firmware` file to be the same name as the firmware you've moved into the `/lib/firmware/` folder. This tells the PRU to load the firmware with that name.
+    - `cat /sys/class/remoteproc/remoteproc1/firmware` to check which firmware it will load.
+    - `echo myFirmwareName > /sys/class/remoteproc/remoteproc1/firmware` to set the firmware to load.
+7. `echo start > /sys/class/remoteproc/remoteproc1/state` to start the PRU.
+    - `cat /sys/class/remoteproc/remoteproc1/state` to observe if the PRU is `running` or `offline`.
 
 TODO:
 - PRU hookup and modification of OpenVLC
