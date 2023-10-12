@@ -12,6 +12,8 @@
 #define GPIO2_ADDR 0x481AC000
 #define GPIO3_ADDR 0x481AE000
 
+static int gpioBaseAddress[] = {GPIO0_ADDR, GPIO1_ADDR, GPIO2_ADDR, GPIO3_ADDR};
+
 // GPIO byte offsets
 #define GPIO_OE              0x134
 #define GPIO_DATAOUT         0x13C
@@ -53,6 +55,7 @@
 */
 
 // P9_23 is gpio49 is on chip 1 line 17 (32 * 1 + 17)
+// P9_15 is gpio48 is on chip 1 line 16 (32 * 1 + 16)
 
 #define SELECT_GPIO_CHIP 1
 #define SELECT_GPIO_LINE 17
@@ -63,45 +66,76 @@
 
 int main(int argc, char * argv[])
 {
-    int chip, line, gpio;
+    uint8_t chip[2], line[2], gpioNumber[2];
     switch (argc){
+        case 3: // assume provided second gpio
+            gpioNumber[1] = atoi(argv[2]);
+            chip[1] = gpioNumber[1] / 32;
+            line[1] = gpioNumber[1] % 32;
+            printf("gpio%d[%d] = gpio%d\n", chip[1], line[1], gpioNumber[1]);
+            // fall-through to process second arg
         case 2: // assume logical number
-            gpio = atoi(argv[1]);
-            chip = gpio / 32;
-            line = gpio % 32;
-            break;
-        case 3: // assume chip and line
-            chip = atoi(argv[1]);
-            line = atoi(argv[2]);
-            gpio = chip * 32 + line;
+            gpioNumber[0] = atoi(argv[1]);
+            chip[0] = gpioNumber[0] / 32;
+            line[0] = gpioNumber[0] % 32;
+            printf("gpio%d[%d] = gpio%d\n", chip[0], line[0], gpioNumber[0]);
             break;
         default:
-            printf("usage:\nsudo %s <gpio#>\nsudo %s <gpiochip#> <gpioline#>\nNote: Must be run with sudo or else you get segfault.\n", argv[0], argv[0]);
+            printf("usage:\nsudo %s <gpio#> <optional: gpio#>\nNote: Must be run with sudo or else you get segfault. Partial list of gpio is available in '/sys/class/gpio/'. Refer to Beaglebone Black System Reference Manual for gpio details.\n", argv[0], argv[0]);
             return -1;
             break;
     }
-    printf("gpio%d[%d] = gpio%d\n", chip, line, gpio);
     
-    // Check for valid gpio?
+    // Check for valid gpio
+    for (int i = 0; i < 2; i++){
+        if ((chip[i] > 3) || (line[i] > 31) || (gpioNumber[i] > 128)){
+            printf("Invalid gpio entered.\n");
+            return -1;
+        }
+    }
+    
+    if (argc == 3){
+        if (chip[0] != chip[1]){
+            printf("For this example program, both gpios must be on the same chip.\n");
+        }
+    }
     
     printf("Opening /dev/mem\n");
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
-    printf("Init pinconf1\n");
-    ulong* pinconf1 = (ulong*) mmap(NULL, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO1_ADDR);
-    printf("setting OE\n");
-    pinconf1[GPIO_OE/4] &= (0xFFFFFFFF ^ (1 << line));
-    printf("blinking\n");
     
+    printf("Init pinconf1\n");
+    ulong* pinconf1 = (ulong*) mmap(NULL, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, fd, gpioBaseAddress[chip[0]]);
+    
+    printf("setting OE\n");
+    pinconf1[GPIO_OE/4] &= (0xFFFFFFFF ^ ((1 << line[0]) | (1 << line[1])));
+    
+    printf("gpio blinking\n");
+    uint32_t delay = 1; // 1 << 20 corresponds to about 67 Hz
     while(1){
         // pinconf1[GPIO_DATAOUT/4]  |= (1 << line);
         // DELAY_CYCLES(10);
         // pinconf1[GPIO_DATAOUT/4]  ^= (1 << line);
         // DELAY_CYCLES(10);
         
-        pinconf1[GPIO_SETDATAOUT/4] = (1 << line);
-        // DELAY_CYCLES(10);
-        pinconf1[GPIO_CLEARDATAOUT/4] = (1 << line);
-        // DELAY_CYCLES(10);
+        
+        // for (int delay = 1; delay < (1 << 21); delay << 1){
+            // for (int duration = 0; duration < 1000000; duration += delay){
+                
+        // pinconf1[GPIO_SETDATAOUT/4] = ((1 << line[0]) | (1 << line[1]));
+        pinconf1[GPIO_SETDATAOUT/4] = (1 << line[0]);
+        pinconf1[GPIO_CLEARDATAOUT/4] = (1 << line[1]);
+        DELAY_CYCLES(delay);
+        // pinconf1[GPIO_CLEARDATAOUT/4] = ((1 << line[0]) | (1 << line[1]));
+        pinconf1[GPIO_CLEARDATAOUT/4] = (1 << line[0]);
+        pinconf1[GPIO_SETDATAOUT/4] = (1 << line[1]);
+        DELAY_CYCLES(delay);
+                
+            // }
+        // }
+        
+        
+        delay = delay << 1;
+        if (delay > (1 << 19)) delay = 1;
     }
     
     return 0;
