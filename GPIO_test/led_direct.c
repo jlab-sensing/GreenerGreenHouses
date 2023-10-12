@@ -12,12 +12,16 @@
 #define GPIO2_ADDR 0x481AC000
 #define GPIO3_ADDR 0x481AE000
 
-// GPIO offsets
+// GPIO byte offsets
 #define GPIO_OE              0x134
 #define GPIO_DATAOUT         0x13C
 #define GPIO_DATAIN          0x138
 #define GPIO_CLEARDATAOUT    0x190
 #define GPIO_SETDATAOUT      0x194
+
+// GPIO word offsets (byte offset / 4)
+#define GPIO_CLEARDATAOUT_W  0x64
+#define GPIO_SETDATAOUT_W    0x65
 
 /* GPIO offsets (full)
 #define GPIO_REVISION        0x0
@@ -53,6 +57,8 @@
 #define SELECT_GPIO_CHIP 1
 #define SELECT_GPIO_LINE 17
 
+#define DELAY_CYCLES(x) do{for(int i = 0; i < x; i++);}while(0)
+
 // Modified from http://vabi-robotics.blogspot.com/2013/10/register-access-to-gpios-of-beaglebone.html
 
 int main(int argc, char * argv[])
@@ -70,7 +76,7 @@ int main(int argc, char * argv[])
             gpio = chip * 32 + line;
             break;
         default:
-            printf("usage: %s <gpio#> OR %s <gpiochip#> <gpioline#>\n", argv[0], argv[0]);
+            printf("usage:\nsudo %s <gpio#>\nsudo %s <gpiochip#> <gpioline#>\nNote: Must be run with sudo or else you get segfault.\n", argv[0], argv[0]);
             return -1;
             break;
     }
@@ -82,17 +88,27 @@ int main(int argc, char * argv[])
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     printf("Init pinconf1\n");
     ulong* pinconf1 = (ulong*) mmap(NULL, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO1_ADDR);
+    printf("setting OE\n");
     pinconf1[GPIO_OE/4] &= (0xFFFFFFFF ^ (1 << line));
-    for(int i = 0 ; i < 5; i++){
-        pinconf1[GPIO_DATAOUT/4]  |= (1 << line);
-        pinconf1[GPIO_DATAOUT/4]  ^= (1 << 21);
-        sleep(1);
-        pinconf1[GPIO_DATAOUT/4]  ^= (1 << line);
-        pinconf1[GPIO_DATAOUT/4]  |= (1 << 21);
-        sleep(1);
+    printf("blinking\n");
+    
+    while(1){
+        // pinconf1[GPIO_DATAOUT/4]  |= (1 << line);
+        // DELAY_CYCLES(10);
+        // pinconf1[GPIO_DATAOUT/4]  ^= (1 << line);
+        // DELAY_CYCLES(10);
+        
+        pinconf1[GPIO_SETDATAOUT/4] = (1 << line);
+        // DELAY_CYCLES(10);
+        pinconf1[GPIO_CLEARDATAOUT/4] = (1 << line);
+        // DELAY_CYCLES(10);
     }
-    pinconf1[GPIO_DATAOUT/4]  &= (0xFFFFFFFF ^ ((1 << 21) | (1 << line)));
-    pinconf1[GPIO_OE/4] |= ( 1 << line);
+    
+    return 0;
+    
+    /* input
+    pinconf1[GPIO_DATAOUT/4]  &= (0xFFFFFFFF ^ ((1 << 21) | (1 << line))); // set both off
+    pinconf1[GPIO_OE/4] |= ( 1 << line); // set input
     for(int i = 0; i < 20; i++){
         printf("%ld\n", pinconf1[GPIO_DATAIN/4]);
         if(pinconf1[GPIO_DATAIN/4] & (1  << line)){
@@ -107,47 +123,6 @@ int main(int argc, char * argv[])
     }
     pinconf1[GPIO_DATAOUT/4]  ^= (1 << 21);
     return 0;
-    
-    /*
-    FILE *iodir, *ioval;
-
-    iodir = fopen("/sys/class/gpio/gpio49/direction", "w");
-    if (iodir == NULL){
-        printf("iodir null\n");
-        return -1;
-    }
-    printf("seek start\n");
-    fseek(iodir,0,SEEK_SET);
-    printf("write out\n");
-    fwrite("out", sizeof(char), 3, iodir);
-    fflush(iodir);
-
-    ioval = fopen("/sys/class/gpio/gpio49/value", "w");
-    if (ioval == NULL){
-        printf("ioval null\n");
-        return -1;
-    }
-    fseek(ioval,0,SEEK_SET);
-    
-    setvbuf(ioval, NULL, _IONBF, 0); // no buffer, write immediately
-
-    const char high = '1';
-    const char low = '0';
-    printf("sizes: %d %d bytes\n", sizeof(high), sizeof(low));
-    while(1)
-    {
-        fputc('1', ioval);
-        fputc('0', ioval);
-        // fwrite(&high, sizeof(high), 1, ioval);
-        // fflush(ioval);
-        // usleep(interval);
-        // fwrite(&low, sizeof(low), 1, ioval);
-        // fflush(ioval);
-        // usleep(interval);
-    }
-
-    // fclose(iodir);
-    // fclose(ioval);
-    return 0;
     */
+    
 }
