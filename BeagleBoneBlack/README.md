@@ -24,6 +24,13 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
     - `ssh debian@192.168.6.2` (macOS & Linux)
         - [macOS 11.5 USB FIX](https://forum.beagleboard.org/t/beaglebone-black-on-macosx-12-1/31366/6): On the BBB run `cd /opt/scripts/`, `git pull`, then `sudo reboot`.
     - [Alternative addresses](https://docs.beagleboard.org/latest/intro/support/getting-started.html#browse-to-your-beagle)
+    - Note: If you encounter hostkey verification issues due to ssh'ing into multiple BBBs, you can modify your `~/.ssh/config` file to disable strict host key checking. Append the following lines to the end of your `~/.ssh/config` file:
+    ```
+    Host 192.168.7.*
+      UserKnownHostsFile /dev/null
+      StrictHostKeyChecking no
+    ```
+    - You may want to change the `Host` value to `beaglebone.local` or to the address you use to access the BBB.
 3. The default password for the `debian` user is `temppwd`
     - Use `passwd` to update the password if you intend to make the BBB network-accessible.
 4. Connect an ethernet cable to the BBB for internet.
