@@ -18,7 +18,7 @@ FTDI cable.
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <signal.h>
+// #include <signal.h>
 // #include <linux/spi/spidev.h>
 // #include <linux/types.h>
 // #include <sys/ioctl.h>
@@ -31,14 +31,18 @@ FTDI cable.
 
 // #define LIST_ALL_REGISTERS
 // #define TEST_PACKET_PARSER
-#define PARSE_PACKET_CAST_32
+
 // #define SKIP_LORA
 // #define SKIP_MODBUS
+
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
-// #define MODBUS_NONBLOCKING
-// #ifdef MODBUS_NONBLOCKING
-// #include <sys/socket.h>
-// #endif
+#define PARSE_PACKET_CAST_32
+
+#define MODBUS_NONBLOCKING
+#ifdef MODBUS_NONBLOCKING
+#define MODBUS_RECEIVE_TIMEOUT_SEC  0
+#define MODBUS_RECEIVE_TIMEOUT_USEC 500000
+#endif
 
 #define MAX_PACKET_LENGTH 128
 #define MAX_FILENAME_LENGTH 50
@@ -51,12 +55,12 @@ FTDI cable.
 #define SPI_DEVICE SPI_DEV_BUS0_CS0
 
 #ifndef SPIDEV_H // from <linux/spi/spidev.h>
-#define SPI_CPHA                0x01
-#define SPI_CPOL                0x02
-#define SPI_MODE_0              (0|0)
-#define SPI_MODE_1              (0|SPI_CPHA)
-#define SPI_MODE_2              (SPI_CPOL|0)
-#define SPI_MODE_3              (SPI_CPOL|SPI_CPHA)
+#define SPI_CPHA        0x01
+#define SPI_CPOL        0x02
+#define SPI_MODE_0      (0|0)
+#define SPI_MODE_1      (0|SPI_CPHA)
+#define SPI_MODE_2      (SPI_CPOL|0)
+#define SPI_MODE_3      (SPI_CPOL|SPI_CPHA)
 #endif
 
 // Bitmasks for the CC1125 marcstate register
@@ -73,13 +77,16 @@ FTDI cable.
 #define MAX_TAG_DEVICE_ID 0xF
 
 // Modbus map size (# of rows)
-#define MAP_SIZE_BITS 0
-#define MAP_SIZE_IBITS 0
-#define MAP_SIZE_REGS (MAX_TAG_DEVICE_ID << 1)
-#define MAP_SIZE_IREGS 0
+#define MAP_SIZE_BITS   0
+#define MAP_SIZE_IBITS  0
+#define MAP_SIZE_REGS   ((MAX_TAG_DEVICE_ID + 1) << 1) // two registers per tag (temperature, humidity)
+#define MAP_SIZE_IREGS  0
+#if ((MAP_SIZE_BITS + MAP_SIZE_IBITS + MAP_SIZE_IREGS) == 0)
+#define MAP_PRINT_REGS_ONLY // enables x by y register table printing, and omits bits, ibits, and iregs. Comment out the condition to force this option.
+#endif
 
 // Modbus RTU settings
-#define RTU_PORT        "/dev/ttyUSB0"
+#define RTU_PORT        "/dev/ttyUSB0" // set this string to the USB/serial device connected to the RS485 cable.
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
 #define RTU_DATA_BITS   8
@@ -106,39 +113,26 @@ typedef struct {
     uint16_t crc16;
 } packetStruct_t;
 
-// Global Variables
-// These pointers are global so that they can be accessed by intHandler.
-// In particular, fpData needs(?) to close safely to write.
-static FILE *fpData = NULL;
-static modbus_t *mb = NULL;
-static modbus_mapping_t *map = NULL;
-
 // Function Prototypes
-static void intHandler(int sig);
-
 static int spi_init(int baudrate);
 
 static int radio_init(void);
 static void manualCalibration(void);
 static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters);
 
-static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs);
-static modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit);
-static void print_modbus_mapping(void);
+static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs);
+static void print_modbus_mapping(modbus_mapping_t *map);
 
 static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket);
 
 int main(int argc, char *argv[]){
 #ifdef TEST_PACKET_PARSER
-    printf("%ld\n", time(NULL));
-    return 0;
-
     printf("argc = %d\n", argc);
     for (int i = 0; i < argc; i++){
         printf("%s\n", argv[i]);
     }
     if (argc < 2){
-        printf("TEST_PACKET_PARSER usage: <program> <1 byte hex> <1 byte hex> {max 16 bytes}\nExample: ./out 30 E5 6F 1A");
+        printf("TEST_PACKET_PARSER usage: %s <1 byte hex> <1 byte hex> {max 16 bytes}\nExample: ./%s 30 E5 6F 1A", argv[0], argv[0]);
         return -1;
     }
     
@@ -164,19 +158,19 @@ int main(int argc, char *argv[]){
     }
     return 0;
 #endif
+    
+    FILE *fpData = NULL;
+    modbus_t *mb = NULL;
+    modbus_mapping_t *map = NULL;
+
     printf("Program start.\n");
     
-    signal(SIGINT, intHandler);
-    
-    int initReturn = -1;
-    initReturn = spi_init(1000000);
-    if (initReturn == -1){
-        printf("spi_init() error (spi fd = %d)\n", initReturn);
+    if (spi_init(1000000) == -1){
+        printf("spi_init() error\n");
     }
     
 #ifndef SKIP_LORA
-    initReturn = radio_init();
-    if (initReturn == -1){
+    if (radio_init() == -1){
         printf("radio_init() error\n");
     }
 #else
@@ -184,8 +178,7 @@ int main(int argc, char *argv[]){
 #endif
 
 #ifndef SKIP_MODBUS
-    initReturn = modbus_init(MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS);
-    if (initReturn == -1){
+    if (modbus_init(&mb, &map, MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS) == -1){
         printf("modbus_init() error\n");
     }
 #else
@@ -204,6 +197,7 @@ int main(int argc, char *argv[]){
     }
     printf("write column names to CSV\n");
     fprintf(fpData, "time_unix, id, temperature_raw, temperature_celsius, humidity_raw, humidity_percent\n");
+    fflush(fpData);
     
 #ifndef SKIP_LORA
     printf("Strobing SRX and entering main loop.\n");
@@ -251,13 +245,12 @@ int main(int argc, char *argv[]){
                         printf("writing\n");
                         
                         fprintf(fpData, "%ld, %d, %d, %f, %d, %f\n", time(NULL), parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
+                        fflush(fpData); // immediately write to CSV
                         
                         printf("modifying modbus registers\n");
                         uint32_t mappedAddress = ((uint32_t) parsedPacket.deviceID) << 1;
                         map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
                         map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
-                        
-                        // fwrite(rxBuffer, rxBytes, sizeof(rxBuffer[0]), fpData);
                         break;
                     case UNKNOWN:
                         break;
@@ -276,7 +269,7 @@ int main(int argc, char *argv[]){
         uint8_t req[MODBUS_MAX_ADU_LENGTH];
         int errnoSaved = 0;
         
-        print_modbus_mapping();
+        print_modbus_mapping(map);
         printf("modbus_receive\n");
         requestLength = modbus_receive(mb, req);
         switch(requestLength){
@@ -338,6 +331,7 @@ static int radio_init(void)
     
     if (registerErrorAddr != 0xFFFF){
         printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
+        return -1;
     }
     manualCalibration();
     
@@ -355,24 +349,80 @@ static int radio_init(void)
 }
 
 // returns 0 on success, else -1
-static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs)
+static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits, unsigned int ibits, unsigned int regs, unsigned int iregs)
 {
     printf("Setting up modbus struct and config.\n");
-    mb = modbus_setup(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
-    printf("mb = 0x%02X\n", (uint32_t) mb);
-    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
-    if (modbus_set_slave(mb, MODBUS_SLAVE_ID) < 0)
-    {
-        printf("modbus_set_slave failed to set the slave number.\n");
-    }
+    printf("given mb = 0x%0X\n", mb);
+    printf("given *mb = 0x%0X\n", *mb);    
     
-    printf("Opening connection.\n");
-    if (modbus_connect(mb) != 0){
-        printf("modbus_connect(mb=0x%02X) failed to connect.\n", (uint32_t) mb);
+    printf("Instantiating Modbus RTU on %s at %d baud (%d%c%d).\n", RTU_PORT, RTU_BAUD, RTU_DATA_BITS, RTU_PARITY, RTU_STOP_BITS);
+    *mb = modbus_new_rtu(RTU_PORT, RTU_BAUD, RTU_PARITY, RTU_DATA_BITS, RTU_STOP_BITS);
+    printf("(after) *mb = 0x%02X\n", (uint32_t) *mb);
+    
+#ifdef MODBUS_DEBUG_ENABLE
+    printf("\tMODBUS_DEBUG_ENABLE\n");
+    if (modbus_set_debug(mb, TRUE) != 0){
+        printf("Failed to enable debug on mb = 0x%02X with flag %d\n", mb, TRUE);
+        return -1;
+    }else{
+        printf("Enabled debug.\n");
+    }
+#endif
+    
+    printf("Check Modbus RTU settings:\n");
+    int serial_mode = modbus_rtu_get_serial_mode(*mb);
+    printf("\tSerial mode: %d ", serial_mode);
+    switch(serial_mode){
+        case MODBUS_RTU_RS232:
+            printf("MODBUS_RTU_RS232\n");
+            break;
+        case MODBUS_RTU_RS485:
+            printf("MODBUS_RTU_RS485\n");
+            break;
+        default:
+            printf("Invalid serial mode\n");
+            return -1;
+            break;
+    }
+    int rts_mode = modbus_rtu_get_rts(*mb);
+    printf("\tRTS mode: %d ", rts_mode);
+    switch(rts_mode){
+        case MODBUS_RTU_RTS_NONE:
+            printf("MODBUS_RTU_RTS_NONE\n");
+            break;
+        case MODBUS_RTU_RTS_UP:
+            printf("MODBUS_RTU_RTS_UP\n");
+            break;
+        case MODBUS_RTU_RTS_DOWN:
+            printf("MODBUS_RTU_RTS_DOWN\n");
+            break;
+        default:
+            printf("Invalid rts mode\n");
+            return -1;
+            break;
+    }
+    int rts_delay = modbus_rtu_get_rts_delay(*mb);
+    printf("\tRTS delay: %d us\n", rts_delay);
+    if (rts_delay == -1){
+        printf("Invalid rts delay\n");
         return -1;
     }
     
-    printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(mb), modbus_flush(mb));
+    printf("*mb = 0x%02X\n", (uint32_t) *mb);
+    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
+    if (modbus_set_slave(*mb, MODBUS_SLAVE_ID) < 0)
+    {
+        printf("modbus_set_slave failed to set the slave number.\n");
+        return -1;
+    }
+    
+    printf("Opening connection.\n");
+    if (modbus_connect(*mb) != 0){
+        printf("modbus_connect(*mb=0x%02X) failed to connect.\n", (uint32_t) *mb);
+        return -1;
+    }
+    
+    printf("get_socket == %d, flushed %d bytes\n", modbus_get_socket(*mb), modbus_flush(*mb));
     
 #ifdef MODBUS_NONBLOCKING
     // Timeout info
@@ -380,20 +430,26 @@ static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs,
     uint32_t usec;
     int timeoutStatus;
     printf("timeouts\n");
-    timeoutStatus = modbus_get_response_timeout(mb, &sec, &usec);
-    printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    timeoutStatus = modbus_set_indication_timeout(mb, sec, usec);
-    printf("\tindication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    timeoutStatus = modbus_get_byte_timeout(mb, &sec, &usec);
-    printf("\tbyte (%d) = %d s %d us\n", timeoutStatus, sec, usec);
-    // Set socket as nonblocking
-    // getsockopt();
+    // timeoutStatus = modbus_get_response_timeout(*mb, &sec, &usec);
+    // printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_get_indication_timeout(*mb, &sec, &usec);
+    printf("\tget indication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    
+    sec = MODBUS_RECEIVE_TIMEOUT_SEC;
+    usec = MODBUS_RECEIVE_TIMEOUT_USEC;
+    
+    timeoutStatus = modbus_set_indication_timeout(*mb, sec, usec);
+    printf("\tset indication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
+    timeoutStatus = modbus_get_indication_timeout(*mb, &sec, &usec);
+    printf("\tget indication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
 #endif
     
     printf("Mapping\n");
+    printf("given map = 0x%0X\n", map);
+    printf("given *map = 0x%0X\n", *map);
     // map = modbus_mapping_new_start_address();
-    map = modbus_mapping_new(bits, ibits, regs, iregs);
-    
+    *map = modbus_mapping_new(bits, ibits, regs, iregs);
+    printf("after *map = 0x%0X\n", *map);
     /* 
         map->tab_bits[0]
         map->tab_input_bits[0]
@@ -401,44 +457,22 @@ static int modbus_init(unsigned int bits, unsigned int ibits, unsigned int regs,
         map->tab_registers[0]
     */
     
-    if (map == NULL){
+    if (*map == NULL){
         printf("modbus_mapping_new failed to allocate.\n");
         return -1;
     }
     
-    printf("map located at 0x%X\n", (uint32_t) map);
-    printf("sizeof(map) = %d\n", sizeof(map));
-    print_modbus_mapping();
-    printf("Overwriting...\n");
-    for (int i = 0; i < MAP_SIZE_REGS; i++){
-        
-    }
+    printf("*map located at 0x%X\n", (uint32_t) *map);
+    print_modbus_mapping(*map);
+    
+    // Prefill map (regs only)
+    // printf("filling map\n");
+    // for (int i = 0; i < MAP_SIZE_REGS; i++){
+        // (*map)->tab_registers[i] = i;
+    // }
+    // print_modbus_mapping(*map);
     
     return 0;
-}
-
-/*******************************************************************************
-*   @fn         intHandler
-*
-*   @brief      Interrupt handler for catching SIGINT (CTRL + C).
-*
-*   @param      int sig
-*
-*   @return     none
-*/
-static void intHandler(int sig) {
-    // printf("SIG %d\n", sig);
-    if (fpData != NULL) fclose(fpData);
-    trxRfSpiInterfaceClose();
-    if (map != NULL) modbus_mapping_free(map);
-    if (mb != NULL){
-        modbus_close(mb);
-        // printf("Flushed %d bytes.\n", modbus_flush(mb));
-        // printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
-        modbus_free(mb);
-    }
-    
-    exit(sig);
 }
 
 /*******************************************************************************
@@ -720,64 +754,33 @@ static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t
     return returnPacket->type;
 }
 
-static modbus_t * modbus_setup(const char *device, int baud, char parity, int data_bit, int stop_bit)
-{
-    modbus_t *mb;
-    // printf("\t(before) mb = 0x%02X\n", mb);
-    printf("\tInstantiating Modbus RTU on %s at %d baud (%d%c%d).\n", device, baud, data_bit, parity, stop_bit);
-    mb = modbus_new_rtu(device, baud, parity, data_bit, stop_bit);
-    printf("\t(after) mb = 0x%02X\n", (uint32_t) mb);
-    
-#ifdef MODBUS_DEBUG_ENABLE
-    printf("\tMODBUS_DEBUG_ENABLE\n");
-    if (modbus_set_debug(mb, TRUE) != 0){
-        printf("Failed to enable debug on mb = 0x%02X with flag %d\n", mb, TRUE);
-        // return 0;
-    }
-    // printf("Enabled debug.\n");
-#endif
-    
-    printf("\tCheck Modbus RTU settings:\n");
-    int serial_mode = modbus_rtu_get_serial_mode(mb);
-    printf("\t\tSerial mode: %d ", serial_mode);
-    switch(serial_mode){
-        case MODBUS_RTU_RS232:
-            printf("MODBUS_RTU_RS232\n");
-            break;
-        case MODBUS_RTU_RS485:
-            printf("MODBUS_RTU_RS485\n");
-            break;
-        default:
-            printf("ERROR\n");
-            break;
-    }
-    int rts_mode = modbus_rtu_get_rts(mb);
-    printf("\t\tRTS mode: %d ", rts_mode);
-    switch(serial_mode){
-        case MODBUS_RTU_RTS_NONE:
-            printf("MODBUS_RTU_RTS_NONE\n");
-            break;
-        case MODBUS_RTU_RTS_UP:
-            printf("MODBUS_RTU_RTS_UP\n");
-            break;
-        case MODBUS_RTU_RTS_DOWN:
-            printf("MODBUS_RTU_RTS_DOWN\n");
-            break;
-        default:
-            printf("ERROR\n");
-            break;
-    }
-    int rts_delay = modbus_rtu_get_rts_delay(mb);
-    printf("\t\tRTS delay: %d us\n", rts_delay);
-    if (rts_delay == -1) printf("ERROR\n");
-    
-    return mb;
-}
-
-static void print_modbus_mapping(void)
+static void print_modbus_mapping(modbus_mapping_t *map)
 {
     // printf("Dumping data (hex):\n");
     // printf("info: %d, reg %d, reg0 %d\n", sizeof(mbmap), sizeof(mbmap->tab_registers), sizeof(mbmap->tab_registers[0]));
+    printf("time %ld\n", time(NULL));
+#ifdef MAP_PRINT_REGS_ONLY
+    
+    // column headers (MSB)
+    printf("LO\\HI\t");
+    for (int i = 0; i <= ((MAP_SIZE_REGS - 1) >> 4); i++){
+        printf("%01X_\t", i);
+    }
+    printf("\n");
+    for (int i = 0; i <= ((MAP_SIZE_REGS - 1) >> 4) + 1; i++){
+        printf("--------");
+    }
+    printf("\n");
+    
+    
+    for (int i = 0; i <= 0xF; i++){
+        printf("_%01X |\t", i); // row header
+        for (int j = i; j < MAP_SIZE_REGS; j += 0x10){
+            printf("%04X\t", map->tab_registers[j]);
+        }
+        printf("\n");
+    }
+#else
     printf("addr\tbit\tibit\treg\tireg\n");
     printf("------------------------------------\n");
     for (int i = 0; (i < MAP_SIZE_BITS) || (i < MAP_SIZE_IBITS) || (i < MAP_SIZE_REGS) || (i < MAP_SIZE_IREGS); i++){
@@ -804,4 +807,5 @@ static void print_modbus_mapping(void)
         }
         printf("\n");
     }
+#endif
 }
