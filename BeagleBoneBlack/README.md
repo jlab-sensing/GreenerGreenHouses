@@ -62,6 +62,7 @@ Use `lsusb` and `dmesg` to check which `/dev/ttyUSBx` should be provided to `mod
 Note: The Debian prebuilt packages `libmodbus5` and `libmodbus-dev` did not work for me. Just build from source.
 
 ## WiFi
+
 ### Simple WPA2 Networks
 1. Plug in the wifi dongle. Tested with Comfast CF-WU810N, 2.4 GHz only (802.11n) which has the (RTL8188EUS) R8188EU driver. This device does not require additional/separate driver installation.
 	- You can check if the wifi dongle is connected with `lsusb`, and you can find out more with `dmesg`.
@@ -104,7 +105,7 @@ TODO:
 Telnet is used to control the LF11 Light Fixture. Note that the LF11 only provides illumination to the plants, and does not control the LBRB9 Light Bar for LiFi communication.
 
 ### (Recommended) Ethernet Blacklisted From Connman
-The steps below describe how to connecto to the LF11 (DC11) using manual configuration on the ethernet interface. This method has a downside of requiring additional setup and (untested:) may not work properly if you want to use the ethernet port for an internet connection. The upside is that this will not interfere with the wifi wlan0 internet connection.
+The steps below describe how to connect to the LF11 (DC11) using manual configuration on the ethernet interface. This method has a downside of requiring additional setup and (untested:) may not work properly if you want to use the ethernet port for an internet connection. The upside is that this will not interfere with the wifi wlan0 internet connection.
 
 Further investigation in `/etc/dhcp/dhclient.conf` could help resolve static/dhcp issues (i.e. preferred dhcp ip or fallback static ip after no dhcp server response).
 
@@ -163,6 +164,21 @@ iface eth0:1 inet static
     1. `mode m` to change to manual mode (the default is auto for use with the companion application).
     2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
     3. `ls all` to apply the light output to all light bars.
+
+When configured properly, your `route` table should look like this:
+```
+debian@beaglebone:~$ route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         comm-vss-g-v480 0.0.0.0         UG    0      0        0 wlan0
+ns2.ucsc.edu    comm-vss-g-v480 255.255.255.255 UGH   0      0        0 wlan0
+ns1.ucsc.edu    comm-vss-g-v480 255.255.255.255 UGH   0      0        0 wlan0
+169.233.128.0   0.0.0.0         255.255.128.0   U     0      0        0 wlan0
+comm-vss-g-v480 0.0.0.0         255.255.255.255 UH    0      0        0 wlan0
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+192.168.6.0     0.0.0.0         255.255.255.0   U     0      0        0 usb1
+192.168.7.0     0.0.0.0         255.255.255.0   U     0      0        0 usb0
+```
 
 ### Ethernet Managed By Connman
 The steps below describe how to connect to the LF11 (DC11) using Debian 10's default Connection Manager. This method has a downside of regularly modifying the routing table (`route`) and disrupting the wifi wlan0 internet connection. However, this method maintains the out-of-the-box behavior of the ethernet port in case you want to use the ethernet port for an internet connection or DHCP.
