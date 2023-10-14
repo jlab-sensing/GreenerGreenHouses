@@ -5,12 +5,13 @@ This directory contains subdirectories for scripts and programs for the BeagleBo
 All projects and guides assume that the BBB is on Debian Buster IoT Image 2020-04-06, with Linux 4.19.94-ti-r42 kernel. There are certain ramifications on the accuracy of the WiFi section of this guide if you [update to newer versions such as Debian 11 Bullseye or 12 Bookworm](https://www.beagleboard.org/distros), specifically that `connman` is no longer in use and is replaced by `systemd-networkd`, see the [Debian 11.x Bullseye Monthly Snapshot](https://forum.beagleboard.org/t/debian-11-x-bullseye-monthly-snapshot-2023-09-02/31280) for more information. If you decide to upgrade, you should use the IoT image, unless you need the desktop provided in the Xfce image.
 
 ## Folders
-- BoosterPack_swrc253e\ -- (Deprecated) Program for interfacing the BBB with the CC1125. For a more up-to-date program, see `rxlogger\` which also includes Modbus integration.
-- LaunchPad_trx_demo_swra493\ -- (Abandoned) Non-working compatibility conversion of the Texas Instruments SWRA493 test code for use with the CC1125.
-- SPI_test\ -- (Deprecated) Various small test programs for exploring SPI on the BBB.
-- config-pin\ -- Scripts for toggling I2C and SPI. Execute the script(s) before running programs that access the BBB's I2C and SPI peripherals.
-- libmodbus\ -- (Deprecated) Test program for exploring libmodbus on the BBB.
-- rxlogger\ -- Program for the "Sensor Manager" in the traditional IoT system. Receives periodic data packets from the IoT tag (MSP430), saves the data to a CSV, and also updates the BBB's modbus registers in order to provide the greenhouse control system (Argus) with the latest temperature and relative humidity readings.
+- BoosterPack_swrc253e/ -- (Deprecated) Program for interfacing the BBB with the CC1125. For a more up-to-date program, see `rxlogger/` which also includes Modbus integration.
+- LaunchPad_trx_demo_swra493/ -- (Abandoned) Non-working compatibility conversion of the Texas Instruments SWRA493 test code for use with the CC1125.
+- SPI_test/ -- (Deprecated) Various small test programs for exploring SPI on the BBB.
+- config-pin/ -- Scripts for toggling I2C and SPI. Execute the script(s) before running programs that access the BBB's I2C and SPI peripherals.
+- libmodbus/ -- (Deprecated) Test program for exploring libmodbus on the BBB.
+- rxlogger/ -- Program for the "Sensor Manager" in the traditional IoT system. Receives periodic data packets from the IoT tag (MSP430), saves the data to a CSV, and also updates the BBB's modbus registers in order to provide the greenhouse control system (Argus) with the latest temperature and relative humidity readings.
+- GPIO_test/ -- Variety of small GPIO test programs to evaluate the timing difference when accessing GPIO from userspace (i.e. writing to `/sys/class/gpio/gpio##`) or when writing directly to the GPIO registers through memory mapping (i.e. writing to `/dev/mem`).
 
 # BeagleBone Black Setup
 The following instructions should be done on the BeagleBone Black (abbreviated as BBB), and assume that you are executing commands on the BBB through SSH. It is easiest to connect through the onboard mini USB port.
@@ -44,7 +45,7 @@ The following instructions should be done on the BeagleBone Black (abbreviated a
 3. Then run with: `./<executable_name>`
 
 ## SPI and I2C
-Run scripts in the `confg-pin\` folder from the git repo to configure the pins for SPI and I2C.
+Run scripts in the `confg-pin/` folder from the git repo to configure the pins for SPI and I2C.
 Alternatively, invoke the commands manually with the `config-pin` command. These commands and scripts do not need to be run with `sudo`. Pin configurations do not persist after power-off.
 
 ## libmodbus
