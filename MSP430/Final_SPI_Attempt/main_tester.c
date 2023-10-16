@@ -20,6 +20,8 @@
 #include "cc112x_spi.h"
 #include "Uart.h"
 
+#define DEBUG_UART
+
 //
 void EnterLPM3(void){
      CSCTL4 |= SMCLKOFF;
@@ -47,8 +49,10 @@ int main()
     //basic I2C library initialization
     initClockTo16MHz();
     initGPIO();
+#ifdef DEBUG_UART
     //uart initialization, used for debugging
-  //  InitUart(); DONT USE IF U WANT LPM3
+    InitUart(); // DONT USE IF U WANT LPM3
+#endif
     //for some reason we have to init uart before i2c because they share euscia
     initI2C(HDC2021_ADDRESS);
 
@@ -85,6 +89,14 @@ int main()
         //create and send packet array based on temp,humidity, and
         //constant device ID set in FR5969_CC1125.h (0x0A)
         createPacket(Msgg, Temperature, Humidity, DEVICE_ID);
+#ifdef DEBUG_UART
+        putcha(Msgg[0]);
+        putcha(Msgg[1]);
+        putcha(Msgg[2]);
+        putcha(Msgg[3]);
+        putcha('\r');
+        putcha('\n');
+#endif
 
         cc112xSpiWriteTxFifo(Msgg, sizeof(Msgg));
 
