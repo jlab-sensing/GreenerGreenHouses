@@ -251,6 +251,9 @@ int main(int argc, char *argv[]){
                         uint32_t mappedAddress = ((uint32_t) parsedPacket.deviceID) << 1;
                         map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
                         map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
+#ifndef SKIP_MODBUS
+                        print_modbus_mapping(map);
+#endif
                         break;
                     case UNKNOWN:
                         break;
@@ -269,7 +272,9 @@ int main(int argc, char *argv[]){
         uint8_t req[MODBUS_MAX_ADU_LENGTH];
         int errnoSaved = 0;
         
+#ifdef SKIP_LORA
         print_modbus_mapping(map);
+#endif
         printf("modbus_receive\n");
         requestLength = modbus_receive(mb, req);
         switch(requestLength){
