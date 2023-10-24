@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <rsc_types.h>
 
-#define TEST_TOGGLE
+// #define TEST_TOGGLE
+#define TEST_UPCHIRP
 
 #define CYCLES_PER_SECOND 200000000 /* PRU has 200 MHz clock */
 
@@ -11,9 +12,14 @@ volatile register uint32_t __R30; /* output register for PRU */
 volatile register uint32_t __R31; /* output register for PRU */
 
 void main(void) {
+    uint8_t i, j = 0xFF;
     while (1) {
 #ifdef TEST_TOGGLE
         __R30 ^= P9_31;
+#elif defined TEST_UPCHIRP
+        __R30 ^= P9_31;
+        for (i = j; i > 0; i--) asm(" NOP");
+        j--;
 #else
         __R30 |= P9_31; /* set first bit in register 30 */
         __delay_cycles(CYCLES_PER_SECOND / 4); /* wait 0.5 seconds */

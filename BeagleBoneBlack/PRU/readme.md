@@ -22,4 +22,5 @@ You can build from source or use the prebuilt firmware.
 5. `cat /sys/class/remoteproc/remoteproc1/firmware` to check what firmware will be run when you turn on the PRU.
 6. `echo am335x-pru0-fw > /sys/class/remoteproc/remoteproc1/firmware` to tell the PRU to load the specificed firmware.
 7. `echo start > /sys/class/remoteproc/remoteproc1/state` to start the PRU.
+    - Note: You must `config-pin` the pins the PRU accesses as `pruout` or `pruin`.
 8. `echo stop > /sys/class/remoteproc/remoteproc1/state` to halt the PRU.
