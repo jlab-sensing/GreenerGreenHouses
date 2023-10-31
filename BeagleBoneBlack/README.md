@@ -161,6 +161,7 @@ iface eth0:1 inet static
     - The BBB must be on the same subnet as the BF-430.
 8. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
 9. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
+    - If you do not get any text responses from the DC11, enter the command `ecr! 1` to enable it to respond to commands.
 10. To set the LED brightness, use the following commands:
     1. `mode m` to change to manual mode (the default is auto for use with the companion application).
     2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)
@@ -198,6 +199,7 @@ Use this method if you do not care about having a wifi connection.
     - Alternatively, you can use the command `sudo route add default gw comm-vss-g-v480 dev wlan0` to manually route non-local connections through the wlan0 interface. Similarly, you can manually route 192.168.1.123 through eth0 using `sudo route add 192.168.1.123 gw 0.0.0.0 dev eth0`. However, this will not stop the connman daemon from modifying the default gateway.
 5. `telnet 192.168.1.123 50123` to connect to the DC11. (192.168.1.123:50123)
 6. In the telnet shell, use the `?` command to view all possible commands and their descriptions.
+    - If you do not get any text responses from the DC11, enter the command `ecr! 1` to enable it to respond to commands.
 7. To set the LED brightness, use the following commands:
     1. `mode m` to change to manual mode (the default is auto for use with the companion application).
     2. `lo [0-2000]` where the number is the brightness in tenths of a percent. (ex. 1000 corresponds to 100.0%, and 50 corresponds to 5.0%.)

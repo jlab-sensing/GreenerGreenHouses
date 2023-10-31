@@ -24,3 +24,9 @@ You can build from source or use the prebuilt firmware.
 7. `echo start > /sys/class/remoteproc/remoteproc1/state` to start the PRU.
     - Note: You must `config-pin` the pins the PRU accesses as `pruout` or `pruin`.
 8. `echo stop > /sys/class/remoteproc/remoteproc1/state` to halt the PRU.
+
+One line:
+```
+make && mv am335x-pru0-fw am335x-pru0-fw-blink-mc-1us-p9_31 && sudo cp am335x-pru0-fw-blink-mc-1us-p9_31 /lib/firmware/ && echo stop > /sys/class/remoteproc/remoteproc1/state && e
+cho start > /sys/class/remoteproc/remoteproc1/state
+```
