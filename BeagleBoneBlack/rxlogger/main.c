@@ -35,6 +35,8 @@ FTDI cable.
 // #define SKIP_LORA
 // #define SKIP_MODBUS
 
+#define LORA_MANUAL_BOOTUP_SEQUENCE
+
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
 #define PARSE_PACKET_CAST_32
 
@@ -86,7 +88,7 @@ FTDI cable.
 #endif
 
 // Modbus RTU settings
-#define RTU_PORT        "/dev/ttyUSB0" // set this string to the USB/serial device connected to the RS485 cable.
+#define RTU_PORT        "/dev/ttyUSB1" // set this string to the USB/serial device connected to the RS485 cable.
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
 #define RTU_DATA_BITS   8
@@ -170,16 +172,24 @@ int main(int argc, char *argv[]){
     }
     
 #ifndef SKIP_LORA
+    printf("Initializing radio...\n");
     if (radio_init() == -1){
         printf("radio_init() error\n");
+        return -1;
+    }else{
+        printf("Done initializing radio\n");
     }
 #else
     printf("SKIP_LORA\n");
 #endif
 
 #ifndef SKIP_MODBUS
+    printf("modbus init...\n");
     if (modbus_init(&mb, &map, MAP_SIZE_BITS, MAP_SIZE_IBITS, MAP_SIZE_REGS, MAP_SIZE_IREGS) == -1){
         printf("modbus_init() error\n");
+        return -1;
+    }else{
+        printf("Done initializing modbus\n");
     }
 #else
     printf("SKIP_MODBUS\n");
@@ -332,14 +342,54 @@ static int spi_init(int baudrate)
 // Returns 0 on success, else -1
 static int radio_init(void)
 {
-    uint16_t registerErrorAddr = registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+#ifdef LORA_MANUAL_BOOTUP_SEQUENCE
+    printf("MANUAL BOOTUP SEQUENCE\n");
     
+    // Reset radio
+    printf("Resetting radio\n");
+    printf("Status byte: 0x%02X\n", trxSpiCmdStrobe(CC112X_SRES));
+    
+    // Wait for reset
+    sleep(1);
+    
+    printf("Part 1\n");
+    uint16_t registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_1, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_1)/sizeof(registerSetting_t));
+    printf("exited registerConfig, reentered radio_init\n");
     if (registerErrorAddr != 0xFFFF){
         printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
         return -1;
     }
-    manualCalibration();
     
+    trxSpiCmdStrobe(CC112X_SIDLE);
+    trxSpiCmdStrobe(CC112X_SFTX);
+    
+    printf("Part 2\n");
+    registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_2, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_2)/sizeof(registerSetting_t));
+    printf("exited registerConfig, reentered radio_init\n");
+    if (registerErrorAddr != 0xFFFF){
+        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
+        return -1;
+    }
+    
+    printf("Part 3\n");
+    registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_3, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_3)/sizeof(registerSetting_t));
+    printf("exited registerConfig, reentered radio_init\n");
+    if (registerErrorAddr != 0xFFFF){
+        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
+        return -1;
+    }
+#else // normal bootup
+    uint16_t registerErrorAddr = registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+    printf("exited registerConfig, reentered radio_init\n");
+    if (registerErrorAddr != 0xFFFF){
+        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
+        return -1;
+    }
+    printf("manualCalibration start\n");
+    manualCalibration();
+    printf("manualCalibration done\n");
+#endif
+
 #ifdef LIST_ALL_REGISTERS
     // Read ALL registers from radio
     printf("Reading ALL registers\n");
@@ -508,7 +558,7 @@ static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
         // printf("%d\t0x%02X\t0x%02X\n", i, reg[i].addr, reg[i].data);
     // }
     // printf("Done listing registers to write\n");
-
+#ifndef LORA_MANUAL_BOOTUP_SEQUENCE
     // Reset radio
     printf("Resetting radio\n");
     status = trxSpiCmdStrobe(CC112X_SRES);
@@ -516,7 +566,7 @@ static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
     
     // Wait for reset
     sleep(1);
-    
+#endif
     // Read registers from radio
     printf("Reading registers that will be written to\n");
     printf("#\taddr\texpect\tvalue\tcompare\n");
@@ -581,24 +631,36 @@ static void manualCalibration(void) {
     uint8_t writeByte;
 
     // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    printf("1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)\n");
     writeByte = 0x00;
     cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
 
     // 2) Start with high VCDAC (original VCDAC_START + 2):
+    printf("2) Start with high VCDAC (original VCDAC_START + 2)\n");
     cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
     writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
+    printf("3) Calibrate and wait for calibration to be done (radio back in IDLE state)\n");
     trxSpiCmdStrobe(CC112X_SCAL);
+    
+    // Go to idle state
+    trxSpiCmdStrobe(CC112X_SIDLE);
+    trxSpiCmdStrobe(CC112X_SFTX);
+    trxSpiCmdStrobe(CC112X_SFRX);
+
 
     do {
         cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+        // printf("%02X ", marcstate);
+        // trxSpiCmdStrobe(CC112X_SFRX);
     } while (marcstate != 0x41);
 
     // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
     //    high VCDAC_START value
+    printf("4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with high VCDAC_START value\n");
     cc112xSpiReadReg(CC112X_FS_VCO2,
                      &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -607,23 +669,28 @@ static void manualCalibration(void) {
                      &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
 
     // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    printf("5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)\n");
     writeByte = 0x00;
     cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
 
     // 6) Continue with mid VCDAC (original VCDAC_START):
+    printf("6) Continue with mid VCDAC (original VCDAC_START):\n");
     writeByte = original_fs_cal2;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
+    printf("7) Calibrate and wait for calibration to be done (radio back in IDLE state)\n");
     trxSpiCmdStrobe(CC112X_SCAL);
-
+/*
     do {
         cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+        // printf("%02X ", marcstate);
     } while (marcstate != 0x41);
-
+*/
     // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
     //    with mid VCDAC_START value
+    printf("8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with mid VCDAC_START value\n");
     cc112xSpiReadReg(CC112X_FS_VCO2, 
                      &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -633,6 +700,7 @@ static void manualCalibration(void) {
 
     // 9) Write back highest FS_VCO2 and corresponding FS_VCO
     //    and FS_CHP result
+    printf("9) Write back highest FS_VCO2 and corresponding FS_VCO and FS_CHP result\n");
     if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
         calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
         writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
