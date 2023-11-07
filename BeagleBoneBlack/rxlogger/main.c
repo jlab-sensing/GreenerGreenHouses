@@ -35,10 +35,11 @@ FTDI cable.
 // #define SKIP_LORA
 // #define SKIP_MODBUS
 
-#define LORA_MANUAL_BOOTUP_SEQUENCE
+// #define LORA_MANUAL_BOOTUP_SEQUENCE
 
 #define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
 #define PARSE_PACKET_CAST_32
+#define PACKET_STATUS_BYTES 2
 
 #define MODBUS_NONBLOCKING
 #ifdef MODBUS_NONBLOCKING
@@ -88,7 +89,7 @@ FTDI cable.
 #endif
 
 // Modbus RTU settings
-#define RTU_PORT        "/dev/ttyUSB1" // set this string to the USB/serial device connected to the RS485 cable.
+#define RTU_PORT        "/dev/ttyUSB0" // set this string to the USB/serial device connected to the RS485 cable.
 #define RTU_BAUD        19200
 #define RTU_PARITY      'N'
 #define RTU_DATA_BITS   8
@@ -96,6 +97,7 @@ FTDI cable.
 
 typedef enum {
     UNKNOWN,
+    RH_T_16_BIT, // full 16 bits regardless of set accuracy
     RH_T_14_BIT,
     RH_T_11_BIT,
     RH_T_9_BIT
@@ -148,6 +150,7 @@ int main(int argc, char *argv[]){
     packetStruct_t parsedPacket;
     printf("Calling packetParser\n");
     switch (packetParser(testBuffer, argc - 1, &parsedPacket)){
+        case RH_T_16_BIT:
         case RH_T_14_BIT:
         case RH_T_11_BIT:
         case RH_T_9_BIT:
@@ -248,7 +251,8 @@ int main(int argc, char *argv[]){
                 }
                 printf("\n");
                 
-                switch (packetParser(rxBuffer, rxBytes - PACKET_INCLUDES_RSSI, &parsedPacket)){
+                switch (packetParser(rxBuffer, rxBytes, &parsedPacket)){
+                    case RH_T_16_BIT:
                     case RH_T_14_BIT:
                     case RH_T_11_BIT:
                     case RH_T_9_BIT:
@@ -259,8 +263,14 @@ int main(int argc, char *argv[]){
                         
                         printf("modifying modbus registers\n");
                         uint32_t mappedAddress = ((uint32_t) parsedPacket.deviceID) << 1;
-                        map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
-                        map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
+                        if (mappedAddress <= MAP_SIZE_REGS){
+                            // Address is inbounds
+                            map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
+                            map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
+                        }else{
+                            // Address is out of bounds
+                            printf("error: invalid id\n");
+                        }
 #ifndef SKIP_MODBUS
                         print_modbus_mapping(map);
 #endif
@@ -723,28 +733,79 @@ static void manualCalibration(void) {
 // packetType describes which fields in returnPacket are relevant.
 static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket)
 {
-    /*  Packet Structure for temp/humidity
-        | Device ID (4 bits) | Temperature (14 bits) | Humidity (14 bits) | CRC16 (16 bits) |
+    // New 6 byte packet structure
+    // 2 byte id
+    // 2 byte temp
+    // 2 byte humidity
+    // depending on radio settings
+    //      crc16 may be appended by the sender (and auto-removed by receiver)
+    //      rssi may be appended by the receiver
+    
+    // INCLUDES
+    if (length == 6 + PACKET_STATUS_BYTES){ // Identify packet type based on length
+        returnPacket->type = RH_T_16_BIT;
         
-          [   0   ] [   1   ] [   2   ] [   3   ] [   4   ] [   5   ]
-        0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
-          [ID] [  Temperature  ][    Humidity   ] [      RSSI?      ]
+        uint16_t id             = (packet[0] << 8) | (packet[1]);
+        uint16_t temperature    = (packet[2] << 8) | (packet[3]);
+        uint16_t humidity       = (packet[4] << 8) | (packet[5]);
+        uint8_t rssi            = packet[6];
+        uint8_t crc_ok          = (packet[7] & 0x80) >> 7; // 1 when ok (no error), 0 when not ok (error)
+        uint8_t link_quality    = packet[7] & 0x7F; // Low is good
         
-        ID (store as uint8_t)
-        xxxx ABCD
-        0: upp 4    ABCD xxxx
+        printf("%04X %04X %04X (%d %d %d)\n", id, temperature, humidity, rssi, crc_ok, link_quality);
+        printf("\tID: 0x%04X\n\trawtemp: 0x%04X\n\trawhum: 0x%04X\n\trssi: %d\n\tcrcOK: %d\n\tlinkQuality: %d\n", id, temperature, humidity, rssi, crc_ok, link_quality);
         
-        Temperature (store as uint16_t)
-        ABCD EFGH IJKL MNxx
-        0: low 4    xxxx ABCD
-        1: all 8    EFGH IJKL
-        2: upp 2    MNxx xxxx
+        returnPacket->deviceID = id;
+        returnPacket->temperature_raw = temperature;
+        returnPacket->temperature_scaled = (((float)temperature * 165.0f) / 65536.0f) - 40.0f;
+        returnPacket->humidity_raw = humidity;
+        returnPacket->humidity_scaled = ((float)humidity / 65536.0f) * 100.0f;
         
-        Humidity (store as uint16_t)
-        ABCD EFGH IJKL MNxx
-        2: low 6    xxAB CDEF
-        3: all 8    GHIJ KLMN
-    */
+        printf("temp calcs %X %d %f\n", temperature, temperature, (float)temperature);
+        returnPacket->temperature_scaled = temperature;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled *= 165.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled /= 65536.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        returnPacket->temperature_scaled -= 40.0f;
+        printf("\t%f\n", returnPacket->temperature_scaled);
+        
+        printf("humidity calcs %X %d %f\n", humidity, humidity, (float)humidity);
+        returnPacket->humidity_scaled = humidity;
+        printf("\t%f\n", returnPacket->humidity_scaled);
+        returnPacket->humidity_scaled /= 65536.0f;
+        printf("\t%f\n", returnPacket->humidity_scaled);
+        returnPacket->humidity_scaled *= 100.0f;
+        printf("\t%f\n", returnPacket->humidity_scaled);
+    }else{
+        printf("Unrecognized packet format\n");
+        returnPacket->type = UNKNOWN;
+    }
+    return returnPacket->type;
+
+/*
+    //  OLD Packet Structure for temp/humidity
+    //  | Device ID (4 bits) | Temperature (14 bits) | Humidity (14 bits) | CRC16 (16 bits) |
+    //  
+    //    [   0   ] [   1   ] [   2   ] [   3   ] [   4   ] [   5   ]
+    //  0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
+    //    [ID] [  Temperature  ][    Humidity   ] [      RSSI?      ]
+    //  
+    //  ID (store as uint8_t)
+    //  xxxx ABCD
+    //  0: upp 4    ABCD xxxx
+    //  
+    //  Temperature (store as uint16_t)
+    //  ABCD EFGH IJKL MNxx
+    //  0: low 4    xxxx ABCD
+    //  1: all 8    EFGH IJKL
+    //  2: upp 2    MNxx xxxx
+    //  
+    //  Humidity (store as uint16_t)
+    //  ABCD EFGH IJKL MNxx
+    //  2: low 6    xxAB CDEF
+    //  3: all 8    GHIJ KLMN
     
     // To do: Return struct which breaks out the received raw packet into its constituent segments
     // Consider: What about multi-packet messages? Out of scope?
@@ -825,6 +886,7 @@ static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t
         returnPacket->type = UNKNOWN;
     }
     return returnPacket->type;
+*/
 }
 
 static void print_modbus_mapping(modbus_mapping_t *map)

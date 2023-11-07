@@ -74,7 +74,7 @@ static const registerSetting_t preferredSettings[]=
     {CC112X_SETTLING_CFG,      0x03},
     {CC112X_FS_CFG,            0x12},
     {CC112X_PKT_CFG0,          0x00}, /* 0x20 variable length, 0x00 fixed length */
-    {CC112X_PKT_LEN,           0x04}, /* packet length in bytes */
+    {CC112X_PKT_LEN,           0x06}, /* packet length in bytes */
     {CC112X_IF_MIX_CFG,        0x00},
     {CC112X_FREQOFF_CFG,       0x22},
     {CC112X_FREQ2,             0x56},
