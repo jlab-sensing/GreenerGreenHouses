@@ -52,7 +52,7 @@ void manualCalibration(void);
  * @param hum:          14 bit raw humidity value
  * @param deviceID      4 bit deviceID, custom to micro-C
  */
-void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID);
+void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint16_t deviceID);
 
 /*
  * @function InitTXTimer

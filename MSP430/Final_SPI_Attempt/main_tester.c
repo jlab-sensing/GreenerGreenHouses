@@ -20,7 +20,7 @@
 #include "cc112x_spi.h"
 #include "Uart.h"
 
-#define DEBUG_UART
+//#define DEBUG_UART
 
 //
 void EnterLPM3(void){
@@ -44,7 +44,7 @@ int main()
     uint16_t Temperature, Humidity;
 
     //array to store packet information, filled in createPacket()
-    uint8_t Msgg[4] = { 0 };
+    uint8_t Msgg[6] = { 0 };
 
     //basic I2C library initialization
     initClockTo16MHz();
@@ -94,6 +94,8 @@ int main()
         putcha(Msgg[1]);
         putcha(Msgg[2]);
         putcha(Msgg[3]);
+        putcha(Msgg[4]);
+        putcha(Msgg[5]);
         putcha('\r');
         putcha('\n');
 #endif

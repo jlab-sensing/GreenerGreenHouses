@@ -57,8 +57,7 @@ void CopyTxArray(uint8_t *source,uint8_t count);
 
 void CopyTxArray(uint8_t *source,uint8_t count)
 {
-        uint8_t copyIndex = 0;
-        for (copyIndex = 0; copyIndex < count; copyIndex++)
+        for (uint8_t copyIndex = 0; copyIndex < count; copyIndex++)
         {
             TransmitBuffer[copyIndex] = source[copyIndex];
         }
@@ -94,8 +93,7 @@ I2C_Mode I2C_Controller_WriteReg(uint8_t dev_addr, uint8_t reg_addr, uint8_t *re
 
 void CopyRxArray(uint8_t *dest, uint8_t count)
 {
-    uint8_t copyIndex = 0;
-    for (copyIndex = 0; copyIndex < count; copyIndex++)
+    for (uint8_t copyIndex = 0; copyIndex < count; copyIndex++)
     {
         dest[copyIndex] = ReceiveBuffer[copyIndex];
     }
@@ -103,7 +101,7 @@ void CopyRxArray(uint8_t *dest, uint8_t count)
 
 void initGPIO()
 {
-    // Configu  re GPIO
+    // Configure GPIO
     P1OUT &= ~BIT0;                                         // Clear P1.0 output latch
     P1DIR |= BIT0;                                          // For LED
     P1SEL1 |= BIT6 | BIT7;                                  // I2C pins

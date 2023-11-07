@@ -474,7 +474,17 @@ void manualCalibration(void)
     }
 }
 
-void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID) {
+void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint16_t deviceID) {
+    // New 48 bit packet format: 16 bit id, 16 bit temp, 16 bit humidity
+
+    packet[0] = (deviceID & 0xFF00) >> 8;   // ID high byte
+    packet[1] = (deviceID & 0x00FF);        // ID low byte
+    packet[2] = (temp & 0xFF00) >> 8;       // temp high byte
+    packet[3] = (temp & 0x00FF);            // temp low byte
+    packet[4] = (hum & 0xFF00) >> 8;        // hum high byte
+    packet[5] = (hum & 0x00FF);             // hum low byte
+
+/*// Old 32 bit packet format: 4 bit id, 14 bit temp, 14 bit humidity
     uint32_t temporary;
 
     temporary  = (uint32_t)hum >> 2;
@@ -485,7 +495,7 @@ void createPacket(uint8_t *packet, uint16_t temp, uint16_t hum, uint8_t deviceID
      packet[1] = (temporary & 0x00ff0000) >> 16;
      packet[2] = (temporary & 0x0000ff00) >> 8;
      packet[3] = (temporary & 0x000000ff);
-
+*/
 }
 
 

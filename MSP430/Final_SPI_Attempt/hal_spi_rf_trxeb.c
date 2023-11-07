@@ -305,13 +305,12 @@ rfStatus_t trxSpiCmdStrobe(uint8 cmd)
  */
 static void trxReadWriteBurstSingle(uint8 addr, uint8 *pData, uint16 len)
 {
-    uint16 i;
     /* Communicate len number of bytes: if RX - the procedure sends 0x00 to push bytes from slave*/
     if (addr & RADIO_READ_ACCESS)
     {
         if (addr & RADIO_BURST_ACCESS)
         {
-            for (i = 0; i < len; i++)
+            for (uint16 i = 0; i < len; i++)
             {
                 TRXEM_SPI_TX(0); /* Possible to combining read and write as one access type */
                 TRXEM_SPI_WAIT_DONE();
@@ -331,7 +330,7 @@ static void trxReadWriteBurstSingle(uint8 addr, uint8 *pData, uint16 len)
         if (addr & RADIO_BURST_ACCESS)
         {
             /* Communicate len number of bytes: if TX - the procedure doesn't overwrite pData */
-            for (i = 0; i < len; i++)
+            for (uint16 i = 0; i < len; i++)
             {
                 TRXEM_SPI_TX(*pData);
                 TRXEM_SPI_WAIT_DONE();
