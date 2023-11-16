@@ -30,16 +30,12 @@ FTDI cable.
 #include <errno.h>
 
 // #define LIST_ALL_REGISTERS
-// #define TEST_PACKET_PARSER
 
 // #define SKIP_LORA
 // #define SKIP_MODBUS
+// #define MODBUS_DEBUG_ENABLE
 
-// #define LORA_MANUAL_BOOTUP_SEQUENCE
-
-#define PACKET_INCLUDES_RSSI 2 // Set to 0 if no RSSI bytes
-#define PARSE_PACKET_CAST_32
-#define PACKET_STATUS_BYTES 2
+#define PACKET_STATUS_BYTES 2 // can be 0 or 2 depending on register config
 
 #define MODBUS_NONBLOCKING
 #ifdef MODBUS_NONBLOCKING
@@ -74,7 +70,7 @@ FTDI cable.
 
 // Modbus (slave/server) ID of the device running this program.
 // This program responds to requests to the ID listed here.
-#define MODBUS_SLAVE_ID 0xAB
+#define MODBUS_SLAVE_ID 0x01
 
 // Highest tag device ID supported by this program
 #define MAX_TAG_DEVICE_ID 0xF
@@ -82,7 +78,7 @@ FTDI cable.
 // Modbus map size (# of rows)
 #define MAP_SIZE_BITS   0
 #define MAP_SIZE_IBITS  0
-#define MAP_SIZE_REGS   ((MAX_TAG_DEVICE_ID + 1) << 1) // two registers per tag (temperature, humidity)
+#define MAP_SIZE_REGS   ((MAX_TAG_DEVICE_ID + 1) * 6) // 6 registers per tag (temperature, humidity: 16 bit raw and 32 bit floats)
 #define MAP_SIZE_IREGS  0
 #if ((MAP_SIZE_BITS + MAP_SIZE_IBITS + MAP_SIZE_IREGS) == 0)
 #define MAP_PRINT_REGS_ONLY // enables x by y register table printing, and omits bits, ibits, and iregs. Comment out the condition to force this option.
@@ -130,39 +126,6 @@ static void print_modbus_mapping(modbus_mapping_t *map);
 static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t *returnPacket);
 
 int main(int argc, char *argv[]){
-#ifdef TEST_PACKET_PARSER
-    printf("argc = %d\n", argc);
-    for (int i = 0; i < argc; i++){
-        printf("%s\n", argv[i]);
-    }
-    if (argc < 2){
-        printf("TEST_PACKET_PARSER usage: %s <1 byte hex> <1 byte hex> {max 16 bytes}\nExample: ./%s 30 E5 6F 1A", argv[0], argv[0]);
-        return -1;
-    }
-    
-    // All arguments (after the name of the program) are interpreted as the data packet
-    uint8_t testBuffer[MAX_PACKET_LENGTH] = {0};
-    for (int i = 1; i < argc; i++){
-        testBuffer[i - 1] = strtoul(argv[i], NULL, 16);
-        printf("testBuffer[%d] = 0x%02X\n", i - 1, testBuffer[i - 1]);
-    }
-    
-    packetStruct_t parsedPacket;
-    printf("Calling packetParser\n");
-    switch (packetParser(testBuffer, argc - 1, &parsedPacket)){
-        case RH_T_16_BIT:
-        case RH_T_14_BIT:
-        case RH_T_11_BIT:
-        case RH_T_9_BIT:
-            printf("%d: temp 0x%X %f, hum 0x%X %f\n", parsedPacket.deviceID, parsedPacket.temperature_raw, parsedPacket.temperature_scaled, parsedPacket.humidity_raw, parsedPacket.humidity_scaled);
-            break;
-        case UNKNOWN:
-            break;
-        default:
-            break;
-    }
-    return 0;
-#endif
     
     FILE *fpData = NULL;
     modbus_t *mb = NULL;
@@ -229,7 +192,6 @@ int main(int argc, char *argv[]){
         uint8_t rxBytes;
         packetStruct_t parsedPacket;
 
-        // printf("marcstate\n");
         status = cc112xSpiReadReg(CC112X_MARCSTATE, &marcState, 1);
         
         // A change in marcstate indicates a CC1125 state machine transition
@@ -266,7 +228,12 @@ int main(int argc, char *argv[]){
                         if (mappedAddress <= MAP_SIZE_REGS){
                             // Address is inbounds
                             map->tab_registers[mappedAddress] = parsedPacket.temperature_raw;
-                            map->tab_registers[mappedAddress + 1] = parsedPacket.humidity_raw;
+
+                            memcpy(&(map->tab_registers[mappedAddress + 1]), &(parsedPacket.temperature_scaled), sizeof(float));
+                            
+                            map->tab_registers[mappedAddress + 3] = parsedPacket.humidity_raw;
+                            
+                            memcpy(&(map->tab_registers[mappedAddress + 4]), &(parsedPacket.humidity_scaled), sizeof(float));
                         }else{
                             // Address is out of bounds
                             printf("error: invalid id\n");
@@ -305,10 +272,10 @@ int main(int argc, char *argv[]){
                 errnoSaved = errno;
                 switch (errnoSaved){
                     case ETIMEDOUT:
-                        printf("ETIMEDOUT (%d)\n", errnoSaved);
+                        printf("ETIMEDOUT (%d) %s\n", errnoSaved, modbus_strerror(errnoSaved));
                         break;
                     default:
-                        printf("Unknown error, check 'errno %d'\n", errnoSaved);
+                        printf("Unknown error, check 'errno %d' (modbus: %s)\n", errnoSaved, modbus_strerror(errnoSaved));
                         break;
                 }
                 break;
@@ -330,8 +297,6 @@ int main(int argc, char *argv[]){
     if (map != NULL) modbus_mapping_free(map);
     if (mb != NULL){
         modbus_close(mb);
-        // printf("Flushed %d bytes.\n", modbus_flush(mb));
-        // printf("Freeing mb = 0x%02X\n", (uint32_t) mb);
         modbus_free(mb);
     }
     return 0;
@@ -341,54 +306,12 @@ int main(int argc, char *argv[]){
 // Note: trxRfSpiInterfaceInit may not return -1 due to SPI.c/h exiting on error
 static int spi_init(int baudrate)
 {
-    // printf("Opening %s in O_RDWR (r+).\n", SPI_DEVICE);
-    // if (SPI_readSettings(spiFileDesc) < 0){
-        // printf("Error: Could not read SPI mode settings.\n");
-        // exit(1);
-    // }
     return trxRfSpiInterfaceInit(SPI_DEVICE, SPI_MODE_0, baudrate);
 }
 
 // Returns 0 on success, else -1
 static int radio_init(void)
 {
-#ifdef LORA_MANUAL_BOOTUP_SEQUENCE
-    printf("MANUAL BOOTUP SEQUENCE\n");
-    
-    // Reset radio
-    printf("Resetting radio\n");
-    printf("Status byte: 0x%02X\n", trxSpiCmdStrobe(CC112X_SRES));
-    
-    // Wait for reset
-    sleep(1);
-    
-    printf("Part 1\n");
-    uint16_t registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_1, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_1)/sizeof(registerSetting_t));
-    printf("exited registerConfig, reentered radio_init\n");
-    if (registerErrorAddr != 0xFFFF){
-        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
-        return -1;
-    }
-    
-    trxSpiCmdStrobe(CC112X_SIDLE);
-    trxSpiCmdStrobe(CC112X_SFTX);
-    
-    printf("Part 2\n");
-    registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_2, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_2)/sizeof(registerSetting_t));
-    printf("exited registerConfig, reentered radio_init\n");
-    if (registerErrorAddr != 0xFFFF){
-        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
-        return -1;
-    }
-    
-    printf("Part 3\n");
-    registerErrorAddr = registerConfig(ETSI_CAT1_869_S1_Bootup_Sequence_Part_3, sizeof(ETSI_CAT1_869_S1_Bootup_Sequence_Part_3)/sizeof(registerSetting_t));
-    printf("exited registerConfig, reentered radio_init\n");
-    if (registerErrorAddr != 0xFFFF){
-        printf("radio_init() failed to write to register 0x%04X\n", registerErrorAddr);
-        return -1;
-    }
-#else // normal bootup
     uint16_t registerErrorAddr = registerConfig(preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
     printf("exited registerConfig, reentered radio_init\n");
     if (registerErrorAddr != 0xFFFF){
@@ -398,7 +321,6 @@ static int radio_init(void)
     printf("manualCalibration start\n");
     manualCalibration();
     printf("manualCalibration done\n");
-#endif
 
 #ifdef LIST_ALL_REGISTERS
     // Read ALL registers from radio
@@ -426,8 +348,8 @@ static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits,
     
 #ifdef MODBUS_DEBUG_ENABLE
     printf("\tMODBUS_DEBUG_ENABLE\n");
-    if (modbus_set_debug(mb, TRUE) != 0){
-        printf("Failed to enable debug on mb = 0x%02X with flag %d\n", mb, TRUE);
+    if (modbus_set_debug(*mb, TRUE) != 0){
+        printf("Failed to enable debug on mb = 0x%02X with flag %d\n", *mb, TRUE);
         return -1;
     }else{
         printf("Enabled debug.\n");
@@ -474,12 +396,14 @@ static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits,
     }
     
     printf("*mb = 0x%02X\n", (uint32_t) *mb);
-    printf("set_slave (slave:address; master:destination) address 0x%02X (%d) ", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
+    printf("set_slave (slave:address; master:destination) address 0x%02X (%d)\n", MODBUS_SLAVE_ID, MODBUS_SLAVE_ID);
     if (modbus_set_slave(*mb, MODBUS_SLAVE_ID) < 0)
     {
         printf("modbus_set_slave failed to set the slave number.\n");
         return -1;
     }
+    
+    printf("get_slave = 0x%02X\n", modbus_get_slave(*mb));
     
     printf("Opening connection.\n");
     if (modbus_connect(*mb) != 0){
@@ -495,8 +419,6 @@ static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits,
     uint32_t usec;
     int timeoutStatus;
     printf("timeouts\n");
-    // timeoutStatus = modbus_get_response_timeout(*mb, &sec, &usec);
-    // printf("\tresponse (%d) = %d s %d us\n", timeoutStatus, sec, usec);
     timeoutStatus = modbus_get_indication_timeout(*mb, &sec, &usec);
     printf("\tget indication (%d) = %d s %d us\n", timeoutStatus, sec, usec);
     
@@ -530,13 +452,6 @@ static int modbus_init(modbus_t **mb, modbus_mapping_t **map, unsigned int bits,
     printf("*map located at 0x%X\n", (uint32_t) *map);
     print_modbus_mapping(*map);
     
-    // Prefill map (regs only)
-    // printf("filling map\n");
-    // for (int i = 0; i < MAP_SIZE_REGS; i++){
-        // (*map)->tab_registers[i] = i;
-    // }
-    // print_modbus_mapping(*map);
-    
     return 0;
 }
 
@@ -558,17 +473,7 @@ static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
     rfStatus_t status;
     
     uint16_t errorFlag = 0xFFFF;
-    
-    // printf("sizeof(reg) = %d\n", sizeof(reg));
-    // printf("sizeof(&reg) = %d\n", sizeof(&reg));
-    
-    // printf("Registers to write\n");
-    // printf("#\taddr\tvalue\n");
-    // for(uint16_t i = 0; i < numRegisters; i++) {
-        // printf("%d\t0x%02X\t0x%02X\n", i, reg[i].addr, reg[i].data);
-    // }
-    // printf("Done listing registers to write\n");
-#ifndef LORA_MANUAL_BOOTUP_SEQUENCE
+
     // Reset radio
     printf("Resetting radio\n");
     status = trxSpiCmdStrobe(CC112X_SRES);
@@ -576,7 +481,7 @@ static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
     
     // Wait for reset
     sleep(1);
-#endif
+
     // Read registers from radio
     printf("Reading registers that will be written to\n");
     printf("#\taddr\texpect\tvalue\tcompare\n");
@@ -598,7 +503,6 @@ static uint16_t registerConfig(const registerSetting_t *reg, int numRegisters) {
         writeByte = reg[i].data;
         printf("0x%02X\t<-- 0x%02X\n", reg[i].addr, writeByte);
         status = cc112xSpiWriteReg(reg[i].addr, &writeByte, 1);
-        // printf("status = 0x%02X\n", status);
     }
     
     // Read registers from radio
@@ -641,36 +545,24 @@ static void manualCalibration(void) {
     uint8_t writeByte;
 
     // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
-    printf("1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)\n");
     writeByte = 0x00;
     cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
 
     // 2) Start with high VCDAC (original VCDAC_START + 2):
-    printf("2) Start with high VCDAC (original VCDAC_START + 2)\n");
     cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
     writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
-    printf("3) Calibrate and wait for calibration to be done (radio back in IDLE state)\n");
     trxSpiCmdStrobe(CC112X_SCAL);
-    
-    // Go to idle state
-    trxSpiCmdStrobe(CC112X_SIDLE);
-    trxSpiCmdStrobe(CC112X_SFTX);
-    trxSpiCmdStrobe(CC112X_SFRX);
-
 
     do {
         cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
-        // printf("%02X ", marcstate);
-        // trxSpiCmdStrobe(CC112X_SFRX);
     } while (marcstate != 0x41);
 
     // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
     //    high VCDAC_START value
-    printf("4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with high VCDAC_START value\n");
     cc112xSpiReadReg(CC112X_FS_VCO2,
                      &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -679,28 +571,23 @@ static void manualCalibration(void) {
                      &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
 
     // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
-    printf("5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)\n");
     writeByte = 0x00;
     cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
 
     // 6) Continue with mid VCDAC (original VCDAC_START):
-    printf("6) Continue with mid VCDAC (original VCDAC_START):\n");
     writeByte = original_fs_cal2;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
-    printf("7) Calibrate and wait for calibration to be done (radio back in IDLE state)\n");
     trxSpiCmdStrobe(CC112X_SCAL);
-/*
+
     do {
         cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
-        // printf("%02X ", marcstate);
     } while (marcstate != 0x41);
-*/
+
     // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
     //    with mid VCDAC_START value
-    printf("8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with mid VCDAC_START value\n");
     cc112xSpiReadReg(CC112X_FS_VCO2, 
                      &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -710,7 +597,6 @@ static void manualCalibration(void) {
 
     // 9) Write back highest FS_VCO2 and corresponding FS_VCO
     //    and FS_CHP result
-    printf("9) Write back highest FS_VCO2 and corresponding FS_VCO and FS_CHP result\n");
     if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
         calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
         writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
@@ -783,116 +669,10 @@ static packetType_t packetParser(uint8_t *packet, uint8_t length, packetStruct_t
         returnPacket->type = UNKNOWN;
     }
     return returnPacket->type;
-
-/*
-    //  OLD Packet Structure for temp/humidity
-    //  | Device ID (4 bits) | Temperature (14 bits) | Humidity (14 bits) | CRC16 (16 bits) |
-    //  
-    //    [   0   ] [   1   ] [   2   ] [   3   ] [   4   ] [   5   ]
-    //  0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
-    //    [ID] [  Temperature  ][    Humidity   ] [      RSSI?      ]
-    //  
-    //  ID (store as uint8_t)
-    //  xxxx ABCD
-    //  0: upp 4    ABCD xxxx
-    //  
-    //  Temperature (store as uint16_t)
-    //  ABCD EFGH IJKL MNxx
-    //  0: low 4    xxxx ABCD
-    //  1: all 8    EFGH IJKL
-    //  2: upp 2    MNxx xxxx
-    //  
-    //  Humidity (store as uint16_t)
-    //  ABCD EFGH IJKL MNxx
-    //  2: low 6    xxAB CDEF
-    //  3: all 8    GHIJ KLMN
-    
-    // To do: Return struct which breaks out the received raw packet into its constituent segments
-    // Consider: What about multi-packet messages? Out of scope?
-    
-    if ((length == 4) || (length == 6)){ // Identify packet type based on length
-        returnPacket->type = RH_T_14_BIT;
-#ifdef PARSE_PACKET_CAST_32
-        uint32_t bigPacket = (packet[0] << 24) | (packet[1] << 16) | (packet[2] << 8) | (packet[3]);
-        printf("%X\n", bigPacket);
-        
-        uint8_t  id             = (bigPacket & 0xF0000000) >> 28; // align LSB
-        uint16_t temperature    = (bigPacket & 0x0FFFC000) >> 12; // align MSB
-        uint16_t humidity       = (bigPacket & 0x00003FFF) <<  2; // align MSB
-        
-        printf("%01X %04X %04X\n", id, temperature, humidity);
-        
-        returnPacket->deviceID = id;
-        returnPacket->temperature_raw = temperature;
-        returnPacket->temperature_scaled = (((float)temperature * 165.0f) / 65536.0f) - 40.0f;
-        returnPacket->humidity_raw = humidity;
-        returnPacket->humidity_scaled = ((float)humidity / 65536.0f) * 100.0f;
-        
-        printf("temp calcs %X %d %f\n", temperature, temperature, (float)temperature);
-        returnPacket->temperature_scaled = temperature;
-        printf("\t%f\n", returnPacket->temperature_scaled);
-        returnPacket->temperature_scaled *= 165.0f;
-        printf("\t%f\n", returnPacket->temperature_scaled);
-        returnPacket->temperature_scaled /= 65536.0f;
-        printf("\t%f\n", returnPacket->temperature_scaled);
-        returnPacket->temperature_scaled -= 40.0f;
-        printf("\t%f\n", returnPacket->temperature_scaled);
-        
-        printf("humidity calcs %X %d %f\n", humidity, humidity, (float)humidity);
-        returnPacket->humidity_scaled = humidity;
-        printf("\t%f\n", returnPacket->humidity_scaled);
-        returnPacket->humidity_scaled /= 65536.0f;
-        printf("\t%f\n", returnPacket->humidity_scaled);
-        returnPacket->humidity_scaled *= 100.0f;
-        printf("\t%f\n", returnPacket->humidity_scaled);
-        
-#else
-        uint8_t   id            = (packet[0] >> 4) & 0x0F;
-        uint16_t  temperature   = ((packet[0] << 10) & 0x3C00) | \
-                                ((packet[1] <<  2) & 0x03FC) | \
-                                ((packet[2] >>  6) & 0x0003);
-        uint16_t  humidity      = ((packet[2] << 8) & 0x3F00) | \
-                                (packet[3] & 0x00FF);
-        // uint16_t  crc =           (packet[4] << 8) | (packet[5]);
-        
-        printf("raw: %02X %02X %02X %02X\n", packet[0], packet[1], packet[2], packet[3]);
-        
-        returnPacket->deviceID = id;
-        returnPacket->temperature_raw = temperature;
-        returnPacket->temperature_scaled = temperature;
-        returnPacket->temperature_scaled = ((returnPacket->temperature_scaled * 165.0f) / 65536.0f) - 40.0f;
-        
-        printf("\ttemp calcs\n");
-        printf("\t\tstart 0x%X %f %A\n", temperature, (float)temperature, (float)temperature);
-        printf("\t\tmult 165.0 %f\n", (float)temperature * 165.0f);
-        printf("\t\tdiv 65536.0f %f\n", ((float)temperature * 165.0f) / 65536.0f);
-        printf("\t\tsub 40.0f %f\n", (((float)temperature * 165.0f) / 65536.0f) - 40.0f);
-        
-        returnPacket->humidity_raw = humidity;
-        returnPacket->humidity_scaled = humidity;
-        returnPacket->humidity_scaled = (returnPacket->humidity_scaled / 65536.0f) * 100.0f;
-        
-        printf("\thumi calcs\n");
-        printf("\t\tstart 0x%X %f\n", humidity, (float)humidity);
-        printf("\t\tdiv 65536.0f %f\n", (float)humidity / 65536.0f);
-        printf("\t\tmult 100.0 %f\n", ((float)humidity / 65536.0f) * 100.0f);
-        
-        printf("\tID:\t0x%01X (%d)\n", id, id);
-        printf("\tTemp:\t0x%04X (%d) [%f ; %A]\n", temperature, temperature, returnPacket->temperature_scaled, returnPacket->temperature_scaled);
-        printf("\tHumi:\t0x%04X (%d) [%f ; %A]\n", humidity, humidity, returnPacket->humidity_scaled, returnPacket->humidity_scaled);
-#endif
-    }else{
-        printf("Unrecognized packet format\n");
-        returnPacket->type = UNKNOWN;
-    }
-    return returnPacket->type;
-*/
 }
 
 static void print_modbus_mapping(modbus_mapping_t *map)
 {
-    // printf("Dumping data (hex):\n");
-    // printf("info: %d, reg %d, reg0 %d\n", sizeof(mbmap), sizeof(mbmap->tab_registers), sizeof(mbmap->tab_registers[0]));
     printf("time %ld\n", time(NULL));
 #ifdef MAP_PRINT_REGS_ONLY
     

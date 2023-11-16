@@ -57,6 +57,15 @@ And execute:
 ```
 Halt execution with CTRL+C.
 
+To schedule regular executions, modify the user crontab with `crontab -e`:
+```
+# Restarts rxlogger every day at 1 AM (and 1 minute after reboot)
+0 1 * * * /home/debian/rxlogger_script.sh &> /dev/null
+@reboot sleep 60 && /home/debian/rxlogger_script.sh &> /dev/null
+```
+Where `rxlogger_script.sh` is a short wrapper script to configure the SPI pins and ensure that only one instance of `rxlogger` is running.
+
+
 ## Customization and Tuning
 Use Texas Instruments' [SmartRF Studio 7](https://www.ti.com/tool/download/SMARTRF-STUDIO-7) and the CC1125 BoosterPack to determine the optimal register settings for your desired frequency and modulation. Then, replace the `cc112x_easy_link_reg_config.h` file with the newly exported registers from SmartRF Studio 7 (export as value line or performance line preset).
 
