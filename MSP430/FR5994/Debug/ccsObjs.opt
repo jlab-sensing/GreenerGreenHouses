@@ -1,0 +1,11 @@
+"./HDC2021.obj"
+"./MSP430_I2C.obj"
+"./Uart.obj"
+"./cs.obj"
+"./eusci_a_uart.obj"
+"./gpio.obj"
+"./main_tester.obj"
+"../lnk_msp430fr5994.cmd"
+-llibmpu_init.a
+-llibmath.a
+-llibc.a
