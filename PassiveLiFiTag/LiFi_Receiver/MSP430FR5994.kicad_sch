@@ -1119,7 +1119,7 @@
   (symbol (lib_id "power:VCC") (at 220.98 139.7 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0a05ac65-231f-4f62-8509-f9e9de512896)
-    (property "Reference" "#2.4FromReg" (at 220.98 143.51 0)
+    (property "Reference" "#2.4FromReg0113" (at 220.98 143.51 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "VCC" (at 220.98 134.62 0)
@@ -1135,7 +1135,7 @@
     (instances
       (project "LiFi_Receiver"
         (path "/00b0bd1a-ca4b-4e13-a567-185f08cebf70/8a8bdf70-8118-4996-b9d8-1922bdfdf570"
-          (reference "#2.4FromReg") (unit 1)
+          (reference "#2.4FromReg0113") (unit 1)
         )
       )
     )
@@ -1220,7 +1220,7 @@
   (symbol (lib_id "power:VCC") (at 19.05 24.13 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 51f0660d-82cc-4711-b3c8-1be0b1a1d83f)
-    (property "Reference" "#2.4FromReg" (at 19.05 27.94 0)
+    (property "Reference" "#2.4FromReg0112" (at 19.05 27.94 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "VCC" (at 19.05 19.05 0)
@@ -1236,7 +1236,7 @@
     (instances
       (project "LiFi_Receiver"
         (path "/00b0bd1a-ca4b-4e13-a567-185f08cebf70/8a8bdf70-8118-4996-b9d8-1922bdfdf570"
-          (reference "#2.4FromReg") (unit 1)
+          (reference "#2.4FromReg0112") (unit 1)
         )
       )
     )

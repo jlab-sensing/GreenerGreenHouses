@@ -1,0 +1,1366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/j-lab1/GreenerGreenHouses/PassiveLiFiTag/LiFi_Receiver/LiFi_Receiver.kicad_sch</source>
+    <date>Tue Feb  6 16:23:13 2024</date>
+    <tool>Eeschema 7.0.10-dirty</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>GGH_LiFi_Receiver</title>
+        <company>Sponsoring Lab: jLab in Smart Sensing</company>
+        <rev>1</rev>
+        <date>2024-01-25</date>
+        <source>LiFi_Receiver.kicad_sch</source>
+        <comment number="1" value="Drawn by: Matthew Kaltman"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="2" name="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>RHT_Sensors.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="3" name="/RF_Backscatter/" tstamps="/a9b09cfa-7548-496c-8ddb-6a3b81c54cf2/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>RF_Backscatter.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="4" name="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>ReceiverAndPower.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="5" name="/Peripherals/" tstamps="/e17da094-8248-48a8-9025-b760ee6d1466/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>Peripherals.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+    <sheet number="6" name="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>MSP430FR5994.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C11">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="RHT Sensors"/>
+      <property name="Sheetfile" value="RHT_Sensors.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/"/>
+      <tstamps>410006f7-0b3b-4857-b5d7-0dfef49700fc</tstamps>
+    </comp>
+    <comp ref="C12">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="RHT Sensors"/>
+      <property name="Sheetfile" value="RHT_Sensors.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/"/>
+      <tstamps>fcd9fdb6-537b-4923-a322-c3eea74c0fc1</tstamps>
+    </comp>
+    <comp ref="RN1">
+      <value>742C083472JP</value>
+      <footprint> </footprint>
+      <fields>
+        <field name="Description">  
+</field>
+        <field name="DigiKey_Part_Number">742C083472JPTR-ND</field>
+        <field name="MANUFACTURER"> </field>
+        <field name="MF"> </field>
+        <field name="MP"> </field>
+        <field name="PARTREV"> </field>
+        <field name="Package"> </field>
+        <field name="STANDARD"> </field>
+        <field name="SnapEDA_Link"> </field>
+      </fields>
+      <libsource lib="LifiLib" part="742C083472JP" description=""/>
+      <property name="DigiKey_Part_Number" value="742C083472JPTR-ND"/>
+      <property name="MF" value=" "/>
+      <property name="Purchase-URL" value=""/>
+      <property name="Package" value=" "/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=" "/>
+      <property name="PARTREV" value=" "/>
+      <property name="SnapEDA_Link" value=" "/>
+      <property name="MP" value=" "/>
+      <property name="Description" value="  &#xA;"/>
+      <property name="MANUFACTURER" value=" "/>
+      <property name="Sheetname" value="RHT Sensors"/>
+      <property name="Sheetfile" value="RHT_Sensors.kicad_sch"/>
+      <sheetpath names="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/"/>
+      <tstamps>56948960-23c6-40a6-a26c-a25d77df0fb9</tstamps>
+    </comp>
+    <comp ref="U4">
+      <value>HDC2080DMBR</value>
+      <footprint>DMB0006A</footprint>
+      <datasheet>HDC2080DMBR</datasheet>
+      <libsource lib="LiFi_Receiver" part="HDC2080DMBR" description=""/>
+      <property name="Sheetname" value="RHT Sensors"/>
+      <property name="Sheetfile" value="RHT_Sensors.kicad_sch"/>
+      <property name="ki_keywords" value="HDC2080DMBR"/>
+      <sheetpath names="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/"/>
+      <tstamps>141820ab-5257-48e7-b087-34bb5903ca76</tstamps>
+    </comp>
+    <comp ref="U5">
+      <value>HDC2080DMBR</value>
+      <footprint>DMB0006A</footprint>
+      <datasheet>HDC2080DMBR</datasheet>
+      <libsource lib="LiFi_Receiver" part="HDC2080DMBR" description=""/>
+      <property name="Sheetname" value="RHT Sensors"/>
+      <property name="Sheetfile" value="RHT_Sensors.kicad_sch"/>
+      <property name="ki_keywords" value="HDC2080DMBR"/>
+      <sheetpath names="/RHT Sensors/" tstamps="/b5c5dd7e-aaeb-4581-8f1f-2825f847a429/"/>
+      <tstamps>93592a5b-ef93-4350-9e69-55027e789ae8</tstamps>
+    </comp>
+    <comp ref="B1">
+      <value>SM141K08TFV</value>
+      <footprint>SM141K08TFV_AAR</footprint>
+      <datasheet>SM141K08TFV</datasheet>
+      <libsource lib="LiFi_Receiver" part="SM141K08TFV" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="SM141K08TFV"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>a061f5db-2dd9-4751-b2e0-a39d65af486a</tstamps>
+    </comp>
+    <comp ref="B2">
+      <value>SM141K08TFV</value>
+      <footprint>SM141K08TFV_AAR</footprint>
+      <datasheet>SM141K08TFV</datasheet>
+      <libsource lib="LiFi_Receiver" part="SM141K08TFV" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="SM141K08TFV"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>1c8fc756-afa1-458a-99ed-8e70c9072070</tstamps>
+    </comp>
+    <comp ref="B3">
+      <value>SM141K08TFV</value>
+      <footprint>SM141K08TFV_AAR</footprint>
+      <datasheet>SM141K08TFV</datasheet>
+      <libsource lib="LiFi_Receiver" part="SM141K08TFV" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="SM141K08TFV"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>3a914dcb-7a94-4139-aaaf-9407a3de15e3</tstamps>
+    </comp>
+    <comp ref="B4">
+      <value>SM141K08TFV</value>
+      <footprint>SM141K08TFV_AAR</footprint>
+      <datasheet>SM141K08TFV</datasheet>
+      <libsource lib="LiFi_Receiver" part="SM141K08TFV" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="SM141K08TFV"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>b07f216d-b456-4e3e-bd18-16cb5615b56d</tstamps>
+    </comp>
+    <comp ref="C8">
+      <value>C_Small</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>5803af66-dc85-4a33-973a-fa02273f9aa6</tstamps>
+    </comp>
+    <comp ref="C9">
+      <value>C_Small</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>6aa65a92-29a5-4dcf-9334-ab0f394f0014</tstamps>
+    </comp>
+    <comp ref="C13">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>2ea2255b-5284-4241-b509-49946250bdef</tstamps>
+    </comp>
+    <comp ref="C14">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>a0f819b7-44dc-4ca2-97dc-fbe4227f7299</tstamps>
+    </comp>
+    <comp ref="C15">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>74d048be-f3d0-4c28-92a6-1486d2eefb0d</tstamps>
+    </comp>
+    <comp ref="C16">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>babf7c7c-17db-428b-971d-c37d87f4e710</tstamps>
+    </comp>
+    <comp ref="C17">
+      <value>.1uF</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>b5d6082f-f574-415c-935c-bfd8d96e5962</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>R_Small_US</value>
+      <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small US symbol"/>
+      <property name="ki_keywords" value="r resistor"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>2d9f3054-e7b3-417b-ba85-5417dd96e7e5</tstamps>
+    </comp>
+    <comp ref="R3">
+      <value>R_Small_US</value>
+      <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small US symbol"/>
+      <property name="ki_keywords" value="r resistor"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>2664b0de-7e67-4005-909a-b08524afeab4</tstamps>
+    </comp>
+    <comp ref="U2">
+      <value>TS881ILT</value>
+      <footprint>SOT23-5_TS881_TEX</footprint>
+      <datasheet>TS881ILT</datasheet>
+      <libsource lib="LiFi_Receiver" part="TS881ILT" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="TS881ILT"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>dd7433d0-d346-47c6-b7f7-b05f5747ca9d</tstamps>
+    </comp>
+    <comp ref="U3">
+      <value>BQ25570RGRR</value>
+      <footprint>RGR0020A</footprint>
+      <datasheet>BQ25570RGRR</datasheet>
+      <libsource lib="LiFi_Receiver" part="BQ25570RGRR" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="BQ25570RGRR"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>c2b57931-eb3b-49f3-b7da-2d40186776d8</tstamps>
+    </comp>
+    <comp ref="U6">
+      <value>ADG722BRMZ-REEL7</value>
+      <footprint>RM_8_ADI</footprint>
+      <datasheet>ADG722BRMZ-REEL7</datasheet>
+      <libsource lib="LiFi_Receiver" part="ADG722BRMZ-REEL7" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="ADG722BRMZ-REEL7"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>1339a383-e666-4025-add6-a21a6d954a2b</tstamps>
+    </comp>
+    <comp ref="U7">
+      <value>ADG722BRMZ-REEL7</value>
+      <footprint>RM_8_ADI</footprint>
+      <datasheet>ADG722BRMZ-REEL7</datasheet>
+      <libsource lib="LiFi_Receiver" part="ADG722BRMZ-REEL7" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="ADG722BRMZ-REEL7"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>b64567c0-7b58-4676-a736-cf2c0a6a90d7</tstamps>
+    </comp>
+    <comp ref="U8">
+      <value>ADG721BRMZ-REEL</value>
+      <footprint>RM_8_ADI</footprint>
+      <datasheet>ADG721BRMZ-REEL</datasheet>
+      <libsource lib="LiFi_Receiver" part="ADG721BRMZ-REEL" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="ADG721BRMZ-REEL"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>611aacbf-be3e-4628-a1fc-4b3d356e01d0</tstamps>
+    </comp>
+    <comp ref="U9">
+      <value>ADG721BRMZ-REEL</value>
+      <footprint>RM_8_ADI</footprint>
+      <datasheet>ADG721BRMZ-REEL</datasheet>
+      <libsource lib="LiFi_Receiver" part="ADG721BRMZ-REEL" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="ADG721BRMZ-REEL"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>48fa6dad-d628-473c-b34f-e4a230a850bd</tstamps>
+    </comp>
+    <comp ref="U10">
+      <value>ADG721BRMZ-REEL</value>
+      <footprint>RM_8_ADI</footprint>
+      <datasheet>ADG721BRMZ-REEL</datasheet>
+      <libsource lib="LiFi_Receiver" part="ADG721BRMZ-REEL" description=""/>
+      <property name="Sheetname" value="LiFi_Receiver_and_Power"/>
+      <property name="Sheetfile" value="ReceiverAndPower.kicad_sch"/>
+      <property name="ki_keywords" value="ADG721BRMZ-REEL"/>
+      <sheetpath names="/LiFi_Receiver_and_Power/" tstamps="/c6993dd6-5c17-4cc4-9f69-1140d0f1d252/"/>
+      <tstamps>f8151dd4-69c1-4239-a5f4-80ac713ec2d3</tstamps>
+    </comp>
+    <comp ref="C10">
+      <value>1n</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="Peripherals"/>
+      <property name="Sheetfile" value="Peripherals.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/Peripherals/" tstamps="/e17da094-8248-48a8-9025-b760ee6d1466/"/>
+      <tstamps>5c7350fb-75f3-40d9-8924-f0b631455297</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>Conn_01x07</value>
+      <libsource lib="Connector_Generic" part="Conn_01x07" description="Generic connector, single row, 01x07, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value="Peripherals"/>
+      <property name="Sheetfile" value="Peripherals.kicad_sch"/>
+      <property name="ki_description" value="Generic connector, single row, 01x07, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="ki_keywords" value="connector"/>
+      <sheetpath names="/Peripherals/" tstamps="/e17da094-8248-48a8-9025-b760ee6d1466/"/>
+      <tstamps>c31ebbf0-4ddc-4f0b-9ee1-4c8e6b9ec9b4</tstamps>
+    </comp>
+    <comp ref="R4">
+      <value>27K</value>
+      <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="Sheetname" value="Peripherals"/>
+      <property name="Sheetfile" value="Peripherals.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small US symbol"/>
+      <property name="ki_keywords" value="r resistor"/>
+      <sheetpath names="/Peripherals/" tstamps="/e17da094-8248-48a8-9025-b760ee6d1466/"/>
+      <tstamps>94b137cb-5e60-4574-adb7-f419538d358e</tstamps>
+    </comp>
+    <comp ref="SW1">
+      <value>SW_Push</value>
+      <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
+      <property name="Sheetname" value="Peripherals"/>
+      <property name="Sheetfile" value="Peripherals.kicad_sch"/>
+      <property name="ki_description" value="Push button switch, generic, two pins"/>
+      <property name="ki_keywords" value="switch normally-open pushbutton push-button"/>
+      <sheetpath names="/Peripherals/" tstamps="/e17da094-8248-48a8-9025-b760ee6d1466/"/>
+      <tstamps>87fe9b3f-2f0e-45ad-a414-9d5e01e7d171</tstamps>
+    </comp>
+    <comp ref="C1">
+      <value>100n</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>9b13b1d0-f348-4258-9940-b15dca728980</tstamps>
+    </comp>
+    <comp ref="C2">
+      <value>100n</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>0601c01e-8810-47e5-b0c5-423fe5b8261d</tstamps>
+    </comp>
+    <comp ref="C3">
+      <value>100n</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>78afdd73-d957-4222-b17b-43c84a740fb6</tstamps>
+    </comp>
+    <comp ref="C4">
+      <value>100n</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>6f2be802-cda4-4717-ad34-6b4c758da034</tstamps>
+    </comp>
+    <comp ref="C5">
+      <value>10u</value>
+      <libsource lib="Device" part="C_Polarized_Small_US" description="Polarized capacitor, small US symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Polarized capacitor, small US symbol"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>89136f7c-b571-4a97-aee1-0e5c99b10f8a</tstamps>
+    </comp>
+    <comp ref="C6">
+      <value>22p</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>bfcc04e3-d814-41ed-bb8a-b5893cccb974</tstamps>
+    </comp>
+    <comp ref="C7">
+      <value>22p</value>
+      <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor, small symbol"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>b84603cf-e0fa-4f4e-894d-d60e3162cd81</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>0R</value>
+      <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small US symbol"/>
+      <property name="ki_keywords" value="r resistor"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>33b2dfbf-2530-45c9-b5ac-2a3631e49aec</tstamps>
+    </comp>
+    <comp ref="U1">
+      <value>MSP430FR5994IPNR</value>
+      <footprint>PN0080A_N</footprint>
+      <datasheet>MSP430FR5994IPNR</datasheet>
+      <libsource lib="LiFi_Receiver" part="MSP430FR5994IPNR" description=""/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_keywords" value="MSP430FR5994IPNR"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>e3293b48-4ac3-4b00-8254-c3a65b04091f</tstamps>
+    </comp>
+    <comp ref="Y1">
+      <value>Crystal_Small</value>
+      <libsource lib="Device" part="Crystal_Small" description="Two pin crystal, small symbol"/>
+      <property name="Sheetname" value="MSP430FR5994"/>
+      <property name="Sheetfile" value="MSP430FR5994.kicad_sch"/>
+      <property name="ki_description" value="Two pin crystal, small symbol"/>
+      <property name="ki_keywords" value="quartz ceramic resonator oscillator"/>
+      <sheetpath names="/MSP430FR5994/" tstamps="/8a8bdf70-8118-4996-b9d8-1922bdfdf570/"/>
+      <tstamps>8e26b109-7bd5-409f-9aa1-a14931ecd656</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector_Generic" part="Conn_01x07">
+      <description>Generic connector, single row, 01x07, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x07</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C_Polarized_Small_US">
+      <description>Polarized capacitor, small US symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>CP_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Polarized_Small_US</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="C_Small">
+      <description>Unpolarized capacitor, small symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Small</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="Crystal_Small">
+      <description>Two pin crystal, small symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Crystal*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Y</field>
+        <field name="Value">Crystal_Small</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R_Small_US">
+      <description>Resistor, small US symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R_Small_US</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="ADG721BRMZ-REEL">
+      <docs>ADG721BRMZ-REEL</docs>
+      <footprints>
+        <fp>RM_8_ADI</fp>
+        <fp>RM_8_ADI-M</fp>
+        <fp>RM_8_ADI-L</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ADG721BRMZ-REEL</field>
+        <field name="Footprint">RM_8_ADI</field>
+        <field name="Datasheet">ADG721BRMZ-REEL</field>
+      </fields>
+      <pins>
+        <pin num="1" name="S1" type="unspecified"/>
+        <pin num="2" name="D1" type="unspecified"/>
+        <pin num="3" name="IN2" type="unspecified"/>
+        <pin num="4" name="GND" type="unspecified"/>
+        <pin num="5" name="S2" type="unspecified"/>
+        <pin num="6" name="D2" type="unspecified"/>
+        <pin num="7" name="IN1" type="unspecified"/>
+        <pin num="8" name="VDD" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="ADG722BRMZ-REEL7">
+      <docs>ADG722BRMZ-REEL7</docs>
+      <footprints>
+        <fp>RM_8_ADI</fp>
+        <fp>RM_8_ADI-M</fp>
+        <fp>RM_8_ADI-L</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ADG722BRMZ-REEL7</field>
+        <field name="Footprint">RM_8_ADI</field>
+        <field name="Datasheet">ADG722BRMZ-REEL7</field>
+      </fields>
+      <pins>
+        <pin num="1" name="S1" type="unspecified"/>
+        <pin num="2" name="D1" type="unspecified"/>
+        <pin num="3" name="IN2" type="unspecified"/>
+        <pin num="4" name="GND" type="unspecified"/>
+        <pin num="5" name="S2" type="unspecified"/>
+        <pin num="6" name="D2" type="unspecified"/>
+        <pin num="7" name="IN1" type="unspecified"/>
+        <pin num="8" name="VDD" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="BQ25570RGRR">
+      <docs>BQ25570RGRR</docs>
+      <footprints>
+        <fp>RGR0020A</fp>
+        <fp>RGR0020A_NV</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">BQ25570RGRR</field>
+        <field name="Footprint">RGR0020A</field>
+        <field name="Datasheet">BQ25570RGRR</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VSS" type="power_in"/>
+        <pin num="2" name="VIN_DC" type="power_in"/>
+        <pin num="3" name="VOC_SAMP" type="input"/>
+        <pin num="4" name="VREF_SAMP" type="input"/>
+        <pin num="5" name="EN_N" type="input"/>
+        <pin num="6" name="VOUT_EN" type="input"/>
+        <pin num="7" name="VBAT_OV" type="input"/>
+        <pin num="8" name="VRDIV" type="output"/>
+        <pin num="9" name="NC" type="power_in"/>
+        <pin num="10" name="OK_HYST" type="input"/>
+        <pin num="11" name="OK_PROG" type="input"/>
+        <pin num="12" name="VOUT_SET" type="input"/>
+        <pin num="13" name="VBAT_OK" type="output"/>
+        <pin num="14" name="VOUT" type="power_in"/>
+        <pin num="15" name="VSS" type="power_in"/>
+        <pin num="16" name="LBUCK" type="unspecified"/>
+        <pin num="17" name="NC" type="unspecified"/>
+        <pin num="18" name="VBAT" type="bidirectional"/>
+        <pin num="19" name="VSTOR" type="power_in"/>
+        <pin num="20" name="LBOOST" type="input"/>
+        <pin num="21" name="PAD" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="HDC2080DMBR">
+      <docs>HDC2080DMBR</docs>
+      <footprints>
+        <fp>DMB0006A</fp>
+        <fp>DMB0006A_NV</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">HDC2080DMBR</field>
+        <field name="Footprint">DMB0006A</field>
+        <field name="Datasheet">HDC2080DMBR</field>
+      </fields>
+      <pins>
+        <pin num="1" name="SDA" type="bidirectional"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="ADDR" type="input"/>
+        <pin num="4" name="DRDY_INT" type="output"/>
+        <pin num="5" name="VDD" type="power_in"/>
+        <pin num="6" name="SCL" type="open_collector"/>
+        <pin num="7" name="PAD" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="MSP430FR5994IPNR">
+      <docs>MSP430FR5994IPNR</docs>
+      <footprints>
+        <fp>PN0080A_N</fp>
+        <fp>PN0080A_M</fp>
+        <fp>PN0080A_L</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MSP430FR5994IPNR</field>
+        <field name="Footprint">PN0080A_N</field>
+        <field name="Datasheet">MSP430FR5994IPNR</field>
+      </fields>
+      <pins>
+        <pin num="1" name="P1.0_TA0.1_DMAE0_RTCCLK_A0_C0_VREF-_VeREF-" type="bidirectional"/>
+        <pin num="2" name="P1.1_TA0.2_TA1CLK_COUT_A1_C1_VREF+_VeREF+" type="bidirectional"/>
+        <pin num="3" name="P1.2_TA1.1_TA0CLK_COUT_A2_C2" type="bidirectional"/>
+        <pin num="4" name="P3.0_A12_C12" type="bidirectional"/>
+        <pin num="5" name="P3.1_A13_C13" type="bidirectional"/>
+        <pin num="6" name="P3.2_A14_C14" type="bidirectional"/>
+        <pin num="7" name="P3.3_A15_C15" type="bidirectional"/>
+        <pin num="8" name="P6.0_UCA3TXD_UCA3SIMO" type="bidirectional"/>
+        <pin num="9" name="P6.1_UCA3RXD_UCA3SOMI" type="bidirectional"/>
+        <pin num="10" name="P6.2_UCA3CLK" type="bidirectional"/>
+        <pin num="11" name="P6.3_UCA3STE" type="bidirectional"/>
+        <pin num="12" name="P4.7" type="bidirectional"/>
+        <pin num="13" name="P7.0_UCB2SIMO_UCB2SDA" type="bidirectional"/>
+        <pin num="14" name="P7.1_UCB2SOMI_UCB2SCL" type="bidirectional"/>
+        <pin num="15" name="P8.0" type="bidirectional"/>
+        <pin num="16" name="P1.3_TA1.2_UCB0STE_A3_C3" type="bidirectional"/>
+        <pin num="17" name="P1.4_TB0.1_UCA0STE_A4_C4" type="bidirectional"/>
+        <pin num="18" name="P1.5_TB0.2_UCA0CLK_A5_C5" type="bidirectional"/>
+        <pin num="19" name="DVSS2" type="power_in"/>
+        <pin num="20" name="DVCC2" type="power_in"/>
+        <pin num="21" name="PJ.0_TDO_TB0OUTH_SMCLK_SRSCG1_C6" type="bidirectional"/>
+        <pin num="22" name="PJ.1_TDI_TCLK_MCLK_SRSCG0_C7" type="bidirectional"/>
+        <pin num="23" name="PJ.2_TMS_ACLK_SROSCOFF_C8" type="bidirectional"/>
+        <pin num="24" name="PJ.3_TCK_SRCPUOFF_C9" type="bidirectional"/>
+        <pin num="25" name="P7.2_UCB2CLK" type="bidirectional"/>
+        <pin num="26" name="P7.3_UCB2STE_TA4.1" type="bidirectional"/>
+        <pin num="27" name="P7.4__TA4.0_A16" type="bidirectional"/>
+        <pin num="28" name="P7.5_A17" type="bidirectional"/>
+        <pin num="29" name="P7.6_A18" type="bidirectional"/>
+        <pin num="30" name="P7.7_A19" type="bidirectional"/>
+        <pin num="31" name="P4.0_A8" type="bidirectional"/>
+        <pin num="32" name="P4.1_A9" type="bidirectional"/>
+        <pin num="33" name="P4.2_A10" type="bidirectional"/>
+        <pin num="34" name="P4.3_A11" type="bidirectional"/>
+        <pin num="35" name="P2.5_TB0.0_UCA1TXD_UCA1SIMO" type="bidirectional"/>
+        <pin num="36" name="P2.6_TB0.1_UCA1RXD_UCA1SOMI" type="bidirectional"/>
+        <pin num="37" name="TEST_SBWTCK" type="input"/>
+        <pin num="38" name="RST_NMI_SBWTDIO_N" type="bidirectional"/>
+        <pin num="39" name="DVSS3" type="power_in"/>
+        <pin num="40" name="DVCC3" type="power_in"/>
+        <pin num="41" name="P2.0_TB0.6_UCA0TXD_UCA0SIMO_TB0CLK_ACLK" type="bidirectional"/>
+        <pin num="42" name="P2.1_TB0.0_UCA0RXD_UCA0SOMI" type="bidirectional"/>
+        <pin num="43" name="P2.2_TB0.2_UCB0CLK" type="bidirectional"/>
+        <pin num="44" name="P8.1" type="bidirectional"/>
+        <pin num="45" name="P8.2" type="bidirectional"/>
+        <pin num="46" name="P8.3" type="bidirectional"/>
+        <pin num="47" name="P3.4_TB0.3_SMCLK" type="bidirectional"/>
+        <pin num="48" name="P3.5_TB0.4_COUT" type="bidirectional"/>
+        <pin num="49" name="P3.6_TB0.5" type="bidirectional"/>
+        <pin num="50" name="P3.7_TB0.6" type="bidirectional"/>
+        <pin num="51" name="P1.6_TB0.3_UCB0SIMO_UCB0SDA_TA0.0" type="bidirectional"/>
+        <pin num="52" name="P1.7_TB0.4_UCB0SOMI_UCB0SCL_TA1.0" type="bidirectional"/>
+        <pin num="53" name="P5.0_UCB1SIMO_UCB1SDA" type="bidirectional"/>
+        <pin num="54" name="P5.1_UCB1SOMI_UCB1SCL" type="bidirectional"/>
+        <pin num="55" name="P5.2_UCB1CLK_TA4CLK" type="bidirectional"/>
+        <pin num="56" name="P5.3_UCB1STE" type="bidirectional"/>
+        <pin num="57" name="P4.4_TB0.5" type="bidirectional"/>
+        <pin num="58" name="P4.5" type="bidirectional"/>
+        <pin num="59" name="P4.6" type="bidirectional"/>
+        <pin num="60" name="DVSS1" type="power_in"/>
+        <pin num="61" name="DVCC1" type="power_in"/>
+        <pin num="62" name="P2.7" type="bidirectional"/>
+        <pin num="63" name="P2.3_TA0.0_UCA1STE_A6_C10" type="bidirectional"/>
+        <pin num="64" name="P2.4_TA1.0_UCA1CLK_A7_C11" type="bidirectional"/>
+        <pin num="65" name="P5.4_UCA2TXD_UCA2SIMO_TB0OUTH" type="bidirectional"/>
+        <pin num="66" name="P5.5_UCA2RXD_UCA2SOMI_ACLK" type="bidirectional"/>
+        <pin num="67" name="P5.6_UCA2CLK_TA4.0_SMCLK" type="bidirectional"/>
+        <pin num="68" name="P5.7_UCA2STE_TA4.1_MCLK" type="bidirectional"/>
+        <pin num="69" name="P6.4_UCB3SIMO_UCB3SDA" type="bidirectional"/>
+        <pin num="70" name="P6.5_UCB3SOMI_UCB3SCL" type="bidirectional"/>
+        <pin num="71" name="P6.6_UCB3CLK" type="bidirectional"/>
+        <pin num="72" name="P6.7_UCB3STE" type="bidirectional"/>
+        <pin num="73" name="AVSS3" type="power_in"/>
+        <pin num="74" name="PJ.6_HFXIN" type="bidirectional"/>
+        <pin num="75" name="PJ.7_HFXOUT" type="bidirectional"/>
+        <pin num="76" name="AVSS2" type="power_in"/>
+        <pin num="77" name="PJ.4_LFXIN" type="bidirectional"/>
+        <pin num="78" name="PJ.5_LFXOUT" type="bidirectional"/>
+        <pin num="79" name="AVSS1" type="power_in"/>
+        <pin num="80" name="AVCC1" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="SM141K08TFV">
+      <docs>SM141K08TFV</docs>
+      <footprints>
+        <fp>SM141K08TFV_AAR</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">B</field>
+        <field name="Value">SM141K08TFV</field>
+        <field name="Footprint">SM141K08TFV_AAR</field>
+        <field name="Datasheet">SM141K08TFV</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="LiFi_Receiver" part="TS881ILT">
+      <docs>TS881ILT</docs>
+      <footprints>
+        <fp>SOT23-5_TS881_TEX</fp>
+        <fp>SOT23-5_TS881_TEX-M</fp>
+        <fp>SOT23-5_TS881_TEX-L</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">TS881ILT</field>
+        <field name="Footprint">SOT23-5_TS881_TEX</field>
+        <field name="Datasheet">TS881ILT</field>
+      </fields>
+      <pins>
+        <pin num="1" name="OUT" type="output"/>
+        <pin num="2" name="VCC-" type="power_in"/>
+        <pin num="3" name="IN+" type="input"/>
+        <pin num="4" name="IN-" type="input"/>
+        <pin num="5" name="VCC+" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="LifiLib" part="742C083472JP">
+      <fields>
+        <field name="Reference">RN</field>
+        <field name="Value">742C083472JP</field>
+        <field name="Footprint"> </field>
+        <field name="DigiKey_Part_Number">742C083472JPTR-ND</field>
+        <field name="MF"> </field>
+        <field name="Package"> </field>
+        <field name="STANDARD"> </field>
+        <field name="PARTREV"> </field>
+        <field name="SnapEDA_Link"> </field>
+        <field name="MP"> </field>
+        <field name="Description">  
+</field>
+        <field name="MANUFACTURER"> </field>
+      </fields>
+      <pins>
+        <pin num="4" name="4" type="passive"/>
+        <pin num="5" name="5" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Switch" part="SW_Push">
+      <description>Push button switch, generic, two pins</description>
+      <docs>~</docs>
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">SW_Push</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector_Generic">
+      <uri>/usr/share/kicad/symbols//Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>/usr/share/kicad/symbols//Device.kicad_sym</uri>
+    </library>
+    <library logical="LiFi_Receiver">
+      <uri>/home/j-lab1/snap/kicad/8/.local/share/kicad/7.0/symbols/LiFi_Receiver.kicad_sym</uri>
+    </library>
+    <library logical="Switch">
+      <uri>/usr/share/kicad/symbols//Switch.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3.3V">
+      <node ref="J1" pin="3" pinfunction="Pin_3" pintype="passive"/>
+    </net>
+    <net code="2" name="AVCC_DVSS_">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="U1" pin="80" pinfunction="AVCC1" pintype="power_in"/>
+    </net>
+    <net code="3" name="Batt_ok">
+      <node ref="U10" pin="3" pinfunction="IN2" pintype="unspecified"/>
+      <node ref="U10" pin="7" pinfunction="IN1" pintype="unspecified"/>
+      <node ref="U6" pin="3" pinfunction="IN2" pintype="unspecified"/>
+      <node ref="U6" pin="7" pinfunction="IN1" pintype="unspecified"/>
+      <node ref="U7" pin="3" pinfunction="IN2" pintype="unspecified"/>
+      <node ref="U7" pin="7" pinfunction="IN1" pintype="unspecified"/>
+      <node ref="U8" pin="3" pinfunction="IN2" pintype="unspecified"/>
+      <node ref="U8" pin="7" pinfunction="IN1" pintype="unspecified"/>
+      <node ref="U9" pin="3" pinfunction="IN2" pintype="unspecified"/>
+      <node ref="U9" pin="7" pinfunction="IN1" pintype="unspecified"/>
+    </net>
+    <net code="4" name="Comparator Out">
+      <node ref="U2" pin="1" pinfunction="OUT" pintype="output"/>
+    </net>
+    <net code="5" name="GND">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="C10" pin="2" pintype="passive"/>
+      <node ref="C11" pin="2" pintype="passive"/>
+      <node ref="C12" pin="2" pintype="passive"/>
+      <node ref="C13" pin="2" pintype="passive"/>
+      <node ref="C14" pin="2" pintype="passive"/>
+      <node ref="C15" pin="2" pintype="passive"/>
+      <node ref="C16" pin="2" pintype="passive"/>
+      <node ref="C17" pin="2" pintype="passive"/>
+      <node ref="C2" pin="2" pintype="passive"/>
+      <node ref="C3" pin="2" pintype="passive"/>
+      <node ref="C4" pin="2" pintype="passive"/>
+      <node ref="C5" pin="2" pintype="passive"/>
+      <node ref="C6" pin="1" pintype="passive"/>
+      <node ref="C7" pin="1" pintype="passive"/>
+      <node ref="C9" pin="2" pintype="passive"/>
+      <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+      <node ref="SW1" pin="1" pinfunction="1" pintype="passive"/>
+      <node ref="U1" pin="19" pinfunction="DVSS2" pintype="power_in"/>
+      <node ref="U1" pin="39" pinfunction="DVSS3" pintype="power_in"/>
+      <node ref="U1" pin="60" pinfunction="DVSS1" pintype="power_in"/>
+      <node ref="U1" pin="73" pinfunction="AVSS3" pintype="power_in"/>
+      <node ref="U1" pin="76" pinfunction="AVSS2" pintype="power_in"/>
+      <node ref="U1" pin="79" pinfunction="AVSS1" pintype="power_in"/>
+      <node ref="U10" pin="4" pinfunction="GND" pintype="unspecified"/>
+      <node ref="U2" pin="2" pinfunction="VCC-" pintype="power_in"/>
+      <node ref="U2" pin="4" pinfunction="IN-" pintype="input"/>
+      <node ref="U4" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U4" pin="4" pinfunction="DRDY_INT" pintype="output"/>
+      <node ref="U4" pin="7" pinfunction="PAD" pintype="unspecified"/>
+      <node ref="U5" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U5" pin="3" pinfunction="ADDR" pintype="input"/>
+      <node ref="U5" pin="4" pinfunction="DRDY_INT" pintype="output"/>
+      <node ref="U5" pin="7" pinfunction="PAD" pintype="unspecified"/>
+      <node ref="U6" pin="4" pinfunction="GND" pintype="unspecified"/>
+      <node ref="U7" pin="4" pinfunction="GND" pintype="unspecified"/>
+      <node ref="U8" pin="4" pinfunction="GND" pintype="unspecified"/>
+      <node ref="U9" pin="4" pinfunction="GND" pintype="unspecified"/>
+    </net>
+    <net code="6" name="Harvester_In">
+      <node ref="C9" pin="1" pintype="passive"/>
+      <node ref="R3" pin="2" pintype="passive"/>
+    </net>
+    <net code="7" name="Net-(U1-PJ.4_LFXIN)">
+      <node ref="C7" pin="2" pintype="passive"/>
+      <node ref="U1" pin="77" pinfunction="PJ.4_LFXIN" pintype="bidirectional"/>
+      <node ref="Y1" pin="2" pinfunction="2" pintype="passive"/>
+    </net>
+    <net code="8" name="Net-(U1-PJ.5_LFXOUT)">
+      <node ref="C6" pin="2" pintype="passive"/>
+      <node ref="U1" pin="78" pinfunction="PJ.5_LFXOUT" pintype="bidirectional"/>
+      <node ref="Y1" pin="1" pinfunction="1" pintype="passive"/>
+    </net>
+    <net code="9" name="Net-(U2-IN+)">
+      <node ref="C8" pin="2" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+      <node ref="U2" pin="3" pinfunction="IN+" pintype="input"/>
+    </net>
+    <net code="10" name="P1+">
+      <node ref="B1" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U8" pin="1" pinfunction="S1" pintype="unspecified"/>
+    </net>
+    <net code="11" name="P1-">
+      <node ref="B1" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="U6" pin="1" pinfunction="S1" pintype="unspecified"/>
+      <node ref="U9" pin="5" pinfunction="S2" pintype="unspecified"/>
+    </net>
+    <net code="12" name="P2+">
+      <node ref="B2" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U6" pin="2" pinfunction="D1" pintype="unspecified"/>
+      <node ref="U8" pin="2" pinfunction="D1" pintype="unspecified"/>
+      <node ref="U8" pin="5" pinfunction="S2" pintype="unspecified"/>
+    </net>
+    <net code="13" name="P2-">
+      <node ref="B2" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="U10" pin="1" pinfunction="S1" pintype="unspecified"/>
+      <node ref="U6" pin="5" pinfunction="S2" pintype="unspecified"/>
+      <node ref="U9" pin="6" pinfunction="D2" pintype="unspecified"/>
+    </net>
+    <net code="14" name="P2.0_UART_TXD">
+      <node ref="J1" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="U1" pin="41" pinfunction="P2.0_TB0.6_UCA0TXD_UCA0SIMO_TB0CLK_ACLK" pintype="bidirectional"/>
+    </net>
+    <net code="15" name="P2.1_UART_RXD">
+      <node ref="J1" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="U1" pin="42" pinfunction="P2.1_TB0.0_UCA0RXD_UCA0SOMI" pintype="bidirectional"/>
+    </net>
+    <net code="16" name="P3+">
+      <node ref="B3" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U6" pin="6" pinfunction="D2" pintype="unspecified"/>
+      <node ref="U8" pin="6" pinfunction="D2" pintype="unspecified"/>
+      <node ref="U9" pin="1" pinfunction="S1" pintype="unspecified"/>
+    </net>
+    <net code="17" name="P3-">
+      <node ref="B3" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="U10" pin="2" pinfunction="D1" pintype="unspecified"/>
+      <node ref="U10" pin="5" pinfunction="S2" pintype="unspecified"/>
+      <node ref="U7" pin="1" pinfunction="S1" pintype="unspecified"/>
+    </net>
+    <net code="18" name="P4+">
+      <node ref="B4" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U7" pin="2" pinfunction="D1" pintype="unspecified"/>
+      <node ref="U9" pin="2" pinfunction="D1" pintype="unspecified"/>
+    </net>
+    <net code="19" name="P4-">
+      <node ref="B4" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="U10" pin="6" pinfunction="D2" pintype="unspecified"/>
+    </net>
+    <net code="20" name="PV Out">
+      <node ref="C8" pin="1" pintype="passive"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+    </net>
+    <net code="21" name="TEST_SBWTCK">
+      <node ref="J1" pin="7" pinfunction="Pin_7" pintype="passive"/>
+      <node ref="U1" pin="37" pinfunction="TEST_SBWTCK" pintype="input"/>
+    </net>
+    <net code="22" name="UCB2SCL">
+      <node ref="RN1" pin="5" pinfunction="5" pintype="passive"/>
+      <node ref="U1" pin="14" pinfunction="P7.1_UCB2SOMI_UCB2SCL" pintype="bidirectional"/>
+      <node ref="U4" pin="6" pinfunction="SCL" pintype="open_collector"/>
+      <node ref="U5" pin="6" pinfunction="SCL" pintype="open_collector"/>
+    </net>
+    <net code="23" name="UCB2SDA">
+      <node ref="RN1" pin="5" pinfunction="5" pintype="passive"/>
+      <node ref="U1" pin="13" pinfunction="P7.0_UCB2SIMO_UCB2SDA" pintype="bidirectional"/>
+      <node ref="U4" pin="1" pinfunction="SDA" pintype="bidirectional"/>
+      <node ref="U5" pin="1" pinfunction="SDA" pintype="bidirectional"/>
+    </net>
+    <net code="24" name="VCC">
+      <node ref="C11" pin="1" pintype="passive"/>
+      <node ref="C12" pin="1" pintype="passive"/>
+      <node ref="C13" pin="1" pintype="passive"/>
+      <node ref="C14" pin="1" pintype="passive"/>
+      <node ref="C15" pin="1" pintype="passive"/>
+      <node ref="C16" pin="1" pintype="passive"/>
+      <node ref="C17" pin="1" pintype="passive"/>
+      <node ref="C2" pin="1" pintype="passive"/>
+      <node ref="C3" pin="1" pintype="passive"/>
+      <node ref="C4" pin="1" pintype="passive"/>
+      <node ref="C5" pin="1" pintype="passive"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="R4" pin="1" pintype="passive"/>
+      <node ref="RN1" pin="4" pinfunction="4" pintype="passive"/>
+      <node ref="U1" pin="20" pinfunction="DVCC2" pintype="power_in"/>
+      <node ref="U1" pin="40" pinfunction="DVCC3" pintype="power_in"/>
+      <node ref="U1" pin="61" pinfunction="DVCC1" pintype="power_in"/>
+      <node ref="U10" pin="8" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U2" pin="5" pinfunction="VCC+" pintype="power_in"/>
+      <node ref="U4" pin="3" pinfunction="ADDR" pintype="input"/>
+      <node ref="U4" pin="5" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U5" pin="5" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U6" pin="8" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U7" pin="8" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U8" pin="8" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U9" pin="8" pinfunction="VDD" pintype="power_in"/>
+    </net>
+    <net code="25" name="unconnected-(J1-Pin_2-Pad2)">
+      <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
+    </net>
+    <net code="26" name="unconnected-(U1-P1.0_TA0.1_DMAE0_RTCCLK_A0_C0_VREF-_VeREF--Pad1)">
+      <node ref="U1" pin="1" pinfunction="P1.0_TA0.1_DMAE0_RTCCLK_A0_C0_VREF-_VeREF-" pintype="bidirectional"/>
+    </net>
+    <net code="27" name="unconnected-(U1-P1.1_TA0.2_TA1CLK_COUT_A1_C1_VREF+_VeREF+-Pad2)">
+      <node ref="U1" pin="2" pinfunction="P1.1_TA0.2_TA1CLK_COUT_A1_C1_VREF+_VeREF+" pintype="bidirectional"/>
+    </net>
+    <net code="28" name="unconnected-(U1-P1.2_TA1.1_TA0CLK_COUT_A2_C2-Pad3)">
+      <node ref="U1" pin="3" pinfunction="P1.2_TA1.1_TA0CLK_COUT_A2_C2" pintype="bidirectional"/>
+    </net>
+    <net code="29" name="unconnected-(U1-P1.3_TA1.2_UCB0STE_A3_C3-Pad16)">
+      <node ref="U1" pin="16" pinfunction="P1.3_TA1.2_UCB0STE_A3_C3" pintype="bidirectional"/>
+    </net>
+    <net code="30" name="unconnected-(U1-P1.4_TB0.1_UCA0STE_A4_C4-Pad17)">
+      <node ref="U1" pin="17" pinfunction="P1.4_TB0.1_UCA0STE_A4_C4" pintype="bidirectional"/>
+    </net>
+    <net code="31" name="unconnected-(U1-P1.5_TB0.2_UCA0CLK_A5_C5-Pad18)">
+      <node ref="U1" pin="18" pinfunction="P1.5_TB0.2_UCA0CLK_A5_C5" pintype="bidirectional"/>
+    </net>
+    <net code="32" name="unconnected-(U1-P1.6_TB0.3_UCB0SIMO_UCB0SDA_TA0.0-Pad51)">
+      <node ref="U1" pin="51" pinfunction="P1.6_TB0.3_UCB0SIMO_UCB0SDA_TA0.0" pintype="bidirectional"/>
+    </net>
+    <net code="33" name="unconnected-(U1-P1.7_TB0.4_UCB0SOMI_UCB0SCL_TA1.0-Pad52)">
+      <node ref="U1" pin="52" pinfunction="P1.7_TB0.4_UCB0SOMI_UCB0SCL_TA1.0" pintype="bidirectional"/>
+    </net>
+    <net code="34" name="unconnected-(U1-P2.2_TB0.2_UCB0CLK-Pad43)">
+      <node ref="U1" pin="43" pinfunction="P2.2_TB0.2_UCB0CLK" pintype="bidirectional"/>
+    </net>
+    <net code="35" name="unconnected-(U1-P2.3_TA0.0_UCA1STE_A6_C10-Pad63)">
+      <node ref="U1" pin="63" pinfunction="P2.3_TA0.0_UCA1STE_A6_C10" pintype="bidirectional"/>
+    </net>
+    <net code="36" name="unconnected-(U1-P2.4_TA1.0_UCA1CLK_A7_C11-Pad64)">
+      <node ref="U1" pin="64" pinfunction="P2.4_TA1.0_UCA1CLK_A7_C11" pintype="bidirectional"/>
+    </net>
+    <net code="37" name="unconnected-(U1-P2.5_TB0.0_UCA1TXD_UCA1SIMO-Pad35)">
+      <node ref="U1" pin="35" pinfunction="P2.5_TB0.0_UCA1TXD_UCA1SIMO" pintype="bidirectional"/>
+    </net>
+    <net code="38" name="unconnected-(U1-P2.6_TB0.1_UCA1RXD_UCA1SOMI-Pad36)">
+      <node ref="U1" pin="36" pinfunction="P2.6_TB0.1_UCA1RXD_UCA1SOMI" pintype="bidirectional"/>
+    </net>
+    <net code="39" name="unconnected-(U1-P2.7-Pad62)">
+      <node ref="U1" pin="62" pinfunction="P2.7" pintype="bidirectional"/>
+    </net>
+    <net code="40" name="unconnected-(U1-P3.0_A12_C12-Pad4)">
+      <node ref="U1" pin="4" pinfunction="P3.0_A12_C12" pintype="bidirectional"/>
+    </net>
+    <net code="41" name="unconnected-(U1-P3.1_A13_C13-Pad5)">
+      <node ref="U1" pin="5" pinfunction="P3.1_A13_C13" pintype="bidirectional"/>
+    </net>
+    <net code="42" name="unconnected-(U1-P3.2_A14_C14-Pad6)">
+      <node ref="U1" pin="6" pinfunction="P3.2_A14_C14" pintype="bidirectional"/>
+    </net>
+    <net code="43" name="unconnected-(U1-P3.3_A15_C15-Pad7)">
+      <node ref="U1" pin="7" pinfunction="P3.3_A15_C15" pintype="bidirectional"/>
+    </net>
+    <net code="44" name="unconnected-(U1-P3.4_TB0.3_SMCLK-Pad47)">
+      <node ref="U1" pin="47" pinfunction="P3.4_TB0.3_SMCLK" pintype="bidirectional"/>
+    </net>
+    <net code="45" name="unconnected-(U1-P3.5_TB0.4_COUT-Pad48)">
+      <node ref="U1" pin="48" pinfunction="P3.5_TB0.4_COUT" pintype="bidirectional"/>
+    </net>
+    <net code="46" name="unconnected-(U1-P3.6_TB0.5-Pad49)">
+      <node ref="U1" pin="49" pinfunction="P3.6_TB0.5" pintype="bidirectional"/>
+    </net>
+    <net code="47" name="unconnected-(U1-P3.7_TB0.6-Pad50)">
+      <node ref="U1" pin="50" pinfunction="P3.7_TB0.6" pintype="bidirectional"/>
+    </net>
+    <net code="48" name="unconnected-(U1-P4.0_A8-Pad31)">
+      <node ref="U1" pin="31" pinfunction="P4.0_A8" pintype="bidirectional"/>
+    </net>
+    <net code="49" name="unconnected-(U1-P4.1_A9-Pad32)">
+      <node ref="U1" pin="32" pinfunction="P4.1_A9" pintype="bidirectional"/>
+    </net>
+    <net code="50" name="unconnected-(U1-P4.2_A10-Pad33)">
+      <node ref="U1" pin="33" pinfunction="P4.2_A10" pintype="bidirectional"/>
+    </net>
+    <net code="51" name="unconnected-(U1-P4.3_A11-Pad34)">
+      <node ref="U1" pin="34" pinfunction="P4.3_A11" pintype="bidirectional"/>
+    </net>
+    <net code="52" name="unconnected-(U1-P4.4_TB0.5-Pad57)">
+      <node ref="U1" pin="57" pinfunction="P4.4_TB0.5" pintype="bidirectional"/>
+    </net>
+    <net code="53" name="unconnected-(U1-P4.5-Pad58)">
+      <node ref="U1" pin="58" pinfunction="P4.5" pintype="bidirectional"/>
+    </net>
+    <net code="54" name="unconnected-(U1-P4.6-Pad59)">
+      <node ref="U1" pin="59" pinfunction="P4.6" pintype="bidirectional"/>
+    </net>
+    <net code="55" name="unconnected-(U1-P4.7-Pad12)">
+      <node ref="U1" pin="12" pinfunction="P4.7" pintype="bidirectional"/>
+    </net>
+    <net code="56" name="unconnected-(U1-P5.0_UCB1SIMO_UCB1SDA-Pad53)">
+      <node ref="U1" pin="53" pinfunction="P5.0_UCB1SIMO_UCB1SDA" pintype="bidirectional"/>
+    </net>
+    <net code="57" name="unconnected-(U1-P5.1_UCB1SOMI_UCB1SCL-Pad54)">
+      <node ref="U1" pin="54" pinfunction="P5.1_UCB1SOMI_UCB1SCL" pintype="bidirectional"/>
+    </net>
+    <net code="58" name="unconnected-(U1-P5.2_UCB1CLK_TA4CLK-Pad55)">
+      <node ref="U1" pin="55" pinfunction="P5.2_UCB1CLK_TA4CLK" pintype="bidirectional"/>
+    </net>
+    <net code="59" name="unconnected-(U1-P5.3_UCB1STE-Pad56)">
+      <node ref="U1" pin="56" pinfunction="P5.3_UCB1STE" pintype="bidirectional"/>
+    </net>
+    <net code="60" name="unconnected-(U1-P5.4_UCA2TXD_UCA2SIMO_TB0OUTH-Pad65)">
+      <node ref="U1" pin="65" pinfunction="P5.4_UCA2TXD_UCA2SIMO_TB0OUTH" pintype="bidirectional"/>
+    </net>
+    <net code="61" name="unconnected-(U1-P5.5_UCA2RXD_UCA2SOMI_ACLK-Pad66)">
+      <node ref="U1" pin="66" pinfunction="P5.5_UCA2RXD_UCA2SOMI_ACLK" pintype="bidirectional"/>
+    </net>
+    <net code="62" name="unconnected-(U1-P5.6_UCA2CLK_TA4.0_SMCLK-Pad67)">
+      <node ref="U1" pin="67" pinfunction="P5.6_UCA2CLK_TA4.0_SMCLK" pintype="bidirectional"/>
+    </net>
+    <net code="63" name="unconnected-(U1-P5.7_UCA2STE_TA4.1_MCLK-Pad68)">
+      <node ref="U1" pin="68" pinfunction="P5.7_UCA2STE_TA4.1_MCLK" pintype="bidirectional"/>
+    </net>
+    <net code="64" name="unconnected-(U1-P6.0_UCA3TXD_UCA3SIMO-Pad8)">
+      <node ref="U1" pin="8" pinfunction="P6.0_UCA3TXD_UCA3SIMO" pintype="bidirectional"/>
+    </net>
+    <net code="65" name="unconnected-(U1-P6.1_UCA3RXD_UCA3SOMI-Pad9)">
+      <node ref="U1" pin="9" pinfunction="P6.1_UCA3RXD_UCA3SOMI" pintype="bidirectional"/>
+    </net>
+    <net code="66" name="unconnected-(U1-P6.2_UCA3CLK-Pad10)">
+      <node ref="U1" pin="10" pinfunction="P6.2_UCA3CLK" pintype="bidirectional"/>
+    </net>
+    <net code="67" name="unconnected-(U1-P6.3_UCA3STE-Pad11)">
+      <node ref="U1" pin="11" pinfunction="P6.3_UCA3STE" pintype="bidirectional"/>
+    </net>
+    <net code="68" name="unconnected-(U1-P6.4_UCB3SIMO_UCB3SDA-Pad69)">
+      <node ref="U1" pin="69" pinfunction="P6.4_UCB3SIMO_UCB3SDA" pintype="bidirectional"/>
+    </net>
+    <net code="69" name="unconnected-(U1-P6.5_UCB3SOMI_UCB3SCL-Pad70)">
+      <node ref="U1" pin="70" pinfunction="P6.5_UCB3SOMI_UCB3SCL" pintype="bidirectional"/>
+    </net>
+    <net code="70" name="unconnected-(U1-P6.6_UCB3CLK-Pad71)">
+      <node ref="U1" pin="71" pinfunction="P6.6_UCB3CLK" pintype="bidirectional"/>
+    </net>
+    <net code="71" name="unconnected-(U1-P6.7_UCB3STE-Pad72)">
+      <node ref="U1" pin="72" pinfunction="P6.7_UCB3STE" pintype="bidirectional"/>
+    </net>
+    <net code="72" name="unconnected-(U1-P7.2_UCB2CLK-Pad25)">
+      <node ref="U1" pin="25" pinfunction="P7.2_UCB2CLK" pintype="bidirectional"/>
+    </net>
+    <net code="73" name="unconnected-(U1-P7.3_UCB2STE_TA4.1-Pad26)">
+      <node ref="U1" pin="26" pinfunction="P7.3_UCB2STE_TA4.1" pintype="bidirectional"/>
+    </net>
+    <net code="74" name="unconnected-(U1-P7.4__TA4.0_A16-Pad27)">
+      <node ref="U1" pin="27" pinfunction="P7.4__TA4.0_A16" pintype="bidirectional"/>
+    </net>
+    <net code="75" name="unconnected-(U1-P7.5_A17-Pad28)">
+      <node ref="U1" pin="28" pinfunction="P7.5_A17" pintype="bidirectional"/>
+    </net>
+    <net code="76" name="unconnected-(U1-P7.6_A18-Pad29)">
+      <node ref="U1" pin="29" pinfunction="P7.6_A18" pintype="bidirectional"/>
+    </net>
+    <net code="77" name="unconnected-(U1-P7.7_A19-Pad30)">
+      <node ref="U1" pin="30" pinfunction="P7.7_A19" pintype="bidirectional"/>
+    </net>
+    <net code="78" name="unconnected-(U1-P8.0-Pad15)">
+      <node ref="U1" pin="15" pinfunction="P8.0" pintype="bidirectional"/>
+    </net>
+    <net code="79" name="unconnected-(U1-P8.1-Pad44)">
+      <node ref="U1" pin="44" pinfunction="P8.1" pintype="bidirectional"/>
+    </net>
+    <net code="80" name="unconnected-(U1-P8.2-Pad45)">
+      <node ref="U1" pin="45" pinfunction="P8.2" pintype="bidirectional"/>
+    </net>
+    <net code="81" name="unconnected-(U1-P8.3-Pad46)">
+      <node ref="U1" pin="46" pinfunction="P8.3" pintype="bidirectional"/>
+    </net>
+    <net code="82" name="unconnected-(U1-PJ.0_TDO_TB0OUTH_SMCLK_SRSCG1_C6-Pad21)">
+      <node ref="U1" pin="21" pinfunction="PJ.0_TDO_TB0OUTH_SMCLK_SRSCG1_C6" pintype="bidirectional"/>
+    </net>
+    <net code="83" name="unconnected-(U1-PJ.1_TDI_TCLK_MCLK_SRSCG0_C7-Pad22)">
+      <node ref="U1" pin="22" pinfunction="PJ.1_TDI_TCLK_MCLK_SRSCG0_C7" pintype="bidirectional"/>
+    </net>
+    <net code="84" name="unconnected-(U1-PJ.2_TMS_ACLK_SROSCOFF_C8-Pad23)">
+      <node ref="U1" pin="23" pinfunction="PJ.2_TMS_ACLK_SROSCOFF_C8" pintype="bidirectional"/>
+    </net>
+    <net code="85" name="unconnected-(U1-PJ.3_TCK_SRCPUOFF_C9-Pad24)">
+      <node ref="U1" pin="24" pinfunction="PJ.3_TCK_SRCPUOFF_C9" pintype="bidirectional"/>
+    </net>
+    <net code="86" name="unconnected-(U1-PJ.6_HFXIN-Pad74)">
+      <node ref="U1" pin="74" pinfunction="PJ.6_HFXIN" pintype="bidirectional"/>
+    </net>
+    <net code="87" name="unconnected-(U1-PJ.7_HFXOUT-Pad75)">
+      <node ref="U1" pin="75" pinfunction="PJ.7_HFXOUT" pintype="bidirectional"/>
+    </net>
+    <net code="88" name="unconnected-(U3-EN_N-Pad5)">
+      <node ref="U3" pin="5" pinfunction="EN_N" pintype="input"/>
+    </net>
+    <net code="89" name="unconnected-(U3-LBOOST-Pad20)">
+      <node ref="U3" pin="20" pinfunction="LBOOST" pintype="input"/>
+    </net>
+    <net code="90" name="unconnected-(U3-LBUCK-Pad16)">
+      <node ref="U3" pin="16" pinfunction="LBUCK" pintype="unspecified"/>
+    </net>
+    <net code="91" name="unconnected-(U3-NC-Pad9)">
+      <node ref="U3" pin="9" pinfunction="NC" pintype="power_in"/>
+    </net>
+    <net code="92" name="unconnected-(U3-NC-Pad17)">
+      <node ref="U3" pin="17" pinfunction="NC" pintype="unspecified"/>
+    </net>
+    <net code="93" name="unconnected-(U3-OK_HYST-Pad10)">
+      <node ref="U3" pin="10" pinfunction="OK_HYST" pintype="input"/>
+    </net>
+    <net code="94" name="unconnected-(U3-OK_PROG-Pad11)">
+      <node ref="U3" pin="11" pinfunction="OK_PROG" pintype="input"/>
+    </net>
+    <net code="95" name="unconnected-(U3-PAD-Pad21)">
+      <node ref="U3" pin="21" pinfunction="PAD" pintype="power_in"/>
+    </net>
+    <net code="96" name="unconnected-(U3-VBAT-Pad18)">
+      <node ref="U3" pin="18" pinfunction="VBAT" pintype="bidirectional"/>
+    </net>
+    <net code="97" name="unconnected-(U3-VBAT_OK-Pad13)">
+      <node ref="U3" pin="13" pinfunction="VBAT_OK" pintype="output"/>
+    </net>
+    <net code="98" name="unconnected-(U3-VBAT_OV-Pad7)">
+      <node ref="U3" pin="7" pinfunction="VBAT_OV" pintype="input"/>
+    </net>
+    <net code="99" name="unconnected-(U3-VIN_DC-Pad2)">
+      <node ref="U3" pin="2" pinfunction="VIN_DC" pintype="power_in"/>
+    </net>
+    <net code="100" name="unconnected-(U3-VOC_SAMP-Pad3)">
+      <node ref="U3" pin="3" pinfunction="VOC_SAMP" pintype="input"/>
+    </net>
+    <net code="101" name="unconnected-(U3-VOUT-Pad14)">
+      <node ref="U3" pin="14" pinfunction="VOUT" pintype="power_in"/>
+    </net>
+    <net code="102" name="unconnected-(U3-VOUT_EN-Pad6)">
+      <node ref="U3" pin="6" pinfunction="VOUT_EN" pintype="input"/>
+    </net>
+    <net code="103" name="unconnected-(U3-VOUT_SET-Pad12)">
+      <node ref="U3" pin="12" pinfunction="VOUT_SET" pintype="input"/>
+    </net>
+    <net code="104" name="unconnected-(U3-VRDIV-Pad8)">
+      <node ref="U3" pin="8" pinfunction="VRDIV" pintype="output"/>
+    </net>
+    <net code="105" name="unconnected-(U3-VREF_SAMP-Pad4)">
+      <node ref="U3" pin="4" pinfunction="VREF_SAMP" pintype="input"/>
+    </net>
+    <net code="106" name="unconnected-(U3-VSS-Pad1)">
+      <node ref="U3" pin="1" pinfunction="VSS" pintype="power_in"/>
+    </net>
+    <net code="107" name="unconnected-(U3-VSS-Pad15)">
+      <node ref="U3" pin="15" pinfunction="VSS" pintype="power_in"/>
+    </net>
+    <net code="108" name="unconnected-(U3-VSTOR-Pad19)">
+      <node ref="U3" pin="19" pinfunction="VSTOR" pintype="power_in"/>
+    </net>
+    <net code="109" name="unconnected-(U7-D2-Pad6)">
+      <node ref="U7" pin="6" pinfunction="D2" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="110" name="unconnected-(U7-S2-Pad5)">
+      <node ref="U7" pin="5" pinfunction="S2" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="111" name="~{RST}{slash}SBWTDIO_N">
+      <node ref="C10" pin="1" pintype="passive"/>
+      <node ref="J1" pin="6" pinfunction="Pin_6" pintype="passive"/>
+      <node ref="R4" pin="2" pintype="passive"/>
+      <node ref="SW1" pin="2" pinfunction="2" pintype="passive"/>
+      <node ref="U1" pin="38" pinfunction="RST_NMI_SBWTDIO_N" pintype="bidirectional"/>
+    </net>
+  </nets>
+</export>
