@@ -634,7 +634,7 @@
     (property "Value" "SW_Push" (at 241.3 34.29 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "" (at 241.3 34.29 0)
+    (property "Footprint" "Library:SW_TL59NF160Q" (at 241.3 34.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 241.3 34.29 0)
