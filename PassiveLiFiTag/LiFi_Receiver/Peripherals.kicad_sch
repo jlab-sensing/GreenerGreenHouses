@@ -400,6 +400,8 @@
     (uuid c0b8cf80-d237-4ac1-bc67-719d974cef6f)
   )
 
+  (no_connect (at 260.35 71.12) (uuid 7264aa11-ac6c-45d2-ae16-a54145e30e7e))
+
   (wire (pts (xy 252.73 34.29) (xy 252.73 39.37))
     (stroke (width 0) (type default))
     (uuid 1a9100a3-f82f-407e-ace6-724c744dcba5)
@@ -711,7 +713,7 @@
     (property "Value" "Conn_01x07" (at 267.97 77.47 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (at 265.43 76.2 0)
+    (property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x07_P2.54mm_Vertical" (at 265.43 76.2 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 265.43 76.2 0)
