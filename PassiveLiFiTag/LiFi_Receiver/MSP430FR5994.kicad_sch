@@ -1328,7 +1328,7 @@
     (property "Value" "10u" (at 215.9 152.4 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Capacitor_SMD:C_01005_0402Metric" (at 220.98 151.13 0)
+    (property "Footprint" "LIFI-FOOTPRINTS:TAJA_AVX-M" (at 220.98 151.13 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 220.98 151.13 0)
