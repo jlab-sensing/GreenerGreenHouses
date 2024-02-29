@@ -380,7 +380,7 @@
     (stroke (width 0.1524) (type solid))
     (fill (color 0 0 0 0.0000))
     (uuid e17da094-8248-48a8-9025-b760ee6d1466)
-    (property "Sheetname" "Peripherals" (at 12.7 230.4284 0)
+    (property "Sheetname" "Battery Harvester_&_Peripherals" (at 12.7 230.4284 0)
       (effects (font (size 1 1)) (justify left bottom))
     )
     (property "Sheetfile" "Peripherals.kicad_sch" (at 12.7 420.9546 0)

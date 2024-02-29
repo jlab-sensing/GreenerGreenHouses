@@ -909,6 +909,13 @@
     (effects (font (size 1.27 1.27)) (justify left top))
     (uuid 2293574f-c9bb-4c6d-a4e5-f5c3da58e2ae)
   )
+  (text_box "Pull-Up Array\n\n"
+    (at 19.05 15.24 0) (size 259.08 55.88)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (effects (font (size 1.27 1.27)) (justify left top))
+    (uuid 509807ff-f222-44ed-9a9e-d1ce52d57ea2)
+  )
 
   (global_label "sda2" (shape input) (at 121.92 46.99 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
