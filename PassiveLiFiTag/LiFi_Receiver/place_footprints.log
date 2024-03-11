@@ -1,16 +1,16 @@
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 641:Plugin executed on: 'linux'
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 642:Plugin executed with python version: '3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]'
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 643:KiCad build version: 7.0.10-7.0.10~ubuntu22.04.1
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 644:Plugin version: 2.1.2
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 645:Frame repr: <wx._core.Frame object at 0x7fb20151bd90>
-02-07 17:35:50 com_github_MitjaNemec_PlaceFootprints.place_footprints 121:getting a list of all footprints on board
-02-07 17:35:51 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 824:Reference designator is: J
-02-07 17:35:51 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 825:Reference number is: 2
-02-07 17:35:51 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 857:Sorted and filtered list:
-['J2', 'J3', 'J4', 'J5']
-02-07 17:35:51 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 358:wx.Colour(250, 250, 250, 255)
-02-07 17:35:54 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 489:'5'
-02-07 17:35:54 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 895:Footprints to place:
-['J2', 'J3', 'J4', 'J5']
-02-07 17:35:54 com_github_MitjaNemec_PlaceFootprints.place_footprints 367:Starting placing with linear layout
-02-07 17:35:54 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 936:Placing complete
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 641:Plugin executed on: 'linux'
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 642:Plugin executed with python version: '3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]'
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 643:KiCad build version: 7.0.10-7.0.10~ubuntu22.04.1
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 644:Plugin version: 2.1.2
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 645:Frame repr: <wx._core.Frame object at 0x7f426291fd90>
+03-04 17:52:59 com_github_MitjaNemec_PlaceFootprints.place_footprints 121:getting a list of all footprints on board
+03-04 17:53:00 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 824:Reference designator is: R
+03-04 17:53:00 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 825:Reference number is: 7
+03-04 17:53:00 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 857:Sorted and filtered list:
+['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13']
+03-04 17:53:00 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 358:wx.Colour(250, 250, 250, 255)
+03-04 17:53:16 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 489:'5'
+03-04 17:53:16 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 895:Footprints to place:
+['R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13']
+03-04 17:53:16 com_github_MitjaNemec_PlaceFootprints.place_footprints 398:Starting placing with matrix layout
+03-04 17:53:16 com_github_MitjaNemec_PlaceFootprints.action_place_footprints 965:Placing complete
